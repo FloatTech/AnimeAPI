@@ -7,6 +7,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+
+	"github.com/tidwall/gjson"
 )
 
 // P站 无污染 IP 地址
@@ -15,9 +17,47 @@ var IPTables = map[string]string{
 	"i.pximg.net": "210.140.92.142:443",
 }
 
+//插画结构体
+type ImgAll struct {
+	ID          string
+	Title       string
+	Type        string
+	Description string
+	Small       string
+	Original    string
+	AuthorID    string
+	AuthorName  string
+	Width       int64
+	Height      int64
+}
+
+//[]byte转tjson类型
+type tjson []byte
+
+//解析json
+func (data tjson) Get(path string) gjson.Result {
+	return gjson.Get(string(data), path)
+}
+
 // Works 获取插画信息
-func Works(id int) ([]byte, error) {
-	return netPost(fmt.Sprintf("https://pixiv.net/ajax/illust/%d", id))
+func Works(id string) (i ImgAll, err error) {
+	var b []byte
+	b, err = netPost(fmt.Sprintf("https://pixiv.net/ajax/illust/%s", id))
+	if err != nil {
+		return
+	}
+	body := tjson(b)
+	i.ID = id
+	i.Title = body.Get("body.illustTitle").String()
+	i.Type = body.Get("body.illustType").String()
+	i.Description = body.Get("body.description").String()
+	i.Small = body.Get("body.urls.small").String()
+	i.Original = body.Get("body.urls.original").String()
+	i.AuthorID = body.Get("body.userId").String()
+	i.AuthorName = body.Get("body.userName").String()
+	i.Width = body.Get("body.width").Int()
+	i.Height = body.Get("body.height").Int()
+	return
 }
 
 // Download 下载图片

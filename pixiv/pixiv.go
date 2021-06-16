@@ -60,6 +60,50 @@ func Works(id string) (i ImgAll, err error) {
 	return
 }
 
+//搜索元素
+type RankValue struct {
+	/* required, possible rank modes:
+		- daily (default)
+	    - weekly
+	    - monthly
+	    - rookie
+	    - original
+	    - male
+	    - female
+	    - daily_r18
+	    - weekly_r18
+	    - male_r18
+	    - female_r18
+	    - r18g
+	*/
+	Mode string
+	/* optional, possible rank type:
+	    - all (default)
+	    - illust
+		- ugoira
+		- manga
+	*/
+	Type string
+	Page int
+	Date string
+}
+
+//画作排行榜
+func (value RankValue) Rank() (r [18]int, err error) {
+	var a []byte
+	if value.Mode == "male_r18" || value.Mode == "male" || value.Mode == "female_r18" || value.Mode == "female" {
+		value.Type = "all"
+		a, err = netPost(fmt.Sprintf("https://pixiv.net/touch/ajax/ranking/illust?mode=%s&type=all&page=%d&date=%s", value.Mode, value.Page, value.Date))
+	} else {
+		a, err = netPost(fmt.Sprintf("https://pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
+	}
+	body := tjson(a)
+	for i := 0; i < 18; i++ {
+		r[i] = int(body.Get(fmt.Sprintf("body.ranking.%d.illustId", i)).Int())
+	}
+	return
+}
+
 // Download 下载图片
 func Download(link string) ([]byte, error) {
 	return netPost(link)

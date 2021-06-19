@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func Download(link, filedir, filename string) error {
+func Download(link, filedir, filename string) (string, error) {
 	// 取文件路径
 	if strings.Contains(filedir, `/`) && !strings.HasSuffix(filedir, `/`) {
 		filedir += `/`
@@ -23,7 +23,7 @@ func Download(link, filedir, filename string) error {
 	// 路径目录不存在则创建目录
 	if _, err := os.Stat(filedir); err != nil && !os.IsExist(err) {
 		if err := os.MkdirAll(filedir, 0644); err != nil {
-			return err
+			return "", err
 		}
 	}
 	// P站特殊客户端
@@ -49,14 +49,14 @@ func Download(link, filedir, filename string) error {
 	request.Header.Set("Accept", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
 	resp, err := client.Do(request)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 	// 验证接收到的长度
 	length, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
 	data, _ := ioutil.ReadAll(resp.Body)
 	if length != len(data) {
-		return errors.New("download not complete")
+		return "", errors.New("download not complete")
 	}
 	// 获取文件后缀
 	switch resp.Header.Get("Content-Type") {
@@ -73,5 +73,5 @@ func Download(link, filedir, filename string) error {
 	f, _ := os.OpenFile(filepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	defer f.Close()
 	f.Write(data)
-	return nil
+	return filepath, nil
 }

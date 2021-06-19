@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/tidwall/gjson"
 )
@@ -18,17 +19,16 @@ var IPTables = map[string]string{
 }
 
 //插画结构体
-type ImgAll struct {
-	ID          string
-	Title       string
-	Type        string
-	Description string
-	Small       string
-	Original    string
-	AuthorID    string
-	AuthorName  string
-	Width       int64
-	Height      int64
+type Illust struct {
+	Pid         int64  `db:"pid"`
+	Title       string `db:"title"`
+	Caption     string `db:"caption"`
+	Tags        string `db:"tags"`
+	ImageUrls   string `db:"image_urls"`
+	AgeLimit    string `db:"age_limit"`
+	CreatedTime string `db:"created_time"`
+	UserId      int64  `db:"user_id"`
+	UserName    string `db:"user_name"`
 }
 
 //[]byte转tjson类型
@@ -40,24 +40,37 @@ func (data tjson) Get(path string) gjson.Result {
 }
 
 // Works 获取插画信息
-func Works(id string) (i ImgAll, err error) {
-	var b []byte
-	b, err = netPost(fmt.Sprintf("https://pixiv.net/ajax/illust/%s", id))
+func Works(id int64) (i *Illust, err error) {
+	data, err := netPost(fmt.Sprintf("https://pixiv.net/ajax/illust/%d", id))
 	if err != nil {
-		return
+		return nil, err
 	}
-	body := tjson(b)
-	i.ID = id
-	i.Title = body.Get("body.illustTitle").String()
-	i.Type = body.Get("body.illustType").String()
-	i.Description = body.Get("body.description").String()
-	i.Small = body.Get("body.urls.small").String()
-	i.Original = body.Get("body.urls.original").String()
-	i.AuthorID = body.Get("body.userId").String()
-	i.AuthorName = body.Get("body.userName").String()
-	i.Width = body.Get("body.width").Int()
-	i.Height = body.Get("body.height").Int()
-	return
+	json := gjson.ParseBytes(data).Get("body")
+	// 如果有"R-18"tag则判断为R-18（暂时）
+	var ageLimit = "all-age"
+	for _, tag := range json.Get("tags.tags.#.tag").Array() {
+		if tag.Str == "R-18" {
+			ageLimit = "r18"
+			break
+		}
+	}
+	// 解决json返回带html格式
+	var caption = strings.ReplaceAll(json.Get("illustComment").Str, "<br />", "\n")
+	if index := strings.Index(caption, "<"); index != -1 {
+		caption = caption[:index]
+	}
+	// 解析返回插画信息
+	i = &Illust{}
+	i.Pid = json.Get("illustId").Int()
+	i.Title = json.Get("illustTitle").Str
+	i.Caption = caption
+	i.Tags = fmt.Sprintln(json.Get("tags.tags.#.tag").Array())
+	i.ImageUrls = json.Get("urls.original").Str
+	i.AgeLimit = ageLimit
+	i.CreatedTime = json.Get("createDate").Str
+	i.UserId = json.Get("userId").Int()
+	i.UserName = json.Get("userName").Str
+	return i, err
 }
 
 //搜索元素

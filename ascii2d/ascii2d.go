@@ -7,18 +7,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/FloatTech/AnimeAPI/pixiv"
+
 	xpath "github.com/antchfx/htmlquery"
 )
 
-type Result struct {
-	PixivID    int64
-	Title      string
-	ImageURL   string
-	MemberName string
-	MemberID   int64
-}
-
-func Ascii2d(image string) (*Result, error) {
+func Ascii2d(image string) (*pixiv.Illust, error) {
 	var (
 		api = "https://ascii2d.net/search/uri"
 	)
@@ -80,16 +74,14 @@ func Ascii2d(image string) (*Result, error) {
 	if id == 0 {
 		return nil, fmt.Errorf("convert to pid error")
 	}
-	// 根据PID查询插图信息
-	/*
-		var illust = &pixiv.Illust{}
-		if err := illust.IllustInfo(id); err != nil {
-			return nil, err
-		}
-		if illust.AgeLimit != "all-age" {
-			return nil, fmt.Errorf("Ascii2d not found")
-		}
-	*/
+
+	illust, err := pixiv.Works(id)
+	if err != nil {
+		return nil, err
+	}
+	if illust.AgeLimit != "all-age" {
+		return nil, fmt.Errorf("Ascii2d not found")
+	}
 	// 待完善
-	return nil, nil
+	return illust, nil
 }

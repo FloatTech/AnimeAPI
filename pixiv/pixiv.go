@@ -104,11 +104,6 @@ func (value RankValue) Rank() (r [18]int, err error) {
 	return
 }
 
-// Download 下载图片
-func Download(link string) ([]byte, error) {
-	return netPost(link)
-}
-
 // netPost 返回请求数据
 func netPost(link string) ([]byte, error) {
 	// 获取IP地址

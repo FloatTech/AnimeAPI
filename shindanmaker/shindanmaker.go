@@ -39,8 +39,8 @@ func Shindanmaker(id int64, name string) (string, error) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("_token", token)
-	_ = writer.WriteField("name", name)
-	_ = writer.WriteField("hiddenName", "名無しのV")
+	_ = writer.WriteField("shindanName", name)
+	_ = writer.WriteField("hiddenName", "名無しのR")
 	_ = writer.Close()
 	// 发送请求
 	req, _ := http.NewRequest("POST", url, payload)

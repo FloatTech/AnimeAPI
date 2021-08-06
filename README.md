@@ -2,6 +2,8 @@
 二次元相关API
 ## ascii2d
 ascii2d 搜图
+## classify
+AI图片打分
 ## picture
 ZeroBot 索取图片
 ## pixiv

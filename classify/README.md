@@ -1,4 +1,4 @@
-# Zerobot-ACGImage-Classify
+# Zerobot-AnimeAPI-Classify
 Zerobot-ACGImage插件的AI评分接口，也可单独引用。
 
 # 接口说明

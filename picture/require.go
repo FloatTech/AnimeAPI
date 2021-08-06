@@ -58,8 +58,10 @@ func MustGiven() zero.Rule {
 			newCtx := &zero.Ctx{Event: e, State: zero.State{}}
 			if Exists()(newCtx) {
 				ctx.State["image_url"] = newCtx.State["image_url"]
+				ctx.Event.MessageID = newCtx.Event.MessageID
+				return true
 			}
-			return true
+			return false
 		}
 	}
 }

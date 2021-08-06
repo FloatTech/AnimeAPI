@@ -1,11 +1,27 @@
 package picture
 
 import (
+	"strings"
 	"time"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
+
+// CmdMatch 命令匹配
+func CmdMatch() zero.Rule {
+	return func(ctx *zero.Ctx) bool {
+		for _, elem := range ctx.Event.Message {
+			if elem.Type == "text" {
+				text := strings.ReplaceAll(elem.Data["text"], " ", "")
+				if text != ctx.State["keyword"].(string) {
+					return false
+				}
+			}
+		}
+		return true
+	}
+}
 
 // Exists 消息含有图片返回 true
 func Exists() zero.Rule {

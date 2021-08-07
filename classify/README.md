@@ -1,4 +1,4 @@
-# Zerobot-AnimeAPI-Classify
+# AnimeAPI/classify
 Zerobot-ACGImage插件的AI评分接口，也可单独引用。
 
 # 接口说明
@@ -14,11 +14,13 @@ Zerobot-ACGImage插件的AI评分接口，也可单独引用。
 
 请确保`delay`至少大于1，否则可能导致无法加载图片。
 
-## func Classify(ctx *zero.Ctx, targeturl string, noimg bool)
-用AI对`targeturl`指向的图片打分。
+## func Classify(targeturl string, noimg bool) (int, int64, string, string)
+用AI对`targeturl`指向的图片打分。返回值：class lastvisit dhash comment。
 
-- 如果`noimg==true`，将用打分回复`ctx.Event.MessageID`指示的消息。
-- 如果`noimg==false`，将发送该图片并针对该图片回复打分。
+- 如果`noimg==true`，将不下载图片。
+- 如果`noimg==false`，将下载图片到`dataPath/cache`+`lastvisit`。
+- `dhash`为图片的dhash值的[base16384](https://github.com/fumiama/base16384)编码。
+- `comment`为针对该`class`的评语，详见下方打分等级。
 
 # 打分等级
 
@@ -33,8 +35,8 @@ Zerobot-ACGImage插件的AI评分接口，也可单独引用。
 
 > r18
 
-由于模型并不精确，目前有较大可能误判，请勿将其作为鉴黄模型使用，仅供娱乐。
+由于模型并不精确，目前对于非`lolicon`图片有70%可能误判（`lolicon`图片可保证无误），请勿将其作为鉴黄模型使用，仅供娱乐。
 
 - [6]影响不好啦!
-- [7]太涩啦，🐛了!
-- [8]已经🐛不动啦...
+- [7]太涩啦，🐛了!（非`lolicon`图片的最高等级）
+- [8]已经🐛不动啦...（仅`lolicon`图片有此等级，表示误判但被纠正的图片）

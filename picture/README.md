@@ -15,4 +15,4 @@ zero.OnKeywordGroup([]string{"欲匹配短语1", "欲匹配短语2" ...}, pictur
 ## func Exists() zero.Rule
 消息含有图片返回`true`
 ## func MustGiven() zero.Rule
-消息不存在图片阻塞60秒至有图片，超时返回`false`
+消息不存在图片阻塞60秒至有图片并将`ctx.Event.MessageID`设置为图片对应的消息id（`plugin_acgimage`依赖此特性），超时返回`false`。

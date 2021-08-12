@@ -12,7 +12,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const head = "http://sayuri.fumiama.top:62002/dice?class=9&url="
+const head = "http://sayuri.fumiama.top:8080/dice?class=9&url="
 
 var (
 	datapath  string

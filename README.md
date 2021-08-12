@@ -1,5 +1,5 @@
 # AnimeAPI
-二次元相关API
+二次元相关API，详细说明可前往各文件夹查看。
 ## ascii2d
 ascii2d 搜图
 ## classify

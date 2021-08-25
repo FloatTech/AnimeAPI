@@ -68,7 +68,8 @@ func Shindanmaker(id int64, name string) (string, error) {
 		if text := xpath.InnerText(child); text != "" {
 			output = append(output, text)
 		} else if child.Data == "img" {
-			output = append(output, "[CQ:image,file=base64://"+child.Attr[1].Val+"]")
+			img := child.Attr[1].Val
+			output = append(output, "[CQ:image,file=base64://"+img[strings.Index(img, ",")+1:]+"]")
 		} else {
 			output = append(output, "\n")
 		}

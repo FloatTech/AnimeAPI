@@ -69,7 +69,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 			output = append(output, text)
 		} else if child.Data == "img" {
 			img := child.Attr[1].Val
-			output = append(output, "[CQ:image,file=base64://"+img[strings.Index(img, ",")+1:]+"]")
+			output = append(output, "[CQ:image,file="+img[strings.Index(img, ",")+1:]+"]")
 		} else {
 			output = append(output, "\n")
 		}

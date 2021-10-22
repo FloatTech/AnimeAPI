@@ -11,6 +11,59 @@ import (
 	"strings"
 )
 
+var (
+	// P站特殊客户端
+	client = &http.Client{
+		// 解决中国大陆无法访问的问题
+		Transport: &http.Transport{
+			DisableKeepAlives: false,
+			// 隐藏 sni 标志
+			TLSClientConfig: &tls.Config{
+				ServerName:         "-",
+				InsecureSkipVerify: true,
+			},
+			// 更改 dns
+			Dial: func(network, addr string) (net.Conn, error) {
+				return net.Dial("tcp", IPTables["i.pximg.net"])
+			},
+		},
+	}
+)
+
+// DownloadData 下载 link，返回 &data, suffix, error
+func DownloadData(link string) (*[]byte, string, error) {
+	// 网络请求
+	request, _ := http.NewRequest("GET", link, nil)
+	request.Header.Set("Host", "i.pximg.net")
+	request.Header.Set("Referer", "https://www.pixiv.net/")
+	request.Header.Set("Accept", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
+	resp, err := client.Do(request)
+	if err != nil {
+		return nil, "", err
+	}
+	defer resp.Body.Close()
+	// 验证接收到的长度
+	length, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
+	data, _ := ioutil.ReadAll(resp.Body)
+	if length != len(data) {
+		return nil, "", errors.New("download not complete")
+	}
+	// 获取文件后缀
+	suffix := ".jpg"
+	switch resp.Header.Get("Content-Type") {
+	case "image/jpeg":
+		break
+	case "image/png":
+		suffix = ".png"
+	case "image/gif":
+		suffix = ".gif"
+	default:
+		break
+	}
+	return &data, suffix, nil
+}
+
+// DownloadData 下载 link 到 filedir，返回 filename+suffix, error
 func Download(link, filedir, filename string) (string, error) {
 	// 取文件路径
 	if strings.Contains(filedir, `/`) && !strings.HasSuffix(filedir, `/`) {
@@ -26,52 +79,14 @@ func Download(link, filedir, filename string) (string, error) {
 			return "", err
 		}
 	}
-	// P站特殊客户端
-	client := &http.Client{
-		// 解决中国大陆无法访问的问题
-		Transport: &http.Transport{
-			DisableKeepAlives: false,
-			// 隐藏 sni 标志
-			TLSClientConfig: &tls.Config{
-				ServerName:         "-",
-				InsecureSkipVerify: true,
-			},
-			// 更改 dns
-			Dial: func(network, addr string) (net.Conn, error) {
-				return net.Dial("tcp", IPTables["i.pximg.net"])
-			},
-		},
+	data, suffix, err := DownloadData(link)
+	if err == nil {
+		filepath += suffix
+		// 写入文件
+		f, _ := os.OpenFile(filepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+		f.Write(*data)
+		f.Close()
+		return filepath, nil
 	}
-	// 网络请求
-	request, _ := http.NewRequest("GET", link, nil)
-	request.Header.Set("Host", "i.pximg.net")
-	request.Header.Set("Referer", "https://www.pixiv.net/")
-	request.Header.Set("Accept", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
-	resp, err := client.Do(request)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	// 验证接收到的长度
-	length, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
-	data, _ := ioutil.ReadAll(resp.Body)
-	if length != len(data) {
-		return "", errors.New("download not complete")
-	}
-	// 获取文件后缀
-	switch resp.Header.Get("Content-Type") {
-	case "image/jpeg":
-		filepath += ".jpg"
-	case "image/png":
-		filepath += ".png"
-	case "image/gif":
-		filepath += ".gif"
-	default:
-		filepath += ".jpg"
-	}
-	// 写入文件
-	f, _ := os.OpenFile(filepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
-	defer f.Close()
-	f.Write(data)
-	return filepath, nil
+	return "", err
 }

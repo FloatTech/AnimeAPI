@@ -63,7 +63,7 @@ func DownloadData(link string) (*[]byte, string, error) {
 	return &data, suffix, nil
 }
 
-// DownloadData 下载 link 到 filedir，返回 filename+suffix, error
+// DownloadData 下载 link 到 filedir，返回 filedir+filename+suffix, error
 func Download(link, filedir, filename string) (string, error) {
 	// 取文件路径
 	if strings.Contains(filedir, `/`) && !strings.HasSuffix(filedir, `/`) {

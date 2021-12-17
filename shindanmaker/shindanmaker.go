@@ -45,6 +45,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 	// 发送请求
 	req, _ := http.NewRequest("POST", url, payload)
 	req.Header.Add("Cookie", cookie)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	resp, err := client.Do(req)
 	if err != nil {
@@ -85,6 +86,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 func refresh() error {
 	client := &http.Client{}
 	req, _ := http.NewRequest("POST", "https://shindanmaker.com/587874", nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
 		return err

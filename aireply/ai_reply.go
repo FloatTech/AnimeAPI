@@ -20,7 +20,7 @@ var (
 // AIReply 公用智能回复类
 type AIReply interface {
 	// Talk 取得回复消息
-	Talk(string) message.MessageSegment
+	Talk(string) message.Message
 	// Talk 取得文本回复消息
 	TalkPlain(string) string
 	// String 获得模式

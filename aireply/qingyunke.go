@@ -32,14 +32,14 @@ func (*QYKReply) String() string {
 }
 
 // Talk 取得回复消息
-func (*QYKReply) Talk(msg string) message.MessageSegment {
+func (*QYKReply) Talk(msg string) message.Message {
 	msg = strings.ReplaceAll(msg, zero.BotConfig.NickName[0], qykBotName)
 
 	u := fmt.Sprintf(qykURL, url.QueryEscape(msg))
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
-		return message.Text("ERROR:", err)
+		return message.Message{message.Text("ERROR:", err)}
 	}
 	// 自定义Header
 	req.Header.Set("User-Agent", web.RandUA())
@@ -47,12 +47,12 @@ func (*QYKReply) Talk(msg string) message.MessageSegment {
 	req.Header.Set("Host", "api.qingyunke.com")
 	resp, err := client.Do(req)
 	if err != nil {
-		return message.Text("ERROR:", err)
+		return message.Message{message.Text("ERROR:", err)}
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return message.Text("ERROR:", err)
+		return message.Message{message.Text("ERROR:", err)}
 	}
 
 	replystr := gjson.Get(helper.BytesToString(bytes), "content").String()
@@ -61,7 +61,7 @@ func (*QYKReply) Talk(msg string) message.MessageSegment {
 	replystr = strings.ReplaceAll(replystr, "}", "]")
 	replystr = strings.ReplaceAll(replystr, qykBotName, zero.BotConfig.NickName[0])
 
-	return message.Text(replystr)
+	return message.ParseMessageFromString(replystr)
 }
 
 // TalkPlain 取得回复消息

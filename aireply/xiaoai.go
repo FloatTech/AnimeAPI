@@ -59,6 +59,6 @@ func (*XiaoAiReply) TalkPlain(msg string) string {
 }
 
 // Talk 取得回复消息
-func (x *XiaoAiReply) Talk(msg string) message.MessageSegment {
-	return message.Text(x.TalkPlain(msg))
+func (x *XiaoAiReply) Talk(msg string) message.Message {
+	return message.Message{message.Text(x.TalkPlain(msg))}
 }

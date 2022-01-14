@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"sort"
 
+	"github.com/FloatTech/zbputils/file"
 	"github.com/FloatTech/zbputils/txt2img" // jpg png gif
 	"github.com/FloatTech/zbputils/web"
 	"github.com/fogleman/gg"
@@ -72,6 +73,15 @@ func TagURL(name, u string) (t txt2img.TxtCanvas, err error) {
 
 	st := newsorttags(tags)
 	sort.Sort(st)
+
+	_, err = file.GetLazyData(txt2img.BoldFontFile, false, true)
+	if err != nil {
+		return
+	}
+	_, err = file.GetLazyData(txt2img.ConsolasFontFile, false, true)
+	if err != nil {
+		return
+	}
 
 	data = <-ch
 	if err != nil {

@@ -67,6 +67,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 				logrus.Infoln("[imgpool] 缓存:", name, "url:", u)
 			} else {
 				err = errors.New("get msg error")
+				return
 			}
 			break
 		}

@@ -91,7 +91,7 @@ func RegisterListener(key string, en control.Engine) {
 			var u, n string
 			for _, e := range ctx.Event.Message {
 				if e.Type == "image" {
-					u = e.Data["file"]
+					u = e.Data["url"]
 					u = u[:strings.LastIndex(u, "/")]
 					u = u[strings.LastIndex(u, "/")+1:]
 				} else if e.Type == "text" {

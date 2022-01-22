@@ -72,6 +72,9 @@ func RegisterListener(key string, en control.Engine) {
 					n = e.Data["text"]
 				}
 			}
+			if u == "" || n == "" {
+				return
+			}
 			img, err := pool.NewItem(n, u)
 			if err != nil {
 				ctx.SendChain(message.Text("ERROR:", err))

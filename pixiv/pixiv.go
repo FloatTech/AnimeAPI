@@ -14,8 +14,8 @@ import (
 
 // P站 无污染 IP 地址
 var IPTables = map[string]string{
-	"pixiv.net":   "210.140.92.180:443",
-	"i.pximg.net": "210.140.92.147:443",
+	"pixiv.net":   "210.140.92.183:443",
+	"i.pximg.net": "210.140.92.142:443",
 }
 
 //插画结构体

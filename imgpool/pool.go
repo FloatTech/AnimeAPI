@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/FloatTech/zbputils/control"
 	"github.com/FloatTech/zbputils/pool"
 	"github.com/FloatTech/zbputils/web"
 	zero "github.com/wdvxdr1123/ZeroBot"
@@ -56,10 +57,10 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 }
 
 // RegisterListener key engine
-func RegisterListener(key string, en *zero.Engine) {
+func RegisterListener(key string, en control.Engine) {
 	en.OnMessage(zero.OnlyGroup, func(ctx *zero.Ctx) bool {
 		return ctx.Event.GroupID == imgpoolgrp && ctx.Event.MessageType == "image"
-	}).SetBlock(true).FirstPriority().
+	}).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			var u, n string
 			for _, e := range ctx.Event.Message {

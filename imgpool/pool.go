@@ -40,13 +40,9 @@ func init() {
 // NewImage context name file
 func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 	if strings.HasPrefix(f, "http") {
-		m.f = cachedir + "/" + name
-		err = file.DownloadTo(f, cachedir+"/"+name, false)
-		if err != nil {
-			return
-		}
-	} else {
 		m.f = f
+	} else {
+		m.f = "file:///" + file.BOTPATH + "/" + f
 	}
 	m.img, err = pool.GetItem(name)
 	if err == nil && m.img.String() != "" {
@@ -55,7 +51,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 			return
 		}
 	}
-	id := ctx.SendGroupMessage(imgpoolgrp, message.Message{message.Text(name), message.Image("file:///" + file.BOTPATH + "/" + m.f)})
+	id := ctx.SendGroupMessage(imgpoolgrp, message.Message{message.Text(name), message.Image(m.f)})
 	if id == 0 {
 		err = errors.New("send image error")
 		return

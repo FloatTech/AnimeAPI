@@ -4,6 +4,7 @@ package imgpool
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/FloatTech/zbputils/control"
 	"github.com/FloatTech/zbputils/file"
 	"github.com/FloatTech/zbputils/pool"
-	"github.com/FloatTech/zbputils/web"
 	"github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -24,9 +24,8 @@ const cachedir = "data/poolcache"
 var pushkey string
 
 type Image struct {
-	img  *pool.Item
-	f    string
-	Data []byte
+	img *pool.Item
+	f   string
 }
 
 func init() {
@@ -46,7 +45,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 	}
 	m.img, err = pool.GetItem(name)
 	if err == nil && m.img.String() != "" {
-		m.Data, err = web.GetData(m.String())
+		_, err = http.Head(m.String())
 		if err == nil {
 			return
 		}

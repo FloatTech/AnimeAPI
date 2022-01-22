@@ -85,7 +85,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 func RegisterListener(key string, en control.Engine) {
 	pushkey = key
 	en.OnMessage(zero.OnlyGroup, func(ctx *zero.Ctx) bool {
-		return ctx.Event.GroupID == imgpoolgrp && ctx.Event.MessageType == "image"
+		return ctx.Event.GroupID == imgpoolgrp
 	}).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			var u, n string

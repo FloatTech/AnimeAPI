@@ -19,6 +19,8 @@ import (
 const cacheurl = "https://gchat.qpic.cn/gchatpic_new//%s/0"
 const imgpoolgrp = 117500479
 
+var pushkey string
+
 type Image struct {
 	img *pool.Item
 }
@@ -35,7 +37,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 		return
 	}
 	m.img, err = pool.GetItem(name)
-	if err == nil {
+	if err == nil && m.img.String() != "" {
 		return
 	}
 	id := ctx.SendGroupMessage(imgpoolgrp, message.Message{message.Text(name), message.Image("base64://" + base64.StdEncoding.EncodeToString(data))})
@@ -53,11 +55,15 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 			break
 		}
 	}
+	if pushkey != "" {
+		_ = m.img.Push(pushkey)
+	}
 	return
 }
 
 // RegisterListener key engine
 func RegisterListener(key string, en control.Engine) {
+	pushkey = key
 	en.OnMessage(zero.OnlyGroup, func(ctx *zero.Ctx) bool {
 		return ctx.Event.GroupID == imgpoolgrp && ctx.Event.MessageType == "image"
 	}).SetBlock(true).

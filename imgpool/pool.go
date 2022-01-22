@@ -46,7 +46,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 	}
 	m.img, err = pool.GetItem(name)
 	if err == nil && m.img.String() != "" {
-		m.Data, err = web.GetData(m.img.String())
+		m.Data, err = web.GetData(m.String())
 		if err == nil {
 			return
 		}

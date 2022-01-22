@@ -31,11 +31,12 @@ func Ascii2d(image string) (*pixiv.Illust, error) {
 	// 网络请求
 	req, _ := http.NewRequest("POST", api, fromData)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Accept", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 	// 色合检索改变到特征检索
 	var bovwUrl = strings.ReplaceAll(resp.Request.URL.String(), "color", "bovw")
 	bovwReq, _ := http.NewRequest("POST", bovwUrl, nil)

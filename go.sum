@@ -1,6 +1,6 @@
 github.com/FloatTech/bot-manager v1.0.0/go.mod h1:8YYRJ16oroGHQGD2En0oVnmcKJkxR9O/jd5BPSfWfOQ=
-github.com/FloatTech/zbputils v1.2.4-beta5 h1:puvvScHJ6G+VmQbj0LSBd3mJMVD+bVAf14P9kVUxfso=
-github.com/FloatTech/zbputils v1.2.4-beta5/go.mod h1:yQwwXUoFhJeU+CkaDXia1E+k4iBqxIiobE3n3Vy/R3w=
+github.com/FloatTech/zbputils v1.2.4-beta6 h1:r6NtdVznx42QVNgJ46ldIw4YmyQDrciyKufwflgKU7Q=
+github.com/FloatTech/zbputils v1.2.4-beta6/go.mod h1:yQwwXUoFhJeU+CkaDXia1E+k4iBqxIiobE3n3Vy/R3w=
 github.com/Mrs4s/MiraiGo v0.0.0-20211120033824-43b23f4e6fcb h1:Rkj28fqIwGx/EgBzRYtpmJRfH6wqVn7cNdc7aJ0QE4M=
 github.com/Mrs4s/MiraiGo v0.0.0-20211120033824-43b23f4e6fcb/go.mod h1:imVKbfKqqeit+C/eaWGb4MKQ3z3gN6pRpBU5RMtp5so=
 github.com/antchfx/htmlquery v1.2.3 h1:sP3NFDneHx2stfNXCKbhHFo8XgNjCACnU/4AO5gWz6M=

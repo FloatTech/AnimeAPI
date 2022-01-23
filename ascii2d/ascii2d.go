@@ -1,6 +1,7 @@
 package ascii2d
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -17,7 +18,9 @@ func Ascii2d(image string) (*pixiv.Illust, error) {
 		api = "https://ascii2d.net/search/uri"
 	)
 	transport := http.Transport{
-		DisableKeepAlives: true,
+		TLSClientConfig: &tls.Config{
+			MaxVersion: tls.VersionTLS12,
+		},
 	}
 	client := &http.Client{
 		Transport: &transport,

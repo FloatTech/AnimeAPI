@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/FloatTech/zbputils/control"
-	"github.com/FloatTech/zbputils/file"
 	"github.com/FloatTech/zbputils/pool"
 	"github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
@@ -41,7 +40,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 	if strings.HasPrefix(f, "http") {
 		m.f = f
 	} else {
-		m.f = "file:///" + file.BOTPATH + "/" + f
+		m.f = "file:///" + f
 	}
 	m.img, err = pool.GetItem(name)
 	if err == nil && m.img.String() != "" {
@@ -64,16 +63,16 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 			if u != "" {
 				m.img, err = pool.NewItem(name, u)
 				logrus.Infoln("[imgpool] 缓存:", name, "url:", u)
+				if pushkey != "" {
+					_ = m.img.Push(pushkey)
+				}
 			} else {
 				err = errors.New("get msg error")
-				return
 			}
-			break
+			return
 		}
 	}
-	if pushkey != "" {
-		_ = m.img.Push(pushkey)
-	}
+	err = errors.New("get msg error")
 	return
 }
 

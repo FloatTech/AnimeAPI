@@ -66,7 +66,7 @@ func DownloadData(link string) (*[]byte, string, error) {
 	return &data, suffix, nil
 }
 
-// Download 下载 link 到 filedir，返回 filedir+filename+suffix, error
+// DownAll 单线程下载 link 到 filedir，返回 filedir+filename+suffix, error
 func DownAll(link, filedir, filename string) (string, error) {
 	// 取文件路径
 	if strings.Contains(filedir, `/`) && !strings.HasSuffix(filedir, `/`) {
@@ -94,6 +94,7 @@ func DownAll(link, filedir, filename string) (string, error) {
 	return "", err
 }
 
+// Download 多线程下载 link 到 filedir，返回 filedir+filename+suffix, error
 func Download(link, filedir, filename string) (string, error) {
 	var slicecap int64 = 65536
 	// 获取IP地址

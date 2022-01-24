@@ -20,15 +20,15 @@ var IPTables = map[string]string{
 
 //插画结构体
 type Illust struct {
-	Pid         int64  `db:"pid"`
-	Title       string `db:"title"`
-	Caption     string `db:"caption"`
-	Tags        string `db:"tags"`
-	ImageUrls   string `db:"image_urls"`
-	AgeLimit    string `db:"age_limit"`
-	CreatedTime string `db:"created_time"`
-	UserId      int64  `db:"user_id"`
-	UserName    string `db:"user_name"`
+	Pid         int64    `db:"pid"`
+	Title       string   `db:"title"`
+	Caption     string   `db:"caption"`
+	Tags        string   `db:"tags"`
+	ImageUrls   []string `db:"image_urls"`
+	AgeLimit    string   `db:"age_limit"`
+	CreatedTime string   `db:"created_time"`
+	UserId      int64    `db:"user_id"`
+	UserName    string   `db:"user_name"`
 }
 
 //[]byte转tjson类型
@@ -65,7 +65,10 @@ func Works(id int64) (i *Illust, err error) {
 	i.Title = json.Get("illustTitle").Str
 	i.Caption = caption
 	i.Tags = fmt.Sprintln(json.Get("tags.tags.#.tag").Array())
-	i.ImageUrls = json.Get("urls.original").Str
+	json.Get("urls.original").ForEach(func(_, value gjson.Result) bool {
+		i.ImageUrls = append(i.ImageUrls, value.Str)
+		return true
+	})
 	i.AgeLimit = ageLimit
 	i.CreatedTime = json.Get("createDate").Str
 	i.UserId = json.Get("userId").Int()
@@ -106,10 +109,8 @@ func (value RankValue) Rank() (r [18]int, err error) {
 	var a []byte
 	if value.Mode == "male_r18" || value.Mode == "male" || value.Mode == "female_r18" || value.Mode == "female" {
 		value.Type = "all"
-		a, err = netPost(fmt.Sprintf("https://pixiv.net/touch/ajax/ranking/illust?mode=%s&type=all&page=%d&date=%s", value.Mode, value.Page, value.Date))
-	} else {
-		a, err = netPost(fmt.Sprintf("https://pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
 	}
+	a, err = netPost(fmt.Sprintf("https://pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
 	body := tjson(a)
 	for i := 0; i < 18; i++ {
 		r[i] = int(body.Get(fmt.Sprintf("body.ranking.%d.illustId", i)).Int())

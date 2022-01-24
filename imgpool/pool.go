@@ -11,6 +11,7 @@ import (
 
 	"github.com/FloatTech/zbputils/control"
 	"github.com/FloatTech/zbputils/pool"
+	"github.com/FloatTech/zbputils/process"
 	"github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -66,6 +67,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 				if pushkey != "" {
 					_ = m.img.Push(pushkey)
 				}
+				process.SleepAbout1sTo2s() // 防止风控
 			} else {
 				err = errors.New("get msg error")
 			}

@@ -167,7 +167,7 @@ func Download(link, filedir, filename string) (string, error) {
 		wg.Add(1)
 		go func(f *os.File, start int64, end int64) {
 			var failedtimes int
-			fmt.Println(contentlength, start, end)
+			// fmt.Println(contentlength, start, end)
 			for {
 				if failedtimes >= 3 {
 					break

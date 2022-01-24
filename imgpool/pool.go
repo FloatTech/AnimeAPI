@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
@@ -19,7 +18,6 @@ import (
 
 const cacheurl = "https://gchat.qpic.cn/gchatpic_new//%s/0"
 const imgpoolgrp = 117500479
-const cachedir = "data/poolcache"
 
 var pushkey string
 
@@ -28,12 +26,19 @@ type Image struct {
 	f   string
 }
 
-func init() {
-	_ = os.RemoveAll(cachedir)
-	err := os.MkdirAll(cachedir, 0755)
-	if err != nil {
-		panic(err)
+// GetImage context name
+func GetImage(ctx *zero.Ctx, name string) (m Image, err error) {
+	m.img, err = pool.GetItem(name)
+	if err == nil && m.img.String() != "" {
+		_, err = http.Head(m.String())
+		if err != nil {
+			err = errors.New("img file outdated")
+			return
+		}
+		return
 	}
+	err = errors.New("no such img")
+	return
 }
 
 // NewImage context name file
@@ -55,6 +60,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 		err = errors.New("send image error")
 		return
 	}
+	defer process.SleepAbout1sTo2s() // 防止风控
 	msg := ctx.GetMessage(message.NewMessageID(strconv.FormatInt(id, 10)))
 	for _, e := range msg.Elements {
 		if e.Type == "image" {
@@ -67,7 +73,6 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 				if pushkey != "" {
 					_ = m.img.Push(pushkey)
 				}
-				process.SleepAbout1sTo2s() // 防止风控
 			} else {
 				err = errors.New("get msg error")
 			}

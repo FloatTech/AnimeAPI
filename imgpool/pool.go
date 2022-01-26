@@ -40,7 +40,7 @@ func GetImage(name string) (m *Image, err error) {
 }
 
 // NewImage context name file
-func NewImage(ctx *zero.Ctx, name, f string) (m *Image, err error) {
+func NewImage(ctx *zero.Ctx, cacheuser int64, name, f string) (m *Image, err error) {
 	m = new(Image)
 	m.n = name
 	m.SetFile(f)
@@ -51,7 +51,7 @@ func NewImage(ctx *zero.Ctx, name, f string) (m *Image, err error) {
 			return
 		}
 	}
-	err = m.Push(ctx)
+	err = m.Push(ctx, cacheuser)
 	return
 }
 
@@ -69,8 +69,8 @@ func (m *Image) SetFile(f string) {
 	}
 }
 
-func (m *Image) Push(ctx *zero.Ctx) (err error) {
-	id := ctx.SendPrivateMessage(ctx.Event.SelfID, message.Message{message.Image(m.f)})
+func (m *Image) Push(ctx *zero.Ctx, cacheuser int64) (err error) {
+	id := ctx.SendPrivateMessage(cacheuser, message.Message{message.Image(m.f)})
 	if id == 0 {
 		err = errors.New("send image error")
 		return

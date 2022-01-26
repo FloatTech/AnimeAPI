@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/FloatTech/zbputils/ctxext"
 	"github.com/FloatTech/zbputils/pool"
 	"github.com/FloatTech/zbputils/process"
 	"github.com/sirupsen/logrus"
-	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
@@ -39,7 +39,7 @@ func GetImage(name string) (m *Image, err error) {
 }
 
 // NewImage context name file
-func NewImage(send func(message interface{}) int64, get func(int64) zero.Message, name, f string) (m *Image, err error) {
+func NewImage(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg, name, f string) (m *Image, err error) {
 	m = new(Image)
 	m.n = name
 	m.SetFile(f)
@@ -68,7 +68,7 @@ func (m *Image) SetFile(f string) {
 	}
 }
 
-func (m *Image) Push(send func(message interface{}) int64, get func(int64) zero.Message) (err error) {
+func (m *Image) Push(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg) (err error) {
 	id := send(message.Message{message.Image(m.f)})
 	if id == 0 {
 		err = errors.New("send image error")

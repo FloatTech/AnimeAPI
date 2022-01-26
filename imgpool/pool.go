@@ -18,12 +18,14 @@ import (
 const cacheurl = "https://gchat.qpic.cn/gchatpic_new//%s/0"
 
 type Image struct {
-	img *pool.Item
-	f   string
+	img  *pool.Item
+	n, f string
 }
 
-// GetImage context name
-func GetImage(ctx *zero.Ctx, name string) (m Image, err error) {
+// GetImage name
+func GetImage(name string) (m *Image, err error) {
+	m = new(Image)
+	m.n = name
 	m.img, err = pool.GetItem(name)
 	if err == nil && m.img.String() != "" {
 		_, err = http.Head(m.String())
@@ -38,12 +40,10 @@ func GetImage(ctx *zero.Ctx, name string) (m Image, err error) {
 }
 
 // NewImage context name file
-func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
-	if strings.HasPrefix(f, "http") {
-		m.f = f
-	} else {
-		m.f = "file:///" + f
-	}
+func NewImage(ctx *zero.Ctx, name, f string) (m *Image, err error) {
+	m = new(Image)
+	m.n = name
+	m.SetFile(f)
 	m.img, err = pool.GetItem(name)
 	if err == nil && m.img.String() != "" {
 		_, err = http.Head(m.String())
@@ -51,6 +51,25 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 			return
 		}
 	}
+	err = m.Push(ctx)
+	return
+}
+
+// String url
+func (m *Image) String() string {
+	return fmt.Sprintf(cacheurl, m.img.String())
+}
+
+// SetFile f
+func (m *Image) SetFile(f string) {
+	if strings.HasPrefix(f, "http") {
+		m.f = f
+	} else {
+		m.f = "file:///" + f
+	}
+}
+
+func (m *Image) Push(ctx *zero.Ctx) (err error) {
 	id := ctx.SendPrivateMessage(ctx.Event.SelfID, message.Message{message.Image(m.f)})
 	if id == 0 {
 		err = errors.New("send image error")
@@ -64,8 +83,8 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 			u = u[:strings.LastIndex(u, "/")]
 			u = u[strings.LastIndex(u, "/")+1:]
 			if u != "" {
-				m.img, err = pool.NewItem(name, u)
-				logrus.Infoln("[imgpool] 缓存:", name, "url:", u)
+				m.img, err = pool.NewItem(m.n, u)
+				logrus.Infoln("[imgpool] 缓存:", m.n, "url:", u)
 				_ = m.img.Push("minamoto")
 			} else {
 				err = errors.New("get msg error")
@@ -75,9 +94,4 @@ func NewImage(ctx *zero.Ctx, name, f string) (m Image, err error) {
 	}
 	err = errors.New("get msg error")
 	return
-}
-
-// String url
-func (m Image) String() string {
-	return fmt.Sprintf(cacheurl, m.img.String())
 }

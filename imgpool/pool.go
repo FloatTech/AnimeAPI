@@ -9,7 +9,6 @@ import (
 
 	"github.com/FloatTech/zbputils/ctxext"
 	"github.com/FloatTech/zbputils/pool"
-	"github.com/FloatTech/zbputils/process"
 	"github.com/sirupsen/logrus"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
@@ -74,20 +73,26 @@ func (m *Image) Push(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg) (err erro
 		err = errors.New("send image error")
 		return
 	}
-	defer process.SleepAbout1sTo2s() // 防止风控
 	msg := get(id)
 	for _, e := range msg.Elements {
 		if e.Type == "image" {
 			u := e.Data["url"]
-			u = u[:strings.LastIndex(u, "/")]
-			u = u[strings.LastIndex(u, "/")+1:]
-			if u != "" {
-				m.img, err = pool.NewItem(m.n, u)
-				logrus.Infoln("[imgpool] 缓存:", m.n, "url:", u)
-				_ = m.img.Push("minamoto")
-			} else {
-				err = errors.New("get msg error")
+			i := strings.LastIndex(u, "/")
+			if i <= 0 {
+				break
 			}
+			u = u[:i]
+			i = strings.LastIndex(u, "/")
+			if i <= 0 {
+				break
+			}
+			u = u[i+1:]
+			if u == "" {
+				break
+			}
+			m.img, err = pool.NewItem(m.n, u)
+			logrus.Infoln("[imgpool] 缓存:", m.n, "url:", u)
+			_ = m.img.Push("minamoto")
 			return
 		}
 	}

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/FloatTech/zbputils/pool"
@@ -40,7 +39,7 @@ func GetImage(name string) (m *Image, err error) {
 }
 
 // NewImage context name file
-func NewImage(ctx *zero.Ctx, cacheuser int64, name, f string) (m *Image, err error) {
+func NewImage(send func(message interface{}) int64, get func(int64) zero.Message, name, f string) (m *Image, err error) {
 	m = new(Image)
 	m.n = name
 	m.SetFile(f)
@@ -51,7 +50,7 @@ func NewImage(ctx *zero.Ctx, cacheuser int64, name, f string) (m *Image, err err
 			return
 		}
 	}
-	err = m.Push(ctx, cacheuser)
+	err = m.Push(send, get)
 	return
 }
 
@@ -69,14 +68,14 @@ func (m *Image) SetFile(f string) {
 	}
 }
 
-func (m *Image) Push(ctx *zero.Ctx, cacheuser int64) (err error) {
-	id := ctx.SendPrivateMessage(cacheuser, message.Message{message.Image(m.f)})
+func (m *Image) Push(send func(message interface{}) int64, get func(int64) zero.Message) (err error) {
+	id := send(message.Message{message.Image(m.f)})
 	if id == 0 {
 		err = errors.New("send image error")
 		return
 	}
 	defer process.SleepAbout1sTo2s() // 防止风控
-	msg := ctx.GetMessage(message.NewMessageID(strconv.FormatInt(id, 10)))
+	msg := get(id)
 	for _, e := range msg.Elements {
 		if e.Type == "image" {
 			u := e.Data["url"]

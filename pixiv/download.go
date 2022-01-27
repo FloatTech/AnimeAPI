@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/FloatTech/zbputils/file"
 )
 
 var (
@@ -31,12 +33,22 @@ var (
 			},
 		},
 	}
+	CacheDir = "data/pixiv/"
 )
 
-// DownloadData 下载 link，返回 &data, suffix, error
-func DownloadData(link string) (*[]byte, string, error) {
+func init() {
+	err := os.MkdirAll(CacheDir, 0755)
+	if err != nil {
+		panic(err)
+	}
+}
+
+// DownloadData 下载第 page 页，返回 data, suffix, error
+func (i *Illust) DownloadData(page int) ([]byte, string, error) {
+	suffix := i.ImageUrls[page]
+	suffix = suffix[strings.LastIndex(suffix, "."):]
 	// 网络请求
-	request, _ := http.NewRequest("GET", link, nil)
+	request, _ := http.NewRequest("GET", i.ImageUrls[page], nil)
 	request.Header.Set("Host", "i.pximg.net")
 	request.Header.Set("Referer", "https://www.pixiv.net/")
 	request.Header.Set("Accept", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
@@ -51,23 +63,11 @@ func DownloadData(link string) (*[]byte, string, error) {
 	if length != len(data) {
 		return nil, "", errors.New("download not complete")
 	}
-	// 获取文件后缀
-	suffix := ".jpg"
-	switch resp.Header.Get("Content-Type") {
-	case "image/jpeg":
-		break
-	case "image/png":
-		suffix = ".png"
-	case "image/gif":
-		suffix = ".gif"
-	default:
-		break
-	}
-	return &data, suffix, nil
+	return data, suffix, nil
 }
 
-// DownAll 单线程下载 link 到 filedir，返回 filedir+filename+suffix, error
-func DownAll(link, filedir, filename string) (string, error) {
+// DownloadSingleThread 单线程下载第 page 页到 filedir/filename.xxx，返回 filedir/filename.suffix, error
+func (i *Illust) DownloadSingleThread(page int, filedir, filename string) (string, error) {
 	// 取文件路径
 	if strings.Contains(filedir, `/`) && !strings.HasSuffix(filedir, `/`) {
 		filedir += `/`
@@ -82,23 +82,38 @@ func DownAll(link, filedir, filename string) (string, error) {
 			return "", err
 		}
 	}
-	data, suffix, err := DownloadData(link)
+	data, suffix, err := i.DownloadData(page)
 	if err == nil {
 		filepath += suffix
 		// 写入文件
 		f, _ := os.OpenFile(filepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
-		f.Write(*data)
+		f.Write(data)
 		f.Close()
 		return filepath, nil
 	}
 	return "", err
 }
 
+// DownloadToCache 多线程下载第 page 页到 CacheDir，返回 CacheDir+filename+suffix, error
+func (i *Illust) DownloadToCache(page int, filename string) (string, error) {
+	u := i.ImageUrls[page]
+	suffix := u
+	suffix = suffix[strings.LastIndex(suffix, "."):]
+	f := CacheDir + filename + suffix
+	if file.IsExist(f) {
+		return f, nil
+	}
+	return i.Download(page, CacheDir, filename)
+}
+
 // Download 多线程下载 link 到 filedir，返回 filedir+filename+suffix, error
-func Download(link, filedir, filename string) (string, error) {
+func (i *Illust) Download(page int, filedir, filename string) (string, error) {
 	var slicecap int64 = 65536
+	u := i.ImageUrls[page]
+	suffix := u
+	suffix = suffix[strings.LastIndex(suffix, "."):]
 	// 获取IP地址
-	domain, err := url.Parse(link)
+	domain, err := url.Parse(u)
 	if err != nil {
 		return "", err
 	}
@@ -125,7 +140,7 @@ func Download(link, filedir, filename string) (string, error) {
 	}
 
 	// 请求 Header
-	headreq, err := http.NewRequest("HEAD", link, nil)
+	headreq, err := http.NewRequest("HEAD", u, nil)
 	if err != nil {
 		return "", err
 	}
@@ -137,17 +152,6 @@ func Download(link, filedir, filename string) (string, error) {
 	defer headresp.Body.Close()
 
 	contentlength, _ := strconv.ParseInt(headresp.Header.Get("Content-Length"), 10, 64)
-	var suffix string
-	switch headresp.Header.Get("Content-Type") {
-	case "image/jpeg":
-		suffix = ".jpg"
-	case "image/png":
-		suffix = ".png"
-	case "image/gif":
-		suffix = ".gif"
-	default:
-		suffix = ".jpg"
-	}
 	var filepath = filedir + filename + suffix
 	f, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
@@ -172,7 +176,7 @@ func Download(link, filedir, filename string) (string, error) {
 				if failedtimes >= 3 {
 					break
 				}
-				req, err := http.NewRequest("GET", link, nil)
+				req, err := http.NewRequest("GET", u, nil)
 				if err != nil {
 					failedtimes++
 					continue

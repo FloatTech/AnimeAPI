@@ -15,6 +15,13 @@ import (
 
 const cacheurl = "https://gchat.qpic.cn/gchatpic_new//%s/0"
 
+var (
+	ErrImgFileOutdated = errors.New("img file outdated")
+	ErrNoSuchImg       = errors.New("no such img")
+	ErrSendImg         = errors.New("send image error")
+	ErrGetMsg          = errors.New("get msg error")
+)
+
 type Image struct {
 	img  *pool.Item
 	n, f string
@@ -28,17 +35,17 @@ func GetImage(name string) (m *Image, err error) {
 	if err == nil && m.img.String() != "" {
 		_, err = http.Head(m.String())
 		if err != nil {
-			err = errors.New("img file outdated")
+			err = ErrImgFileOutdated
 			return
 		}
 		return
 	}
-	err = errors.New("no such img")
+	err = ErrNoSuchImg
 	return
 }
 
 // NewImage context name file
-func NewImage(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg, name, f string) (m *Image, err error) {
+func NewImage(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg, name, f string) (m *Image, hassent bool, err error) {
 	m = new(Image)
 	m.n = name
 	m.SetFile(f)
@@ -49,7 +56,7 @@ func NewImage(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg, name, f string) 
 			return
 		}
 	}
-	err = m.Push(send, get)
+	hassent, err = m.Push(send, get)
 	return
 }
 
@@ -67,12 +74,13 @@ func (m *Image) SetFile(f string) {
 	}
 }
 
-func (m *Image) Push(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg) (err error) {
+func (m *Image) Push(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg) (hassent bool, err error) {
 	id := send(message.Message{message.Image(m.f)})
 	if id == 0 {
-		err = errors.New("send image error")
+		err = ErrSendImg
 		return
 	}
+	hassent = true
 	msg := get(id)
 	for _, e := range msg.Elements {
 		if e.Type == "image" {
@@ -96,6 +104,6 @@ func (m *Image) Push(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg) (err erro
 			return
 		}
 	}
-	err = errors.New("get msg error")
+	err = ErrGetMsg
 	return
 }

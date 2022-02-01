@@ -5,6 +5,19 @@ import (
 	"testing"
 )
 
+func TestGet(t *testing.T) {
+	data, err := Get("https://gchat.qpic.cn/gchatpic_new//663582230-2596768878-CECBADF39E266F89655249A56810EA4F/0", 1, 2, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := os.Create("test/getout.webp")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Write(data)
+	f.Close()
+}
+
 func TestPost(t *testing.T) {
 	f, err := os.Open("test/in.png")
 	if err != nil {

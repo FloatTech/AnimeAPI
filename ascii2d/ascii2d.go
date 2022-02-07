@@ -70,7 +70,7 @@ func Ascii2d(image string) (r []*Result, err error) {
 				Author: xpath.SelectAttr(authPath, "href"),
 				AuthNm: xpath.InnerText(authPath),
 				Thumb:  "https://ascii2d.net" + xpath.SelectAttr(picPath, "src"),
-				Type:   xpath.InnerText(xpath.FindOne(n, `//div[2]/div[3]/h6/small`)),
+				Type:   strings.Trim(xpath.InnerText(xpath.FindOne(n, `//div[2]/div[3]/h6/small`)), "\n"),
 			})
 		}
 	}

@@ -62,6 +62,9 @@ func NewImage(send ctxext.NoCtxSendMsg, get ctxext.NoCtxGetMsg, name, f string) 
 
 // String url
 func (m *Image) String() string {
+	if m.img == nil {
+		return m.f
+	}
 	return fmt.Sprintf(cacheurl, m.img.String())
 }
 

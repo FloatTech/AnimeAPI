@@ -21,7 +21,7 @@ type Result struct {
 
 // SauceNaoSearch SauceNao 以图搜图
 // 传入图片链接，返回P站结果
-func SauceNAO(image string) (*Result, error) {
+func SauceNAO(image string) (r []*Result, err error) {
 	var (
 		api    = "https://saucenao.com/search.php"
 		apiKey = "2cc2772ca550dbacb4c35731a79d341d1a143cb5"
@@ -69,15 +69,17 @@ func SauceNAO(image string) (*Result, error) {
 	if content.Get("results.0.header.similarity").Float() < minSimilarity {
 		return nil, fmt.Errorf("SauceNAO not found")
 	}
-	temp := content.Get("results.0")
-	result := &Result{
-		Similarity: temp.Get("header.similarity").Float(),
-		Thumbnail:  temp.Get("header.thumbnail").Str,
-		PixivID:    temp.Get("data.pixiv_id").Int(),
-		Title:      temp.Get("data.title").Str,
-		ImageURL:   temp.Get("data.ext_urls.0").Str,
-		MemberName: temp.Get("data.member_name").Str,
-		MemberID:   temp.Get("data.member_id").Int(),
-	}
-	return result, nil
+	content.Get("results").ForEach(func(key, value gjson.Result) bool {
+		r = append(r, &Result{
+			Similarity: value.Get("header.similarity").Float(),
+			Thumbnail:  value.Get("header.thumbnail").Str,
+			PixivID:    value.Get("data.pixiv_id").Int(),
+			Title:      value.Get("data.title").Str,
+			ImageURL:   value.Get("data.ext_urls.0").Str,
+			MemberName: value.Get("data.member_name").Str,
+			MemberID:   value.Get("data.member_id").Int(),
+		})
+		return true
+	})
+	return
 }

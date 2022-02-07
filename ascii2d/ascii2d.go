@@ -2,18 +2,24 @@ package ascii2d
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
-
-	"github.com/FloatTech/AnimeAPI/pixiv"
 
 	xpath "github.com/antchfx/htmlquery"
 )
 
-func Ascii2d(image string) (*pixiv.Illust, error) {
+type Result struct {
+	Info   string // Info 图片分辨率 格式 大小信息
+	Link   string // Link 图片链接
+	Name   string // Name 图片名
+	Author string // Author 作者链接
+	AuthNm string // AuthNm 作者名
+	Thumb  string // Thumb 缩略图链接
+	Type   string // Type pixiv / twitter ...
+}
+
+func Ascii2d(image string) (r []*Result, err error) {
 	var (
 		api = "https://ascii2d.net/search/uri"
 	)
@@ -40,16 +46,6 @@ func Ascii2d(image string) (*pixiv.Illust, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	// 色合检索改变到特征检索
-	var bovwUrl = strings.ReplaceAll(resp.Request.URL.String(), "color", "bovw")
-	bovwReq, _ := http.NewRequest("POST", bovwUrl, nil)
-	bovwReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	bovwReq.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
-	bovwResp, err := client.Do(bovwReq)
-	if err != nil {
-		return nil, err
-	}
-	defer bovwResp.Body.Close()
 	// 解析XPATH
 	doc, err := xpath.Parse(resp.Body)
 	if err != nil {
@@ -57,35 +53,26 @@ func Ascii2d(image string) (*pixiv.Illust, error) {
 	}
 	// 取出每个返回的结果
 	list := xpath.Find(doc, `//div[@class="row item-box"]`)
-	var link string
-	// 遍历取出第一个返回的PIXIV结果
+	if len(list) == 0 {
+		return
+	}
+	r = make([]*Result, 0, len(list))
+	// 遍历结果
 	for _, n := range list {
-		linkPath := xpath.Find(n, `//div[2]/div[3]/h6/a[1]`)
-		picPath := xpath.Find(n, `//div[1]/img`)
-		if len(linkPath) != 0 && len(picPath) != 0 {
-			link = xpath.SelectAttr(linkPath[0], "href")
-			if strings.Contains(link, "www.pixiv.net") {
-				break
-			}
+		linkPath := xpath.FindOne(n, `//div[2]/div[3]/h6/a[1]`)
+		authPath := xpath.FindOne(n, `//div[2]/div[3]/h6/a[2]`)
+		picPath := xpath.FindOne(n, `//div[1]/img`)
+		if linkPath != nil && authPath != nil && picPath != nil {
+			r = append(r, &Result{
+				Info:   xpath.InnerText(xpath.FindOne(n, `//div[2]/small`)),
+				Link:   xpath.SelectAttr(linkPath, "href"),
+				Name:   xpath.InnerText(linkPath),
+				Author: xpath.SelectAttr(authPath, "href"),
+				AuthNm: xpath.InnerText(authPath),
+				Thumb:  "https://ascii2d.net" + xpath.SelectAttr(picPath, "src"),
+				Type:   xpath.InnerText(xpath.FindOne(n, `//div[2]/div[3]/h6/small`)),
+			})
 		}
 	}
-	// 链接取出PIXIV id
-	var index = strings.LastIndex(link, "/")
-	if link == "" || index == -1 {
-		return nil, fmt.Errorf("Ascii2d not found")
-	}
-	id, _ := strconv.ParseInt(link[index+1:], 10, 64)
-	if id == 0 {
-		return nil, fmt.Errorf("convert to pid error")
-	}
-
-	illust, err := pixiv.Works(id)
-	if err != nil {
-		return nil, err
-	}
-	if illust.AgeLimit != "all-age" {
-		return nil, fmt.Errorf("Ascii2d not found")
-	}
-	// 待完善
-	return illust, nil
+	return
 }

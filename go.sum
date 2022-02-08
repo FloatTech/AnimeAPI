@@ -1,6 +1,6 @@
 github.com/FloatTech/bot-manager v1.0.0/go.mod h1:8YYRJ16oroGHQGD2En0oVnmcKJkxR9O/jd5BPSfWfOQ=
-github.com/FloatTech/zbputils v1.2.5-beta9 h1:7vSINxn2E3dXOT9zdEv6KnuqEJGZfpgB6hzqEQwZc/s=
-github.com/FloatTech/zbputils v1.2.5-beta9/go.mod h1:1j71Sna0RnprP3ywDNTblRzITNYCb2FGN2yxl1G4zg0=
+github.com/FloatTech/zbputils v1.2.5-beta10 h1:AUhtCKa+5cHAArw3cfqqjv3wL07UEqmV5v3gKOobDrU=
+github.com/FloatTech/zbputils v1.2.5-beta10/go.mod h1:1j71Sna0RnprP3ywDNTblRzITNYCb2FGN2yxl1G4zg0=
 github.com/Mrs4s/MiraiGo v0.0.0-20211120033824-43b23f4e6fcb h1:Rkj28fqIwGx/EgBzRYtpmJRfH6wqVn7cNdc7aJ0QE4M=
 github.com/Mrs4s/MiraiGo v0.0.0-20211120033824-43b23f4e6fcb/go.mod h1:imVKbfKqqeit+C/eaWGb4MKQ3z3gN6pRpBU5RMtp5so=
 github.com/RomiChan/websocket v1.4.3-0.20220123145318-307a86b127bc/go.mod h1:OMmITAib6POA37xCichWM0aRnoVpSMZO1rB/G01wrr0=

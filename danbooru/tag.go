@@ -9,7 +9,7 @@ import (
 	"sort"
 
 	"github.com/FloatTech/zbputils/file"
-	"github.com/FloatTech/zbputils/txt2img" // jpg png gif
+	"github.com/FloatTech/zbputils/img/text" // jpg png gif
 	"github.com/FloatTech/zbputils/web"
 	"github.com/fogleman/gg"
 	_ "golang.org/x/image/webp"
@@ -45,7 +45,7 @@ func (s *sorttags) Swap(i, j int) {
 	s.tseq[j], s.tseq[i] = s.tseq[i], s.tseq[j]
 }
 
-func TagURL(name, u string) (t txt2img.TxtCanvas, err error) {
+func TagURL(name, u string) (im image.Image, err error) {
 	ch := make(chan []byte, 1)
 	go func() {
 		var data []byte
@@ -74,11 +74,11 @@ func TagURL(name, u string) (t txt2img.TxtCanvas, err error) {
 	st := newsorttags(tags)
 	sort.Sort(st)
 
-	_, err = file.GetLazyData(txt2img.BoldFontFile, false, true)
+	_, err = file.GetLazyData(text.BoldFontFile, false, true)
 	if err != nil {
 		return
 	}
-	_, err = file.GetLazyData(txt2img.ConsolasFontFile, false, true)
+	_, err = file.GetLazyData(text.ConsolasFontFile, false, true)
 	if err != nil {
 		return
 	}
@@ -96,13 +96,13 @@ func TagURL(name, u string) (t txt2img.TxtCanvas, err error) {
 	canvas.SetRGB(1, 1, 1)
 	canvas.Clear()
 	canvas.DrawImage(img, 0, 0)
-	if err = canvas.LoadFontFace(txt2img.BoldFontFile, float64(img.Bounds().Size().X)*0.1); err != nil {
+	if err = canvas.LoadFontFace(text.BoldFontFile, float64(img.Bounds().Size().X)*0.1); err != nil {
 		return
 	}
 	canvas.SetRGB(0, 0, 0)
 	canvas.DrawString(name, float64(img.Bounds().Size().X)*0.02, float64(img.Bounds().Size().Y)+float64(img.Bounds().Size().X)*0.1)
 	i := float64(img.Bounds().Size().Y) + float64(img.Bounds().Size().X)*0.2
-	if err = canvas.LoadFontFace(txt2img.ConsolasFontFile, float64(img.Bounds().Size().X)*0.04); err != nil {
+	if err = canvas.LoadFontFace(text.ConsolasFontFile, float64(img.Bounds().Size().X)*0.04); err != nil {
 		return
 	}
 	rate := float64(img.Bounds().Size().X) * 0.04
@@ -110,6 +110,6 @@ func TagURL(name, u string) (t txt2img.TxtCanvas, err error) {
 		canvas.DrawString(fmt.Sprintf("* %-*s -%.3f-", longestlen, k, tags[k]), float64(img.Bounds().Size().X)*0.04, i)
 		i += rate
 	}
-	t.Canvas = canvas
+	im = canvas.Image()
 	return
 }

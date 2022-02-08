@@ -13,9 +13,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
-	"github.com/wdvxdr1123/ZeroBot/message"
-	"github.com/wdvxdr1123/ZeroBot/utils/helper"
 
+	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/file"
 	"github.com/FloatTech/zbputils/web"
 )
@@ -34,7 +33,8 @@ var (
 	vocoderList = []string{"WaveRNN", "HifiGAN"}
 )
 
-func Speak(uid int64, text func() string) message.MessageSegment {
+// Speak 返回音频本地路径
+func Speak(uid int64, text func() string) string {
 	// 异步
 	rch := make(chan string, 1)
 	sch := make(chan string, 1)
@@ -48,7 +48,7 @@ func Speak(uid int64, text func() string) message.MessageSegment {
 	}()
 	fileName := getWav(<-rch, <-sch, vocoderList[1], uid)
 	// 回复
-	return message.Record("file:///" + file.BOTPATH + "/" + cachePath + fileName)
+	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
 }
 
 func getSyntPath() (syntPath string) {
@@ -56,7 +56,7 @@ func getSyntPath() (syntPath string) {
 	if err != nil {
 		log.Errorln("[mockingbird]:", err)
 	}
-	syntPath = gjson.Get(helper.BytesToString(data), "0.path").String()
+	syntPath = gjson.Get(binary.BytesToString(data), "0.path").String()
 	return
 }
 

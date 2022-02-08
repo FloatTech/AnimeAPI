@@ -8,8 +8,6 @@ ascii2d 搜图
 AI图片打分
 ## danbooru
 DeepDanbooru 二次元图片标签识别
-## imgpool
-图片缓存池
 ## mockingbird
 拟声 TTS
 ## nsfw

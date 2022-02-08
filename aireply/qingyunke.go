@@ -8,11 +8,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/web"
 	"github.com/tidwall/gjson"
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"github.com/wdvxdr1123/ZeroBot/message"
-	"github.com/wdvxdr1123/ZeroBot/utils/helper"
 )
 
 // QYKReply 青云客回复类
@@ -31,15 +29,15 @@ func (*QYKReply) String() string {
 	return "青云客"
 }
 
-// Talk 取得回复消息
-func (*QYKReply) Talk(msg string) message.Message {
-	msg = strings.ReplaceAll(msg, zero.BotConfig.NickName[0], qykBotName)
+// Talk 取得带 CQ 码的回复消息
+func (*QYKReply) Talk(msg, nickname string) string {
+	msg = strings.ReplaceAll(msg, nickname, qykBotName)
 
 	u := fmt.Sprintf(qykURL, url.QueryEscape(msg))
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
-		return message.Message{message.Text("ERROR:", err)}
+		return "ERROR:" + err.Error()
 	}
 	// 自定义Header
 	req.Header.Set("User-Agent", web.RandUA())
@@ -47,26 +45,26 @@ func (*QYKReply) Talk(msg string) message.Message {
 	req.Header.Set("Host", "api.qingyunke.com")
 	resp, err := client.Do(req)
 	if err != nil {
-		return message.Message{message.Text("ERROR:", err)}
+		return "ERROR:" + err.Error()
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return message.Message{message.Text("ERROR:", err)}
+		return "ERROR:" + err.Error()
 	}
 
-	replystr := gjson.Get(helper.BytesToString(bytes), "content").String()
+	replystr := gjson.Get(binary.BytesToString(bytes), "content").String()
 	replystr = strings.ReplaceAll(replystr, "{face:", "[CQ:face,id=")
 	replystr = strings.ReplaceAll(replystr, "{br}", "\n")
 	replystr = strings.ReplaceAll(replystr, "}", "]")
-	replystr = strings.ReplaceAll(replystr, qykBotName, zero.BotConfig.NickName[0])
+	replystr = strings.ReplaceAll(replystr, qykBotName, nickname)
 
-	return message.ParseMessageFromString(replystr)
+	return replystr
 }
 
 // TalkPlain 取得回复消息
-func (*QYKReply) TalkPlain(msg string) string {
-	msg = strings.ReplaceAll(msg, zero.BotConfig.NickName[0], qykBotName)
+func (*QYKReply) TalkPlain(msg, nickname string) string {
+	msg = strings.ReplaceAll(msg, nickname, qykBotName)
 
 	u := fmt.Sprintf(qykURL, url.QueryEscape(msg))
 	client := &http.Client{}
@@ -88,10 +86,10 @@ func (*QYKReply) TalkPlain(msg string) string {
 		return "ERROR: " + err.Error()
 	}
 
-	replystr := gjson.Get(helper.BytesToString(bytes), "content").String()
+	replystr := gjson.Get(binary.BytesToString(bytes), "content").String()
 	replystr = qykMatchFace.ReplaceAllLiteralString(replystr, "")
 	replystr = strings.ReplaceAll(replystr, "{br}", "\n")
-	replystr = strings.ReplaceAll(replystr, qykBotName, zero.BotConfig.NickName[0])
+	replystr = strings.ReplaceAll(replystr, qykBotName, nickname)
 
 	return replystr
 }

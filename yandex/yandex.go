@@ -58,9 +58,6 @@ func Yandex(image string) (*pixiv.Illust, error) {
 	if err != nil {
 		return nil, err
 	}
-	if illust.AgeLimit != "all-age" {
-		return nil, fmt.Errorf("Ascii2d not found")
-	}
 	// 待完善
 	return illust, nil
 }

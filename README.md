@@ -22,3 +22,5 @@ SauceNao 搜图
 基于 https://shindanmaker.com 的 API
 ## yandex
 Yandex 搜图
+## baidutts
+百度文字转语音

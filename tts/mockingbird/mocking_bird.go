@@ -20,7 +20,6 @@ import (
 )
 
 const (
-	prio            = 250
 	dbpath          = "data/MockingBird/"
 	cachePath       = dbpath + "cache/"
 	dbfile          = dbpath + "降噪3.wav"
@@ -33,8 +32,16 @@ var (
 	vocoderList = []string{"WaveRNN", "HifiGAN"}
 )
 
+type MockingBirdTTS struct {
+	vocoder int
+}
+
+func NewMockingBirdTTS(vocoder int) *MockingBirdTTS {
+	return &MockingBirdTTS{vocoder: vocoder}
+}
+
 // Speak 返回音频本地路径
-func Speak(uid int64, text func() string) string {
+func (tts *MockingBirdTTS) Speak(uid int64, text func() string) string {
 	// 异步
 	rch := make(chan string, 1)
 	sch := make(chan string, 1)
@@ -46,7 +53,7 @@ func Speak(uid int64, text func() string) string {
 	go func() {
 		sch <- getSyntPath()
 	}()
-	fileName := getWav(<-rch, <-sch, vocoderList[1], uid)
+	fileName := getWav(<-rch, <-sch, vocoderList[tts.vocoder], uid)
 	// 回复
 	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
 }
@@ -61,7 +68,7 @@ func getSyntPath() (syntPath string) {
 }
 
 func getWav(text, syntPath, vocoder string, uid int64) (fileName string) {
-	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + ".wav"
+	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + "_mockingbird.wav"
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 	// Add your file

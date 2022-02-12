@@ -4,17 +4,18 @@ package baidutts
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/FloatTech/zbputils/file"
-	"github.com/FloatTech/zbputils/web"
-	log "github.com/sirupsen/logrus"
-	"github.com/tidwall/gjson"
-	"github.com/wdvxdr1123/ZeroBot/utils/helper"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/FloatTech/zbputils/binary"
+	"github.com/FloatTech/zbputils/file"
+	"github.com/FloatTech/zbputils/web"
+	log "github.com/sirupsen/logrus"
+	"github.com/tidwall/gjson"
 )
 
 const (
@@ -28,8 +29,17 @@ const (
 	ua           = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
 )
 
+type BaiduTTS struct {
+	per int
+}
+
+// NewBaiduTTS ...
+func NewBaiduTTS(per int) *BaiduTTS {
+	return &BaiduTTS{per: per}
+}
+
 // Speak 返回音频本地路径
-func Speak(uid int64, per int, text func() string) string {
+func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
 	// 异步
 	rch := make(chan string, 1)
 	tch := make(chan string, 1)
@@ -41,7 +51,7 @@ func Speak(uid int64, per int, text func() string) string {
 	go func() {
 		tch <- getToken()
 	}()
-	fileName := getWav(<-rch, <-tch, 5, per, 5, 5, uid)
+	fileName := getWav(<-rch, <-tch, 5, tts.per, 5, 5, uid)
 	// 回复
 	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
 }
@@ -51,14 +61,14 @@ func getToken() (accessToken string) {
 	if err != nil {
 		log.Errorln("[baidutts]:", err)
 	}
-	accessToken = gjson.Get(helper.BytesToString(data), "access_token").String()
+	accessToken = gjson.Get(binary.BytesToString(data), "access_token").String()
 	return
 }
 
 func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string) {
-	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + ".wav"
+	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + "_baidu.wav"
 
-	cuid := fmt.Sprintf("%x", md5.Sum(helper.StringToBytes(tok)))
+	cuid := fmt.Sprintf("%x", md5.Sum(binary.StringToBytes(tok)))
 	payload := strings.NewReader(fmt.Sprintf("tex=%s&lan=zh&ctp=1&vol=%d&per=%d&spd=%d&pit=%d&cuid=%s&tok=%s", tex, vol, per, spd, pit, cuid, tok))
 
 	client := &http.Client{}

@@ -4,6 +4,8 @@
 调用 AI 回复对话
 ## ascii2d
 ascii2d 搜图
+## baidutts
+百度文字转语音
 ## classify
 AI图片打分
 ## danbooru
@@ -22,5 +24,3 @@ SauceNao 搜图
 基于 https://shindanmaker.com 的 API
 ## yandex
 Yandex 搜图
-## baidutts
-百度文字转语音

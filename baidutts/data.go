@@ -6,10 +6,10 @@ import (
 )
 
 func init() {
-	go func() {
-		process.SleepAbout1sTo2s()
-		_ = os.MkdirAll(dbpath, 0755)
-		os.RemoveAll(cachePath)
-		_ = os.MkdirAll(cachePath, 0755)
-	}()
+	_ = os.MkdirAll(dbpath, 0755)
+	_ = os.RemoveAll(cachePath)
+	err := os.MkdirAll(cachePath, 0755)
+	if err != nil {
+		panic(err)
+	}
 }

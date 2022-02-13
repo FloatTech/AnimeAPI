@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/FloatTech/zbputils/file"
+	imgutils "github.com/FloatTech/zbputils/img"
 	"github.com/FloatTech/zbputils/img/text" // jpg png gif
 	"github.com/FloatTech/zbputils/web"
 	"github.com/fogleman/gg"
@@ -91,6 +92,8 @@ func TagURL(name, u string) (im image.Image, err error) {
 	if err != nil {
 		return
 	}
+
+	img = imgutils.Limit(img, 1280, 720)
 
 	canvas := gg.NewContext(img.Bounds().Size().X, img.Bounds().Size().Y+int(float64(img.Bounds().Size().X)*0.2)+len(tags)*img.Bounds().Size().X/25)
 	canvas.SetRGB(1, 1, 1)

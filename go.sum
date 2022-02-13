@@ -1,7 +1,7 @@
 github.com/FloatTech/bot-manager v1.0.0/go.mod h1:8YYRJ16oroGHQGD2En0oVnmcKJkxR9O/jd5BPSfWfOQ=
 github.com/FloatTech/sqlite v0.1.0/go.mod h1:XS0oeSqtH6lFzpPRiDE9fV6+zMcuUF5/6o+tQVO1QZE=
-github.com/FloatTech/zbputils v1.3.0-beta8 h1:rc5P3S9rgtSpxESDxnMR6Tnp7DjAZEh5ujgMY9pUlSw=
-github.com/FloatTech/zbputils v1.3.0-beta8/go.mod h1:P3tTFIIQJs/cijG80jwxrs0NBGISEDkXtrZhiev/eMk=
+github.com/FloatTech/zbputils v1.3.0-beta8.0.20220213040222-ee1ac6293584 h1:nJXw4FXaaUJTJclRjisc2739YwWFsStuEOoMaZSj3bs=
+github.com/FloatTech/zbputils v1.3.0-beta8.0.20220213040222-ee1ac6293584/go.mod h1:P3tTFIIQJs/cijG80jwxrs0NBGISEDkXtrZhiev/eMk=
 github.com/RomiChan/websocket v1.4.3-0.20220123145318-307a86b127bc/go.mod h1:OMmITAib6POA37xCichWM0aRnoVpSMZO1rB/G01wrr0=
 github.com/antchfx/htmlquery v1.2.4 h1:qLteofCMe/KGovBI6SQgmou2QNyedFUW+pE+BpeZ494=
 github.com/antchfx/htmlquery v1.2.4/go.mod h1:2xO6iu3EVWs7R2JYqBbp8YzG50gj/ofqs5/0VZoDZLc=
@@ -11,8 +11,10 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
+github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 h1:BBade+JlV/f7JstZ4pitd4tHhpN+w+6I+LyOS7B4fyU=
 github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4/go.mod h1:H7chHJglrhPPzetLdzBleF8d22WYOv7UM/lEKYiwlKM=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=

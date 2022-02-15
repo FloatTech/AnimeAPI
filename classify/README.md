@@ -2,13 +2,15 @@
 Zerobot-ACGImage插件的AI评分接口，也可单独引用。
 
 # 接口说明
-## func Classify(targetURL string, isNoNeedImg bool) (int, string, string, []byte)
-用AI对`targeturl`指向的图片打分。返回值：class dhash comment data。
+```go
+func Classify(targetURL string, isNoNeedImg bool) (class int, dhash string, data []byte, err error)
+```
+用AI对`targeturl`指向的图片打分。
 
-- 如果`noimg==true`，将不下载图片。
-- 如果`noimg==false`，将下载图片到 data。
+- 如果`isNoNeedImg==true`，将不下载图片，data 为 api 返回的 json。
+- 如果`isNoNeedImg==false`，将下载图片到 data。
 - `dhash`为图片的dhash值的[base16384](https://github.com/fumiama/base16384)编码。
-- `comment`为针对该`class`的评语，详见下方打分等级。
+- 可通过`Comments[class]`获得针对该`class`的评语，详见下方打分等级。
 
 # 打分等级
 

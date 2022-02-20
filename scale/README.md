@@ -28,16 +28,3 @@
 特别地，`scale=[3, 4]`时没有模型`[denoise1x, denoise2x]`
 
 返回：`webp`格式的输出图片
-
-## 效果
-
-<table>
-	<tr>
-		<td align="center"><img src="test/in.png"></td>
-		<td align="center"><img src="test/out.webp"></td>
-	</tr>
-    <tr>
-		<td align="center">输入</td>
-		<td align="center">输出</td>
-	</tr>
-</table>

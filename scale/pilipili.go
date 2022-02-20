@@ -26,7 +26,7 @@ var (
 
 // Get model 0-4, scale 2-4, tile 0-4
 func Get(u string, model, scale, tile int) ([]byte, error) {
-	if model < 0 || model > 4 {
+	if model < 0 || model > 4 || ((scale == 3 || scale == 4) && (model == 2 || model == 3)) {
 		return nil, ErrInvModel
 	}
 	if scale > 4 || scale < 2 {
@@ -35,7 +35,7 @@ func Get(u string, model, scale, tile int) ([]byte, error) {
 	if tile < 0 || tile > 4 {
 		return nil, ErrInvTile
 	}
-	return web.GetData(fmt.Sprintf("https://sayuri.fumiama.top/scale/?url=%s&model=%s&scale=%d&tile=%d", url.QueryEscape(u), Models[model], scale, tile))
+	return web.GetData(fmt.Sprintf("https://bilibiliai.azurewebsites.net/api/scale?url=%s&model=%s&scale=%d&tile=%d", url.QueryEscape(u), Models[model], scale, tile))
 }
 
 // Post model 0-4, scale 2-4, tile 0-4
@@ -50,7 +50,7 @@ func Post(body io.Reader, model, scale, tile int) ([]byte, error) {
 		return nil, ErrInvTile
 	}
 	return web.PostData(
-		fmt.Sprintf("https://sayuri.fumiama.top/scale/?model=%s&scale=%d&tile=%d", Models[model], scale, tile),
+		fmt.Sprintf("https://bilibiliai.azurewebsites.net/api/scale?model=%s&scale=%d&tile=%d", Models[model], scale, tile),
 		"application/octet-stream", body,
 	)
 }

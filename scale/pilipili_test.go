@@ -19,11 +19,11 @@ func TestGet(t *testing.T) {
 }
 
 func TestPost(t *testing.T) {
-	f, err := os.Open("test/in.png")
+	f, err := os.Open("test/0.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}
-	data, err := Post(f, 4, 4, 2)
+	data, err := Post(f, 1, 2, 4)
 	f.Close()
 	if err != nil {
 		t.Fatal(err)

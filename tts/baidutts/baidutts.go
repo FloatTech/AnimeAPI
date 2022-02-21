@@ -36,13 +36,23 @@ var (
 
 // BaiduTTS 百度类
 type BaiduTTS struct {
-	Per  int
-	Name string
+	per  int
+	name string
 }
 
 // String 服务名
 func (tts *BaiduTTS) String() string {
-	return modeName + tts.Name
+	return modeName + tts.name
+}
+
+// NewBaiduTTS 新的百度语音
+func NewBaiduTTS(per int) *BaiduTTS {
+	switch per {
+	case 0, 1, 3, 4:
+		return &BaiduTTS{per, BaiduttsModes[per]}
+	default:
+		return &BaiduTTS{4, BaiduttsModes[4]}
+	}
 }
 
 // Speak 返回音频本地路径
@@ -58,7 +68,7 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
 	go func() {
 		tch <- getToken()
 	}()
-	fileName := getWav(<-rch, <-tch, 5, tts.Per, 5, 5, uid)
+	fileName := getWav(<-rch, <-tch, 5, tts.per, 5, 5, uid)
 	// 回复
 	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
 }

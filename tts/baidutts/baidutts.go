@@ -27,15 +27,22 @@ const (
 	cachePath    = dbpath + "cache/"
 	ttsURL       = "http://tsn.baidu.com/text2audio"
 	ua           = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+	modeName     = "百度"
 )
 
+var (
+	BaiduttsModes = map[int]string{0: "女声", 1: "男声", 3: "度逍遥", 4: "度丫丫"}
+)
+
+// BaiduTTS 百度类
 type BaiduTTS struct {
-	per int
+	Per  int
+	Name string
 }
 
-// NewBaiduTTS ...
-func NewBaiduTTS(per int) *BaiduTTS {
-	return &BaiduTTS{per: per}
+// String 服务名
+func (tts *BaiduTTS) String() string {
+	return modeName + tts.Name
 }
 
 // Speak 返回音频本地路径
@@ -51,7 +58,7 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
 	go func() {
 		tch <- getToken()
 	}()
-	fileName := getWav(<-rch, <-tch, 5, tts.per, 5, 5, uid)
+	fileName := getWav(<-rch, <-tch, 5, tts.Per, 5, 5, uid)
 	// 回复
 	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
 }

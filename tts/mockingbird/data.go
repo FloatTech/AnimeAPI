@@ -1,6 +1,7 @@
 package mockingbird
 
 import (
+	"github.com/FloatTech/zbputils/file"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -15,14 +16,14 @@ func init() {
 		_ = os.MkdirAll(dbpath, 0755)
 		os.RemoveAll(cachePath)
 		_ = os.MkdirAll(cachePath, 0755)
-		//_, err := file.GetLazyData(Azfile, false, true)
-		//if err != nil {
-		//	panic(err)
-		//}
-		//_, err = file.GetLazyData(Ysgfile, false, true)
-		//if err != nil {
-		//	panic(err)
-		//}
+		_, err := file.GetLazyData(Azfile, false, true)
+		if err != nil {
+			panic(err)
+		}
+		_, err = file.GetLazyData(Ysgfile, false, true)
+		if err != nil {
+			panic(err)
+		}
 		logrus.Infoln("[mockingbird]加载实例音频")
 	}()
 }

@@ -16,7 +16,11 @@ func init() {
 		_ = os.MkdirAll(dbpath, 0755)
 		os.RemoveAll(cachePath)
 		_ = os.MkdirAll(cachePath, 0755)
-		_, err := file.GetLazyData(dbfile, false, true)
+		_, err := file.GetLazyData(azfile, false, true)
+		if err != nil {
+			panic(err)
+		}
+		_, err = file.GetLazyData(ysgfile, false, true)
 		if err != nil {
 			panic(err)
 		}

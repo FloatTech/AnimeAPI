@@ -27,15 +27,32 @@ const (
 	cachePath    = dbpath + "cache/"
 	ttsURL       = "http://tsn.baidu.com/text2audio"
 	ua           = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+	modeName     = "百度"
 )
 
+var (
+	BaiduttsModes = map[int]string{0: "女声", 1: "男声", 3: "度逍遥", 4: "度丫丫"}
+)
+
+// BaiduTTS 百度类
 type BaiduTTS struct {
-	per int
+	per  int
+	name string
 }
 
-// NewBaiduTTS ...
+// String 服务名
+func (tts *BaiduTTS) String() string {
+	return modeName + tts.name
+}
+
+// NewBaiduTTS 新的百度语音
 func NewBaiduTTS(per int) *BaiduTTS {
-	return &BaiduTTS{per: per}
+	switch per {
+	case 0, 1, 3, 4:
+		return &BaiduTTS{per, BaiduttsModes[per]}
+	default:
+		return &BaiduTTS{4, BaiduttsModes[4]}
+	}
 }
 
 // Speak 返回音频本地路径

@@ -74,7 +74,7 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
 }
 
 func getToken() (accessToken string) {
-	data, err := web.ReqWith(fmt.Sprintf(tokenURL, grantType, clientID, clientSecret), "GET", "", ua)
+	data, err := web.GetDataWith(web.NewDefaultClient(), fmt.Sprintf(tokenURL, grantType, clientID, clientSecret), "GET", "", ua)
 	if err != nil {
 		log.Errorln("[baidutts]:", err)
 	}

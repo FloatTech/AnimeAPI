@@ -32,7 +32,6 @@ const (
 )
 
 var (
-	syntNumber       int64
 	vocoderList      = []string{"WaveRNN", "HifiGAN"}
 	mockingbirdModes = map[int]string{0: "阿梓", 1: "药水哥"}
 	exampleFileMap   = map[int]string{0: azfile, 1: ysgfile}
@@ -79,11 +78,10 @@ func (tts *MockingBirdTTS) Speak(uid int64, text func() string) string {
 }
 
 func (tts *MockingBirdTTS) getSyntPath() (syntPath string) {
-	data, err := web.ReqWith(synthesizersURL, "GET", "", "")
+	data, err := web.GetDataWith(web.NewDefaultClient(), synthesizersURL, "GET", "", "")
 	if err != nil {
 		log.Errorln("[mockingbird]:", err)
 	}
-	syntNumber = gjson.Get(binary.BytesToString(data), "#").Int()
 	syntPath = gjson.Get(binary.BytesToString(data), fmt.Sprintf("%d.path", tts.synt)).String()
 	return
 }

@@ -1,11 +1,11 @@
 package ascii2d
 
 import (
-	"crypto/tls"
 	"net/http"
 	"net/url"
 	"strings"
 
+	"github.com/FloatTech/zbputils/web"
 	xpath "github.com/antchfx/htmlquery"
 )
 
@@ -20,18 +20,8 @@ type Result struct {
 }
 
 func Ascii2d(image string) (r []*Result, err error) {
-	var (
-		api = "https://ascii2d.net/search/uri"
-	)
-	transport := http.Transport{
-		TLSClientConfig: &tls.Config{
-			MaxVersion: tls.VersionTLS12,
-		},
-	}
-	client := &http.Client{
-		Transport: &transport,
-	}
-
+	const api = "https://ascii2d.net/search/uri"
+	client := web.NewTLS12Client()
 	// 包装请求参数
 	data := url.Values{}
 	data.Set("uri", image) // 图片链接

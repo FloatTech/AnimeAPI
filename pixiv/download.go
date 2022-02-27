@@ -12,7 +12,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/FloatTech/zbputils/file"
 	"github.com/FloatTech/zbputils/math"
 )
 
@@ -35,15 +34,22 @@ func (i *Illust) Path(page int) string {
 // DownloadToCache 多线程下载第 page 页到 i.Path(page)，返回 error
 func (i *Illust) DownloadToCache(page int) error {
 	f := i.Path(page)
-	if file.IsExist(f) {
-		return nil
-	}
 	file, err := os.Create(f)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-	return i.Download(page, file)
+	err = i.Download(page, file)
+	_ = file.Sync()
+	stat, err1 := file.Stat()
+	var size int64
+	if err1 != nil {
+		size = stat.Size()
+	}
+	_ = file.Close()
+	if err != nil || size <= 0 {
+		_ = os.Remove(f)
+	}
+	return err
 }
 
 // Download 多线程下载 link 到 filepath，返回 error

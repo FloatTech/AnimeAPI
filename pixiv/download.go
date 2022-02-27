@@ -108,9 +108,14 @@ func (i *Illust) Download(page int, f *os.File) error {
 	var start int64
 	var mu sync.Mutex
 	errs := make(chan error, 8)
+	buf := make(net.Buffers, 0, contentlength/slicecap+1)
+	writers := make([]*binary.Writer, 0, contentlength/slicecap+1)
+	index := 0
 	for end := math.Min64(start+slicecap, contentlength); end <= contentlength; end += slicecap {
 		wg.Add(1)
-		go func(start int64, end int64) {
+		buf = append(buf, nil)
+		writers = append(writers, nil)
+		go func(start int64, end int64, index int) {
 			// fmt.Println(contentlength, start, end)
 			for failedtimes := 0; failedtimes < 3; failedtimes++ {
 				req, err := http.NewRequest("GET", u, nil)
@@ -137,9 +142,9 @@ func (i *Illust) Download(page int, f *os.File) error {
 					continue
 				}
 				mu.Lock()
-				_, err = f.WriteAt(w.Bytes(), int64(start))
+				buf[index] = w.Bytes()
+				writers[index] = w
 				mu.Unlock()
-				binary.PutWriter(w)
 				if err != nil {
 					errs <- err
 					process.SleepAbout1sTo2s()
@@ -148,8 +153,9 @@ func (i *Illust) Download(page int, f *os.File) error {
 				break
 			}
 			wg.Done()
-		}(start, end)
+		}(start, end, index)
 		start = end
+		index++
 	}
 	msg := ""
 	go func() {
@@ -160,7 +166,14 @@ func (i *Illust) Download(page int, f *os.File) error {
 	wg.Wait()
 	close(errs)
 	if msg != "" {
-		return errors.New(msg[:len(msg)-1])
+		err = errors.New(msg[:len(msg)-1])
+	} else {
+		_, err = io.Copy(f, &buf)
 	}
-	return nil
+	for _, w := range writers {
+		if w != nil {
+			binary.PutWriter(w)
+		}
+	}
+	return err
 }

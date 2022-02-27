@@ -42,14 +42,8 @@ func (i *Illust) DownloadToCache(page int) error {
 		return err
 	}
 	err = i.Download(page, file)
-	_ = file.Sync()
-	stat, err1 := file.Stat()
-	var size int64
-	if err1 != nil {
-		size = stat.Size()
-	}
 	_ = file.Close()
-	if err != nil || size <= 0 {
+	if err != nil {
 		_ = os.Remove(f)
 	}
 	return err
@@ -57,7 +51,7 @@ func (i *Illust) DownloadToCache(page int) error {
 
 // Download 多线程下载 link 到 filepath，返回 error
 func (i *Illust) Download(page int, f *os.File) error {
-	const slicecap int64 = 65536
+	const slicecap int64 = 32768
 	u := i.ImageUrls[page]
 	// 获取IP地址
 	domain, err := url.Parse(u)
@@ -111,10 +105,13 @@ func (i *Illust) Download(page int, f *os.File) error {
 	buf := make(net.Buffers, 0, contentlength/slicecap+1)
 	writers := make([]*binary.Writer, 0, contentlength/slicecap+1)
 	index := 0
-	for end := math.Min64(start+slicecap, contentlength); end <= contentlength; end += slicecap {
+	for end := math.Min64(start+slicecap, contentlength); ; end += slicecap {
 		wg.Add(1)
 		buf = append(buf, nil)
 		writers = append(writers, nil)
+		if end > contentlength {
+			end = contentlength
+		}
 		go func(start int64, end int64, index int) {
 			// fmt.Println(contentlength, start, end)
 			for failedtimes := 0; failedtimes < 3; failedtimes++ {
@@ -154,6 +151,9 @@ func (i *Illust) Download(page int, f *os.File) error {
 			}
 			wg.Done()
 		}(start, end, index)
+		if end == contentlength {
+			break
+		}
 		start = end
 		index++
 	}

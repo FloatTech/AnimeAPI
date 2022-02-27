@@ -2,8 +2,9 @@ package pixiv
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -12,7 +13,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/math"
+	"github.com/FloatTech/zbputils/process"
 )
 
 const CacheDir = "data/pixiv/"
@@ -93,57 +96,71 @@ func (i *Illust) Download(page int, f *os.File) error {
 	if err != nil {
 		return err
 	}
-	defer headresp.Body.Close()
 
-	contentlength, _ := strconv.ParseInt(headresp.Header.Get("Content-Length"), 10, 64)
+	contentlength, err := strconv.ParseInt(headresp.Header.Get("Content-Length"), 10, 64)
+	_ = headresp.Body.Close()
+	if err != nil {
+		return err
+	}
+
 	// 多线程下载
-	wg := sync.WaitGroup{}
+	var wg sync.WaitGroup
 	var start int64
 	var mu sync.Mutex
-	for {
-		end := math.Min64(start+slicecap, contentlength)
+	errs := make(chan error, 8)
+	for end := math.Min64(start+slicecap, contentlength); end <= contentlength; end = math.Min64(start+slicecap, contentlength) {
 		wg.Add(1)
 		go func(start int64, end int64) {
-			var failedtimes int
 			// fmt.Println(contentlength, start, end)
-			for {
-				if failedtimes >= 3 {
-					break
-				}
+			for failedtimes := 0; failedtimes < 3; failedtimes++ {
 				req, err := http.NewRequest("GET", u, nil)
 				if err != nil {
-					failedtimes++
+					errs <- err
+					process.SleepAbout1sTo2s()
 					continue
 				}
 				req.Header = header.Clone()
 				req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end-1))
 				resp, err := client.Do(req)
 				if err != nil {
-					failedtimes++
+					errs <- err
+					process.SleepAbout1sTo2s()
 					continue
 				}
-				defer resp.Body.Close()
-				b, _ := ioutil.ReadAll(resp.Body)
-				if len(b) != int(end-start) {
-					failedtimes++
+				w := binary.SelectWriter()
+				_, err = io.CopyN(w, resp.Body, end-start)
+				_ = resp.Body.Close()
+				if err != nil {
+					errs <- err
+					binary.PutWriter(w)
+					process.SleepAbout1sTo2s()
 					continue
 				}
 				mu.Lock()
-				_, err = f.WriteAt(b, int64(start))
+				_, err = f.WriteAt(w.Bytes(), int64(start))
 				mu.Unlock()
+				binary.PutWriter(w)
 				if err != nil {
-					failedtimes++
+					errs <- err
+					process.SleepAbout1sTo2s()
 					continue
 				}
 				break
 			}
 			wg.Done()
 		}(start, end)
-		if end >= contentlength {
-			break
-		}
 		start = end
 	}
+	msg := ""
+	go func() {
+		for err := range errs {
+			msg += err.Error() + "&"
+		}
+	}()
 	wg.Wait()
+	close(errs)
+	if msg != "" {
+		return errors.New(msg[:len(msg)-1])
+	}
 	return nil
 }

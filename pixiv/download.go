@@ -108,7 +108,7 @@ func (i *Illust) Download(page int, f *os.File) error {
 	var start int64
 	var mu sync.Mutex
 	errs := make(chan error, 8)
-	for end := math.Min64(start+slicecap, contentlength); end <= contentlength; end = math.Min64(start+slicecap, contentlength) {
+	for end := math.Min64(start+slicecap, contentlength); end <= contentlength; end += slicecap {
 		wg.Add(1)
 		go func(start int64, end int64) {
 			// fmt.Println(contentlength, start, end)

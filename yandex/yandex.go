@@ -11,7 +11,7 @@ import (
 )
 
 func Yandex(image string) (*pixiv.Illust, error) {
-	search, _ := url.Parse("https://yandex.com/images/search")
+	search, _ := url.Parse("https://copymanga.azurewebsites.net/api/yandex")
 	search.RawQuery = url.Values{
 		"rpt":  []string{"imageview"},
 		"url":  []string{image},

@@ -51,7 +51,7 @@ func (i *Illust) DownloadToCache(page int) error {
 
 // Download 多线程下载 link 到 filepath，返回 error
 func (i *Illust) Download(page int, f *os.File) error {
-	const slicecap int64 = 32768
+	const slicecap int64 = 65536
 	u := i.ImageUrls[page]
 	// 获取IP地址
 	domain, err := url.Parse(u)

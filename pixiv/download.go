@@ -36,21 +36,11 @@ func (i *Illust) Path(page int) string {
 
 // DownloadToCache 多线程下载第 page 页到 i.Path(page)，返回 error
 func (i *Illust) DownloadToCache(page int) error {
-	f := i.Path(page)
-	file, err := os.Create(f)
-	if err != nil {
-		return err
-	}
-	err = i.Download(page, file)
-	_ = file.Close()
-	if err != nil {
-		_ = os.Remove(f)
-	}
-	return err
+	return i.Download(page, i.Path(page))
 }
 
-// Download 多线程下载 link 到 filepath，返回 error
-func (i *Illust) Download(page int, f *os.File) error {
+// Download 多线程下载 page 页到 filepath，返回 error
+func (i *Illust) Download(page int, path string) error {
 	const slicecap int64 = 65536
 	u := i.ImageUrls[page]
 	// 获取IP地址
@@ -100,7 +90,6 @@ func (i *Illust) Download(page int, f *os.File) error {
 	// 多线程下载
 	var wg sync.WaitGroup
 	var start int64
-	var mu sync.Mutex
 	errs := make(chan error, 8)
 	buf := make(net.Buffers, 0, contentlength/slicecap+1)
 	writers := make([]*binary.Writer, 0, contentlength/slicecap+1)
@@ -138,10 +127,8 @@ func (i *Illust) Download(page int, f *os.File) error {
 					process.SleepAbout1sTo2s()
 					continue
 				}
-				mu.Lock()
 				buf[index] = w.Bytes()
 				writers[index] = w
-				mu.Unlock()
 				if err != nil {
 					errs <- err
 					process.SleepAbout1sTo2s()
@@ -168,7 +155,15 @@ func (i *Illust) Download(page int, f *os.File) error {
 	if msg != "" {
 		err = errors.New(msg[:len(msg)-1])
 	} else {
+		f, err := os.Create(path)
+		if err != nil {
+			return err
+		}
 		_, err = io.Copy(f, &buf)
+		_ = f.Close()
+		if err != nil {
+			_ = os.Remove(path)
+		}
 	}
 	for _, w := range writers {
 		if w != nil {

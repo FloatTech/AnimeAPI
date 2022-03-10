@@ -1,6 +1,7 @@
 package ascii2d
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"strings"
@@ -28,8 +29,17 @@ func Ascii2d(image string) (r []*Result, err error) {
 	fromData := strings.NewReader(data.Encode())
 
 	// 网络请求
-	req, _ := http.NewRequest("POST", api, fromData)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	reqcolor, _ := http.NewRequest("POST", api, fromData)
+	reqcolor.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	reqcolor.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
+	respcolor, err := client.Do(reqcolor)
+	if err != nil {
+		return nil, err
+	}
+	defer respcolor.Body.Close()
+	// 色合检索改变到特征检索
+	var bovw = strings.ReplaceAll(respcolor.Request.URL.String(), "color", "bovw")
+	req, _ := http.NewRequest("GET", bovw, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -44,7 +54,7 @@ func Ascii2d(image string) (r []*Result, err error) {
 	// 取出每个返回的结果
 	list := xpath.Find(doc, `//div[@class="row item-box"]`)
 	if len(list) == 0 {
-		return
+		return nil, errors.New("ascii2d not found")
 	}
 	r = make([]*Result, 0, len(list))
 	// 遍历结果

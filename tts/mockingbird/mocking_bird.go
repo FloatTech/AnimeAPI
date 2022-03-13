@@ -78,7 +78,7 @@ func (tts *MockingBirdTTS) Speak(uid int64, text func() string) string {
 }
 
 func (tts *MockingBirdTTS) getSyntPath() (syntPath string) {
-	data, err := web.GetDataWith(web.NewDefaultClient(), synthesizersURL, "GET", "", "")
+	data, err := web.RequestDataWith(web.NewDefaultClient(), synthesizersURL, "GET", "", "")
 	if err != nil {
 		log.Errorln("[mockingbird]:", err)
 	}

@@ -1,7 +1,7 @@
 github.com/FloatTech/bot-manager v1.0.0/go.mod h1:8YYRJ16oroGHQGD2En0oVnmcKJkxR9O/jd5BPSfWfOQ=
 github.com/FloatTech/sqlite v0.2.1/go.mod h1:6NfHRzqOo9RWeMJEoAQVuo51Omd5LFNxCNQhMF02/9U=
-github.com/FloatTech/zbputils v1.3.2-0.20220313045041-9b9f09dfcee0 h1:Pks24MiOLBnmmCJlJzIp0YQW4nW2DITPVUMRqEHNHXE=
-github.com/FloatTech/zbputils v1.3.2-0.20220313045041-9b9f09dfcee0/go.mod h1:ByNutpHjwyrhaxo54dRjJDEppko0Fcot2iOv7WrIDUg=
+github.com/FloatTech/zbputils v1.3.2-0.20220313050647-f542a820183c h1:14Ybaf7Zo5CfgVnD5cxp/nJsmw1NWIna2KqsH9ZTKKc=
+github.com/FloatTech/zbputils v1.3.2-0.20220313050647-f542a820183c/go.mod h1:ByNutpHjwyrhaxo54dRjJDEppko0Fcot2iOv7WrIDUg=
 github.com/RomiChan/websocket v1.4.3-0.20220123145318-307a86b127bc/go.mod h1:OMmITAib6POA37xCichWM0aRnoVpSMZO1rB/G01wrr0=
 github.com/antchfx/htmlquery v1.2.4 h1:qLteofCMe/KGovBI6SQgmou2QNyedFUW+pE+BpeZ494=
 github.com/antchfx/htmlquery v1.2.4/go.mod h1:2xO6iu3EVWs7R2JYqBbp8YzG50gj/ofqs5/0VZoDZLc=

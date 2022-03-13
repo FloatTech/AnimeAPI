@@ -62,7 +62,7 @@ func (i *Illust) Download(page int, path string) error {
 		return err
 	}
 	headreq.Header = header.Clone()
-	headresp, err := web.PixivClient.Do(headreq)
+	headresp, err := web.NewPixivClient().Do(headreq)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (i *Illust) Download(page int, path string) error {
 				}
 				req.Header = header.Clone()
 				req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end-1))
-				resp, err := web.PixivClient.Do(req)
+				resp, err := web.NewPixivClient().Do(req)
 				if err != nil {
 					errs <- err
 					process.SleepAbout1sTo2s()

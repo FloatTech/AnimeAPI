@@ -2,9 +2,7 @@ package pixiv
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/FloatTech/zbputils/web"
@@ -34,7 +32,7 @@ func (data tjson) Get(path string) gjson.Result {
 
 // Works 获取插画信息
 func Works(id int64) (i *Illust, err error) {
-	data, err := netPost(fmt.Sprintf("https://pixiv.net/ajax/illust/%d", id))
+	data, err := get("https://www.pixiv.net/ajax/illust/" + strconv.FormatInt(id, 10))
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +101,7 @@ func (value RankValue) Rank() (r [18]int, err error) {
 	if value.Mode == "male_r18" || value.Mode == "male" || value.Mode == "female_r18" || value.Mode == "female" {
 		value.Type = "all"
 	}
-	a, err = netPost(fmt.Sprintf("https://pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
+	a, err = get(fmt.Sprintf("https://www.pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
 	body := tjson(a)
 	for i := 0; i < 18; i++ {
 		r[i] = int(body.Get(fmt.Sprintf("body.ranking.%d.illustId", i)).Int())
@@ -111,23 +109,11 @@ func (value RankValue) Rank() (r [18]int, err error) {
 	return
 }
 
-// netPost 返回请求数据
-func netPost(link string) ([]byte, error) {
-	// 获取IP地址
-	domain, err := url.Parse(link)
-	if err != nil {
-		return nil, err
-	}
-	// 网络请求
-	request, _ := http.NewRequest("POST", link, nil)
-	request.Header.Set("Host", domain.Host)
-	request.Header.Set("Referer", "https://www.pixiv.net/")
-	request.Header.Set("Accept", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0")
-	res, err := web.PixivClient.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	result, _ := ioutil.ReadAll(res.Body)
-	return result, nil
+// get 返回请求数据
+func get(link string) ([]byte, error) {
+	return web.GetDataWith(
+		web.NewPixivClient(), link, "GET",
+		"https://www.pixiv.net/",
+		"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0",
+	)
 }

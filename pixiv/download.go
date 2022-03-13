@@ -1,7 +1,6 @@
 package pixiv
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -16,6 +15,7 @@ import (
 	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/math"
 	"github.com/FloatTech/zbputils/process"
+	"github.com/FloatTech/zbputils/web"
 )
 
 const CacheDir = "data/pixiv/"
@@ -48,26 +48,12 @@ func (i *Illust) Download(page int, path string) error {
 	if err != nil {
 		return err
 	}
-	// P站特殊客户端
-	client := &http.Client{
-		// 解决中国大陆无法访问的问题
-		Transport: &http.Transport{
-			// 更改 dns
-			Dial: func(network, addr string) (net.Conn, error) {
-				return net.Dial("tcp", IPTables[domain.Host])
-			},
-			// 隐藏 sni 标志
-			TLSClientConfig: &tls.Config{
-				ServerName:         "-",
-				InsecureSkipVerify: true,
-			},
-			DisableKeepAlives: true,
-		},
-	}
+
 	header := http.Header{
-		"Host":       []string{domain.Host},
-		"Referer":    []string{"https://www.pixiv.net/"},
-		"User-Agent": []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0"},
+		"Host":          []string{domain.Host},
+		"Referer":       []string{"https://www.pixiv.net/"},
+		"User-Agent":    []string{"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0"},
+		"Cache-Control": []string{"no-cache"},
 	}
 
 	// 请求 Header
@@ -76,7 +62,7 @@ func (i *Illust) Download(page int, path string) error {
 		return err
 	}
 	headreq.Header = header.Clone()
-	headresp, err := client.Do(headreq)
+	headresp, err := web.PixivClient.Do(headreq)
 	if err != nil {
 		return err
 	}
@@ -112,7 +98,7 @@ func (i *Illust) Download(page int, path string) error {
 				}
 				req.Header = header.Clone()
 				req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end-1))
-				resp, err := client.Do(req)
+				resp, err := web.PixivClient.Do(req)
 				if err != nil {
 					errs <- err
 					process.SleepAbout1sTo2s()

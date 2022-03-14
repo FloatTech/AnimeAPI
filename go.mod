@@ -3,7 +3,7 @@ module github.com/FloatTech/AnimeAPI
 go 1.16
 
 require (
-	github.com/FloatTech/zbputils v1.3.2-0.20220313143945-00fa77c4083a
+	github.com/FloatTech/zbputils v1.3.2-0.20220314044107-57422e361dfb
 	github.com/antchfx/htmlquery v1.2.4
 	github.com/fogleman/gg v1.3.0
 	github.com/sirupsen/logrus v1.8.1

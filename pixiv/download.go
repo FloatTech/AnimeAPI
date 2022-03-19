@@ -81,7 +81,7 @@ func (i *Illust) Download(page int, path string) error {
 	buf := make(net.Buffers, 0, contentlength/slicecap+1)
 	writers := make([]*binary.Writer, 0, contentlength/slicecap+1)
 	index := 0
-	for end := math.Min64(start+slicecap, contentlength); ; end += slicecap {
+	for end := math.Min(start+slicecap, contentlength); ; end += slicecap {
 		wg.Add(1)
 		buf = append(buf, nil)
 		writers = append(writers, nil)

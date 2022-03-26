@@ -3,13 +3,13 @@ module github.com/FloatTech/AnimeAPI
 go 1.18
 
 require (
-	github.com/FloatTech/zbputils v1.3.2-0.20220319114731-e5088958ce00
+	github.com/FloatTech/zbputils v1.3.2-0.20220326161600-f9554b2fb9a4
 	github.com/antchfx/htmlquery v1.2.4
 	github.com/fogleman/gg v1.3.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tidwall/gjson v1.14.0
-	golang.org/x/image v0.0.0-20220302094943-723b81ca9867
+	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a
 )
 
 require (
@@ -25,9 +25,9 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
-	github.com/wdvxdr1123/ZeroBot v1.4.2-0.20220314043738-2ff63b4ac217 // indirect
+	github.com/wdvxdr1123/ZeroBot v1.4.2-0.20220326160643-893d4e910785 // indirect
 	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
-	golang.org/x/sys v0.0.0-20220310020820-b874c991c1a5 // indirect
+	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )

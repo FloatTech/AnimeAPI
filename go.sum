@@ -1,5 +1,5 @@
-github.com/FloatTech/zbputils v1.3.2-0.20220327063325-1389d5a92fff h1:h72B2RgFc4ObczhlS38+seue7/6CLhQBcOAwMe3TBmw=
-github.com/FloatTech/zbputils v1.3.2-0.20220327063325-1389d5a92fff/go.mod h1:qZlHzG1s1giQrXaosjOAA2utGNaPZjwJsVZfBog2bhg=
+github.com/FloatTech/zbputils v1.3.2-0.20220328085635-a33f75aa6bf3 h1:tct1ev2pyhTWNOtFcBYpFAF+bY84reWw9XzIKrLRVek=
+github.com/FloatTech/zbputils v1.3.2-0.20220328085635-a33f75aa6bf3/go.mod h1:qZlHzG1s1giQrXaosjOAA2utGNaPZjwJsVZfBog2bhg=
 github.com/RomiChan/websocket v1.4.3-0.20220123145318-307a86b127bc/go.mod h1:OMmITAib6POA37xCichWM0aRnoVpSMZO1rB/G01wrr0=
 github.com/antchfx/htmlquery v1.2.4 h1:qLteofCMe/KGovBI6SQgmou2QNyedFUW+pE+BpeZ494=
 github.com/antchfx/htmlquery v1.2.4/go.mod h1:2xO6iu3EVWs7R2JYqBbp8YzG50gj/ofqs5/0VZoDZLc=

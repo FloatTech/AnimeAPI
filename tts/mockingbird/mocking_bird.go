@@ -50,13 +50,23 @@ func (tts *MockingBirdTTS) String() string {
 	return modeName + tts.name
 }
 
-func NewMockingBirdTTS(synt int) *MockingBirdTTS {
-	switch synt {
-	case 0, 1:
-		return &MockingBirdTTS{1, synt, mockingbirdModes[synt], exampleFileMap[synt]}
-	default:
-		return &MockingBirdTTS{1, 0, mockingbirdModes[0], exampleFileMap[0]}
+func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
+	if synt < 0 || synt < 1 {
+		synt = 0
 	}
+	switch synt {
+	case 0:
+		_, err := file.GetLazyData(azfile, false, true)
+		if err != nil {
+			return nil, err
+		}
+	case 1:
+		_, err := file.GetLazyData(ysgfile, false, true)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &MockingBirdTTS{1, synt, mockingbirdModes[synt], exampleFileMap[synt]}, nil
 }
 
 // Speak 返回音频本地路径

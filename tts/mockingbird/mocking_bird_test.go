@@ -6,11 +6,17 @@ import (
 )
 
 func TestNewMockingBirdTTS(t *testing.T) {
-	tts := NewMockingBirdTTS(0)
+	tts, err := NewMockingBirdTTS(0)
+	if err != nil {
+		t.Fatal(err)
+	}
 	fmt.Println(tts.Speak(int64(1), func() string {
 		return "我爱你"
 	}))
-	tts = NewMockingBirdTTS(1)
+	tts, err = NewMockingBirdTTS(1)
+	if err != nil {
+		t.Fatal(err)
+	}
 	fmt.Println(tts.Speak(int64(1), func() string {
 		return "我爱你"
 	}))

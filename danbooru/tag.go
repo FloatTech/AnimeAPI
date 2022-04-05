@@ -16,7 +16,7 @@ import (
 	_ "golang.org/x/image/webp"
 )
 
-const api = "https://sayuri.fumiama.top/file?path="
+const api = "https://nsfwtag.azurewebsites.net/api/tag?limit=0.5&url="
 
 type sorttags struct {
 	tags map[string]float64
@@ -59,7 +59,7 @@ func TagURL(name, u string) (im image.Image, err error) {
 		return
 	}
 	tags := make(map[string]float64)
-	err = json.Unmarshal(data, &tags)
+	err = json.Unmarshal(bytes.ReplaceAll(data, []byte("'"), []byte("\"")), &tags)
 	if err != nil {
 		return
 	}

@@ -1,6 +1,7 @@
 package nsfw
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/url"
 
@@ -15,19 +16,19 @@ type Picture struct {
 	Drawings float64 `json:"drawings"`
 }
 
-const apiurl = "https://sayuri.fumiama.top/nsfw?"
+const apiurl = "https://nsfwtag.azurewebsites.net/api/nsfw?url="
 
-func Classify(urls ...string) (p []Picture, err error) {
-	u := apiurl
-	for _, s := range urls {
-		u += "urls=" + url.QueryEscape(s) + "&"
-	}
-	u = u[:len(u)-1]
+func Classify(u string) (*Picture, error) {
+	u = apiurl + url.QueryEscape(u)
 	var data []byte
-	data, err = web.GetData(u)
+	data, err := web.GetData(u)
 	if err != nil {
-		return
+		return nil, err
 	}
-	err = json.Unmarshal(data, &p)
-	return
+	ps := make([]Picture, 1)
+	err = json.Unmarshal(bytes.ReplaceAll(data, []byte("'"), []byte("\"")), &ps)
+	if err != nil {
+		return nil, err
+	}
+	return &ps[0], nil
 }

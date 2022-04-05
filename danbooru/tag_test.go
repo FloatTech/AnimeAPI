@@ -7,8 +7,8 @@ import (
 )
 
 func TestRender(t *testing.T) {
-	u := "http://192.168.7.81:62002/img?arg=get&name=卆悥什繐捀.webp"
-	im, err := TagURL("俁罰穬歭俀", u)
+	u := "https://1mg.obfs.dev/"
+	im, err := TagURL("random", u)
 	if err != nil {
 		t.Fatal(err)
 	}

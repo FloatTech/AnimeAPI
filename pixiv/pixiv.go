@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/web"
 	"github.com/tidwall/gjson"
 )
 
-//插画结构体
+// 插画结构体
 type Illust struct {
 	Pid         int64    `db:"pid"`
 	Title       string   `db:"title"`
@@ -20,14 +21,6 @@ type Illust struct {
 	CreatedTime string   `db:"created_time"`
 	UserId      int64    `db:"user_id"`
 	UserName    string   `db:"user_name"`
-}
-
-//[]byte转tjson类型
-type tjson []byte
-
-//解析json
-func (data tjson) Get(path string) gjson.Result {
-	return gjson.Get(string(data), path)
 }
 
 // Works 获取插画信息
@@ -67,7 +60,7 @@ func Works(id int64) (i *Illust, err error) {
 	return i, err
 }
 
-//搜索元素
+// 搜索元素
 type RankValue struct {
 	/* required, possible rank modes:
 		- daily (default)
@@ -95,17 +88,21 @@ type RankValue struct {
 	Date string
 }
 
-//画作排行榜
+// 画作排行榜
 func (value RankValue) Rank() (r [18]int, err error) {
-	var a []byte
 	if value.Mode == "male_r18" || value.Mode == "male" || value.Mode == "female_r18" || value.Mode == "female" {
 		value.Type = "all"
 	}
-	a, err = get(fmt.Sprintf("https://www.pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
-	body := tjson(a)
-	for i := 0; i < 18; i++ {
-		r[i] = int(body.Get(fmt.Sprintf("body.ranking.%d.illustId", i)).Int())
-	}
+	body, err := get(fmt.Sprintf("https://www.pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
+	i := 0
+	gjson.Get(binary.BytesToString(body), "body.ranking").ForEach(func(key, value gjson.Result) bool {
+		r[i] = int(value.Get("illustId").Int())
+		i++
+		if i == 18 {
+			return false
+		}
+		return true
+	})
 	return
 }
 

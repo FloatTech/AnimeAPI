@@ -3,7 +3,7 @@ module github.com/FloatTech/AnimeAPI
 go 1.18
 
 require (
-	github.com/FloatTech/zbputils v1.3.3-0.20220415105141-e69a077a7905
+	github.com/FloatTech/zbputils v1.3.3-0.20220417132003-a50e9afdc0c6
 	github.com/antchfx/htmlquery v1.2.4
 	github.com/fogleman/gg v1.3.0
 	github.com/sirupsen/logrus v1.8.1
@@ -18,7 +18,7 @@ require (
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 // indirect
 	github.com/fumiama/cron v1.3.0 // indirect
-	github.com/fumiama/go-registry v0.1.3 // indirect
+	github.com/fumiama/go-registry v0.1.5 // indirect
 	github.com/fumiama/gofastTEA v0.0.10 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect

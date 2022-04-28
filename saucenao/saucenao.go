@@ -20,7 +20,7 @@ type Result struct {
 }
 
 // SauceNaoSearch SauceNao 以图搜图
-// 传入图片链接，返回P站结果
+// 传入图片链接, 返回P站结果
 func SauceNAO(image string) (r []*Result, err error) {
 	var (
 		api    = "https://saucenao.com/search.php"

@@ -34,12 +34,12 @@ func (i *Illust) Path(page int) string {
 	return f
 }
 
-// DownloadToCache 多线程下载第 page 页到 i.Path(page)，返回 error
+// DownloadToCache 多线程下载第 page 页到 i.Path(page), 返回 error
 func (i *Illust) DownloadToCache(page int) error {
 	return i.Download(page, i.Path(page))
 }
 
-// Download 多线程下载 page 页到 filepath，返回 error
+// Download 多线程下载 page 页到 filepath, 返回 error
 func (i *Illust) Download(page int, path string) error {
 	const slicecap int64 = 65536
 	u := i.ImageUrls[page]

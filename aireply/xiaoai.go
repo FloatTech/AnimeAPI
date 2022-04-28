@@ -49,7 +49,7 @@ func (*XiaoAiReply) TalkPlain(msg, nickname string) string {
 	replystr := binary.BytesToString(bytes)
 	textReply := strings.ReplaceAll(replystr, xiaoaiBotName, nickname)
 	if textReply == "" {
-		textReply = nickname + "听不懂你的话了，能再说一遍吗"
+		textReply = nickname + "听不懂你的话了, 能再说一遍吗"
 	}
 	textReply = strings.ReplaceAll(textReply, "小米智能助理", "电子宠物")
 

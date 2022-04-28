@@ -13,7 +13,7 @@
 </table>
 
 ## API
-> 注意：由于云函数内存较小，请将图片分辨率控制在`0.25MP`，即`500*500`之内
+> 注意：由于云函数内存较小, 请将图片分辨率控制在`0.25MP`, 即`500*500`之内
 ```go
 func Get(u string, model, scale, tile int) ([]byte, error)
 func Post(body io.Reader, model, scale, tile int) ([]byte, error)

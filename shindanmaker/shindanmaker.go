@@ -18,8 +18,8 @@ var (
 )
 
 // Shindanmaker 基于 https://shindanmaker.com 的 API
-// id 是的不同页面的 url 里的数字，例如 https://shindanmaker.com/a/162207 里的 162207
-// name 是要被测定的人的名字，影响测定结果
+// id 是的不同页面的 url 里的数字, 例如 https://shindanmaker.com/a/162207 里的 162207
+// name 是要被测定的人的名字, 影响测定结果
 func Shindanmaker(id int64, name string) (string, error) {
 	url := fmt.Sprintf("https://shindanmaker.com/%d", id)
 	// seed 使每一天的结果都不同
@@ -62,7 +62,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 	if len(list) == 0 {
 		token = ""
 		cookie = ""
-		return "", errors.New("无法查找到结果，请稍后再试")
+		return "", errors.New("无法查找到结果, 请稍后再试")
 	}
 	var output = []string{}
 	for child := list[0].FirstChild; child != nil; child = child.NextSibling {

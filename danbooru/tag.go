@@ -75,11 +75,11 @@ func TagURL(name, u string) (im image.Image, err error) {
 	st := newsorttags(tags)
 	sort.Sort(st)
 
-	_, err = file.GetLazyData(text.BoldFontFile, false, true)
+	_, err = file.GetLazyData(text.BoldFontFile, true)
 	if err != nil {
 		return
 	}
-	_, err = file.GetLazyData(text.ConsolasFontFile, false, true)
+	_, err = file.GetLazyData(text.ConsolasFontFile, true)
 	if err != nil {
 		return
 	}

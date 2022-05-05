@@ -56,12 +56,12 @@ func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 	}
 	switch synt {
 	case 0:
-		_, err := file.GetLazyData(azfile, false, true)
+		_, err := file.GetLazyData(azfile, true)
 		if err != nil {
 			return nil, err
 		}
 	case 1:
-		_, err := file.GetLazyData(ysgfile, false, true)
+		_, err := file.GetLazyData(ysgfile, true)
 		if err != nil {
 			return nil, err
 		}

@@ -3,6 +3,7 @@ package mockingbird
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,6 +25,7 @@ const (
 	dbpath          = "data/MockingBird/"
 	cachePath       = dbpath + "cache/"
 	azfile          = dbpath + "az.wav"
+	wjfile          = dbpath + "wj.wav"
 	ysgfile         = dbpath + "ysg.wav"
 	baseURL         = "http://aaquatri.com/sound"
 	synthesizersURL = baseURL + "/api/synthesizers/"
@@ -33,8 +35,8 @@ const (
 
 var (
 	vocoderList      = []string{"WaveRNN", "HifiGAN"}
-	mockingbirdModes = map[int]string{0: "阿梓", 1: "药水哥"}
-	exampleFileMap   = map[int]string{0: azfile, 1: ysgfile}
+	mockingbirdModes = map[int]string{0: "阿梓", 1: "文静", 2: "药水哥"}
+	exampleFileMap   = map[int]string{0: azfile, 1: wjfile, 2: ysgfile}
 )
 
 // MockingBirdTTS 类
@@ -61,6 +63,11 @@ func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 			return nil, err
 		}
 	case 1:
+		_, err := file.GetLazyData(wjfile, true)
+		if err != nil {
+			return nil, err
+		}
+	case 2:
 		_, err := file.GetLazyData(ysgfile, true)
 		if err != nil {
 			return nil, err
@@ -70,7 +77,7 @@ func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 }
 
 // Speak 返回音频本地路径
-func (tts *MockingBirdTTS) Speak(uid int64, text func() string) string {
+func (tts *MockingBirdTTS) Speak(uid int64, text func() string) (fileName string, err error) {
 	// 异步
 	rch := make(chan string, 1)
 	sch := make(chan string, 1)
@@ -82,9 +89,13 @@ func (tts *MockingBirdTTS) Speak(uid int64, text func() string) string {
 	go func() {
 		sch <- tts.getSyntPath()
 	}()
-	fileName := tts.getWav(<-rch, <-sch, vocoderList[tts.vocoder], uid)
+	fileName, err = tts.getWav(<-rch, <-sch, vocoderList[tts.vocoder], uid)
+	if err != nil {
+		return
+	}
+	fileName = "file:///" + file.BOTPATH + "/" + cachePath + fileName
 	// 回复
-	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
+	return
 }
 
 func (tts *MockingBirdTTS) getSyntPath() (syntPath string) {
@@ -96,7 +107,11 @@ func (tts *MockingBirdTTS) getSyntPath() (syntPath string) {
 	return
 }
 
-func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fileName string) {
+func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fileName string, err error) {
+	if syntPath == "" {
+		err = errors.New("获取合成器失败")
+		return
+	}
 	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + "_mockingbird.wav"
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
@@ -131,7 +146,7 @@ func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fi
 	if _, err = fw.Write([]byte(vocoder)); err != nil {
 		log.Errorln("[mockingbird]:", err)
 	}
-	w.Close()
+	_ = w.Close()
 	// Now that you have a form, you can submit it to your handler.
 	req, err := http.NewRequest("POST", synthesizeURL, &b)
 	if err != nil {
@@ -149,6 +164,8 @@ func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fi
 	// Check the response
 	if res.StatusCode != http.StatusOK {
 		log.Errorf("[mockingbird]bad status: %s", res.Status)
+		err = errors.New("bad status:" + res.Status)
+		return
 	}
 	defer res.Body.Close()
 	data, _ := ioutil.ReadAll(res.Body)

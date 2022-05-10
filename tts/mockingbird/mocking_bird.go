@@ -6,9 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -118,60 +116,39 @@ func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fi
 	// Add your file
 	f, err := os.Open(tts.exampleFileName)
 	if err != nil {
-		log.Errorln("[mockingbird]:", err)
+		return
 	}
 	defer f.Close()
 	fw, err := w.CreateFormFile("file", tts.exampleFileName)
 	if err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if _, err = io.Copy(fw, f); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if fw, err = w.CreateFormField("text"); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if _, err = fw.Write([]byte(text)); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if fw, err = w.CreateFormField("synt_path"); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if _, err = fw.Write([]byte(syntPath)); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if fw, err = w.CreateFormField("vocoder"); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	if _, err = fw.Write([]byte(vocoder)); err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	_ = w.Close()
-	// Now that you have a form, you can submit it to your handler.
-	req, err := http.NewRequest("POST", synthesizeURL, &b)
-	if err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	// Don't forget to set the content type, this will contain the boundary.
-	req.Header.Set("Content-Type", w.FormDataContentType())
-
-	// Submit the request
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		log.Errorln("[mockingbird]:", err)
-	}
-	// Check the response
-	if res.StatusCode != http.StatusOK {
-		log.Errorf("[mockingbird]bad status: %s", res.Status)
-		err = errors.New("bad status:" + res.Status)
 		return
 	}
-	defer res.Body.Close()
-	data, _ := ioutil.ReadAll(res.Body)
-	err = os.WriteFile(cachePath+fileName, data, 0666)
-	if err != nil {
-		log.Errorln("[mockingbird]:", err)
+	if _, err = io.Copy(fw, f); err != nil {
+		return
 	}
+	if fw, err = w.CreateFormField("text"); err != nil {
+		return
+	}
+	if _, err = fw.Write([]byte(text)); err != nil {
+		return
+	}
+	if fw, err = w.CreateFormField("synt_path"); err != nil {
+		return
+	}
+	if _, err = fw.Write([]byte(syntPath)); err != nil {
+		return
+	}
+	if fw, err = w.CreateFormField("vocoder"); err != nil {
+		return
+	}
+	if _, err = fw.Write([]byte(vocoder)); err != nil {
+		return
+	}
+	_ = w.Close()
+	data, err := web.PostData(synthesizeURL, w.FormDataContentType(), &b)
+	if err != nil {
+		return
+	}
+	err = os.WriteFile(cachePath+fileName, data, 0666)
 	return
 }

@@ -4,8 +4,6 @@ package baidutts
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -56,7 +54,7 @@ func NewBaiduTTS(per int) *BaiduTTS {
 }
 
 // Speak 返回音频本地路径
-func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
+func (tts *BaiduTTS) Speak(uid int64, text func() string) (fileName string, err error) {
 	// 异步
 	rch := make(chan string, 1)
 	tch := make(chan string, 1)
@@ -68,9 +66,13 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
 	go func() {
 		tch <- getToken()
 	}()
-	fileName := getWav(<-rch, <-tch, 5, tts.per, 5, 5, uid)
+	fileName, err = getWav(<-rch, <-tch, 5, tts.per, 5, 5, uid)
+	if err != nil {
+
+	}
+	fileName = "file:///" + file.BOTPATH + "/" + cachePath + fileName
 	// 回复
-	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
+	return
 }
 
 func getToken() (accessToken string) {
@@ -82,32 +84,14 @@ func getToken() (accessToken string) {
 	return
 }
 
-func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string) {
+func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string, err error) {
 	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + "_baidu.wav"
-
 	cuid := fmt.Sprintf("%x", md5.Sum(binary.StringToBytes(tok)))
 	payload := strings.NewReader(fmt.Sprintf("tex=%s&lan=zh&ctp=1&vol=%d&per=%d&spd=%d&pit=%d&cuid=%s&tok=%s", tex, vol, per, spd, pit, cuid, tok))
-
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", ttsURL, payload)
-
+	data, err := web.PostData(ttsURL, "application/x-www-form-urlencoded", payload)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
-	req.Header.Add("User-Agent", ua)
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer res.Body.Close()
-
-	data, _ := ioutil.ReadAll(res.Body)
 	err = os.WriteFile(cachePath+fileName, data, 0666)
-	if err != nil {
-		log.Errorln("[baidutts]:", err)
-	}
 	return
 }

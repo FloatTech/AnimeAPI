@@ -4,7 +4,7 @@ package baidutts
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,7 +14,6 @@ import (
 	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/file"
 	"github.com/FloatTech/zbputils/web"
-	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
 
@@ -56,7 +55,7 @@ func NewBaiduTTS(per int) *BaiduTTS {
 }
 
 // Speak 返回音频本地路径
-func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
+func (tts *BaiduTTS) Speak(uid int64, text func() string) (fileName string, err error) {
 	// 异步
 	rch := make(chan string, 1)
 	tch := make(chan string, 1)
@@ -66,23 +65,32 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) string {
 	}()
 	// 取到token
 	go func() {
-		tch <- getToken()
+		var tok string
+		tok, err = getToken()
+		tch <- tok
 	}()
-	fileName := getWav(<-rch, <-tch, 5, tts.per, 5, 5, uid)
+	tok := <-tch
+	if tok == "" {
+		return
+	}
+	fileName, err = getWav(<-rch, tok, 5, tts.per, 5, 5, uid)
+	if err != nil {
+		return
+	}
 	// 回复
-	return "file:///" + file.BOTPATH + "/" + cachePath + fileName
+	return "file:///" + file.BOTPATH + "/" + cachePath + fileName, nil
 }
 
-func getToken() (accessToken string) {
+func getToken() (accessToken string, err error) {
 	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(tokenURL, grantType, clientID, clientSecret), "GET", "", ua)
 	if err != nil {
-		log.Errorln("[baidutts]:", err)
+		return
 	}
 	accessToken = gjson.Get(binary.BytesToString(data), "access_token").String()
 	return
 }
 
-func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string) {
+func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string, err error) {
 	fileName = strconv.FormatInt(uid, 10) + time.Now().Format("20060102150405") + "_baidu.wav"
 
 	cuid := fmt.Sprintf("%x", md5.Sum(binary.StringToBytes(tok)))
@@ -92,22 +100,24 @@ func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string
 	req, err := http.NewRequest("POST", ttsURL, payload)
 
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	req.Header.Add("User-Agent", ua)
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	defer res.Body.Close()
 
-	data, _ := ioutil.ReadAll(res.Body)
-	err = os.WriteFile(cachePath+fileName, data, 0666)
+	fo, err := os.Create(cachePath + fileName)
 	if err != nil {
-		log.Errorln("[baidutts]:", err)
+		return
+	}
+	defer fo.Close()
+	_, err = io.Copy(fo, res.Body)
+	if err != nil {
+		return
 	}
 	return
 }

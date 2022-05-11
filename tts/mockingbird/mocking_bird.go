@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -56,17 +55,17 @@ func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 	}
 	switch synt {
 	case 0:
-		_, err := file.GetLazyData(azfile, true)
+		_, err := file.GetLazyData(azfile, false)
 		if err != nil {
 			return nil, err
 		}
 	case 1:
-		_, err := file.GetLazyData(wjfile, true)
+		_, err := file.GetLazyData(wjfile, false)
 		if err != nil {
 			return nil, err
 		}
 	case 2:
-		_, err := file.GetLazyData(ysgfile, true)
+		_, err := file.GetLazyData(ysgfile, false)
 		if err != nil {
 			return nil, err
 		}
@@ -148,34 +147,10 @@ func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fi
 		return
 	}
 	_ = w.Close()
-	// Now that you have a form, you can submit it to your handler.
-	req, err := http.NewRequest("POST", synthesizeURL, bytes.NewReader(b.Bytes()))
+	data, err := web.PostData(synthesizeURL, w.FormDataContentType(), bytes.NewReader(b.Bytes()))
 	if err != nil {
 		return
 	}
-	// Don't forget to set the content type, this will contain the boundary.
-	req.Header.Set("Content-Type", w.FormDataContentType())
-
-	// Submit the request
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	// Check the response
-	if res.StatusCode != http.StatusOK {
-		err = errors.New("bad status:" + res.Status)
-		return
-	}
-	defer res.Body.Close()
-	fo, err := os.Create(cachePath + fileName)
-	if err != nil {
-		return
-	}
-	defer fo.Close()
-	_, err = io.Copy(fo, res.Body)
-	if err != nil {
-		return
-	}
+	err = os.WriteFile(cachePath+fileName, data, 0666)
 	return
 }

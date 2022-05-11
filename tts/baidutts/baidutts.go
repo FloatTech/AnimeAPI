@@ -3,9 +3,9 @@ package baidutts
 
 import (
 	"crypto/md5"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -96,28 +96,14 @@ func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string
 	cuid := fmt.Sprintf("%x", md5.Sum(binary.StringToBytes(tok)))
 	payload := strings.NewReader(fmt.Sprintf("tex=%s&lan=zh&ctp=1&vol=%d&per=%d&spd=%d&pit=%d&cuid=%s&tok=%s", tex, vol, per, spd, pit, cuid, tok))
 
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", ttsURL, payload)
-
+	data, err := web.PostData(ttsURL, "	application/x-www-form-urlencoded", payload)
 	if err != nil {
 		return
 	}
-	req.Header.Add("User-Agent", ua)
-
-	res, err := client.Do(req)
-	if err != nil {
+	if json.Valid(data) {
+		err = errors.New(binary.BytesToString(data))
 		return
 	}
-	defer res.Body.Close()
-
-	fo, err := os.Create(cachePath + fileName)
-	if err != nil {
-		return
-	}
-	defer fo.Close()
-	_, err = io.Copy(fo, res.Body)
-	if err != nil {
-		return
-	}
+	err = os.WriteFile(cachePath+fileName, data, 0666)
 	return
 }

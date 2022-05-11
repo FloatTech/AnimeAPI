@@ -96,7 +96,7 @@ func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string
 	cuid := fmt.Sprintf("%x", md5.Sum(binary.StringToBytes(tok)))
 	payload := strings.NewReader(fmt.Sprintf("tex=%s&lan=zh&ctp=1&vol=%d&per=%d&spd=%d&pit=%d&cuid=%s&tok=%s", tex, vol, per, spd, pit, cuid, tok))
 
-	data, err := web.PostData(ttsURL, "	application/x-www-form-urlencoded", payload)
+	data, err := web.PostData(ttsURL, "application/x-www-form-urlencoded", payload)
 	if err != nil {
 		return
 	}

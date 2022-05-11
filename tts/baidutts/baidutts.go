@@ -101,7 +101,7 @@ func getWav(tex, tok string, vol, per, spd, pit int, uid int64) (fileName string
 		return
 	}
 	if json.Valid(data) {
-		err = errors.New(binary.BytesToString(data))
+		err = errors.New(gjson.ParseBytes(data).Get("err_msg").String())
 		return
 	}
 	err = os.WriteFile(cachePath+fileName, data, 0666)

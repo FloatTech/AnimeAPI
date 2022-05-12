@@ -1,5 +1,5 @@
-github.com/FloatTech/zbputils v1.4.0 h1:zjFiTJ5UHFjnDX6iP+f1KMCO9uqFbDjFFVzW8cyMbe8=
-github.com/FloatTech/zbputils v1.4.0/go.mod h1:Cf2wAFtq7OUj4RUHcSQtcAYgAspP06wQseKZwtCJRXQ=
+github.com/FloatTech/zbputils v1.4.1-0.20220510155433-a0cc1629b1df h1:zt+Um+D9UqF5SZmYPmklLh7ff/u0ByU53KX1pqlFEhM=
+github.com/FloatTech/zbputils v1.4.1-0.20220510155433-a0cc1629b1df/go.mod h1:Cf2wAFtq7OUj4RUHcSQtcAYgAspP06wQseKZwtCJRXQ=
 github.com/antchfx/htmlquery v1.2.4 h1:qLteofCMe/KGovBI6SQgmou2QNyedFUW+pE+BpeZ494=
 github.com/antchfx/htmlquery v1.2.4/go.mod h1:2xO6iu3EVWs7R2JYqBbp8YzG50gj/ofqs5/0VZoDZLc=
 github.com/antchfx/xpath v1.2.0 h1:mbwv7co+x0RwgeGAOHdrKy89GvHaGvxxBtPK0uF9Zr8=

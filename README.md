@@ -10,8 +10,6 @@ DeepDanbooru 二次元图片标签识别
 图片合规性审查
 ## pixiv
 P站解析与图片下载
-## saucenao
-SauceNao 搜图
 ## scale
 采用[叔叔的模型](https://github.com/bilibili/ailab)放大二次元图片
 ## shindanmaker

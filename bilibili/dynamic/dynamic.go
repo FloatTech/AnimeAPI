@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/web"
 	"github.com/tidwall/gjson"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -147,17 +148,17 @@ func Card2msg(str string, cType int) (msg []message.MessageSegment, err error) {
 	// 初始化结构体
 	switch cType {
 	case 0:
-		err = json.Unmarshal([]byte(str), &dynamicCard)
+		err = json.Unmarshal(binary.StringToBytes(str), &dynamicCard)
 		if err != nil {
 			return
 		}
-		err = json.Unmarshal([]byte(dynamicCard.Card), &card)
+		err = json.Unmarshal(binary.StringToBytes(dynamicCard.Card), &card)
 		if err != nil {
 			return
 		}
 		cType = dynamicCard.Desc.Type
 	case 1, 2, 4, 8, 16, 64, 256, 2048, 4200, 4308:
-		err = json.Unmarshal([]byte(str), &card)
+		err = json.Unmarshal(binary.StringToBytes(str), &card)
 		if err != nil {
 			return
 		}
@@ -184,7 +185,7 @@ func Card2msg(str string, cType int) (msg []message.MessageSegment, err error) {
 			msg = append(msg, message.Image(card.Item.Pictures[i].ImgSrc))
 		}
 	case 4:
-		msg = append(msg, message.Text(card.User.Name, "在", time.Unix(int64(card.Item.Timestamp), 0).Format("2006-01-02 15:04:05"), typeMsg[cType], "\n"))
+		msg = append(msg, message.Text(card.User.Uname, "在", time.Unix(int64(card.Item.Timestamp), 0).Format("2006-01-02 15:04:05"), typeMsg[cType], "\n"))
 		msg = append(msg, message.Text(card.Item.Content, "\n"))
 	case 8:
 		msg = append(msg, message.Text(card.Owner.Name, "在", time.Unix(int64(card.Pubdate), 0).Format("2006-01-02 15:04:05"), typeMsg[cType], "\n"))

@@ -18,8 +18,8 @@ const (
 	TURL = "https://t.bilibili.com/"
 	// SpaceHistoryURL 历史动态信息,一共12个card
 	SpaceHistoryURL = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid=%v&offset_dynamic_id=%v&need_top=0"
-	// DynamicDetailURL 当前动态信息,一个card
-	DynamicDetailURL = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=%v"
+	// DetailURL 当前动态信息,一个card
+	DetailURL = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=%v"
 )
 
 var (
@@ -37,8 +37,8 @@ var (
 	}
 )
 
-// DynamicCard 总动态结构体,包括desc,card
-type DynamicCard struct {
+// DynCard 总动态结构体,包括desc,card
+type DynCard struct {
 	Desc Desc   `json:"desc"`
 	Card string `json:"card"`
 }
@@ -142,7 +142,7 @@ type Card struct {
 // Card2msg cType=0时,处理DynamicCard字符串,cType=1, 2, 4, 8, 16, 64, 256, 2048, 4200, 4308时,处理Card字符串,cType为card类型
 func Card2msg(str string, cType int) (msg []message.MessageSegment, err error) {
 	var (
-		dynamicCard DynamicCard
+		dynamicCard DynCard
 		card        Card
 	)
 	// 初始化结构体
@@ -250,9 +250,9 @@ func Card2msg(str string, cType int) (msg []message.MessageSegment, err error) {
 	return
 }
 
-func DynamicDetail(dynamicIDStr string) (msg []message.MessageSegment, err error) {
+func Detail(dynamicIDStr string) (msg []message.MessageSegment, err error) {
 	var data []byte
-	data, err = web.GetData(fmt.Sprintf(DynamicDetailURL, dynamicIDStr))
+	data, err = web.GetData(fmt.Sprintf(DetailURL, dynamicIDStr))
 	if err != nil {
 		return
 	}

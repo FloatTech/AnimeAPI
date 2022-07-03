@@ -1,5 +1,5 @@
 module github.com/Haorwen/AnimeAPI
-replace github.com/FloatTech/AnimeAPI => github.com/Haorwen/AnimeAPI v1.4.2 // indirect
+
 go 1.18
 
 require (

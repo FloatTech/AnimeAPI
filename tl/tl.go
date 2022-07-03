@@ -7,7 +7,7 @@ import (
 )
 
 func Translate(target string) (string, error) {
-	data, err := web.GetData("https://api.cloolc.club/fanyi?data=" + target)
+	data, err := web.GetData("http://api.cloolc.club/fanyi?data=" + target)
 	if err != nil {
 		return "", err
 	}

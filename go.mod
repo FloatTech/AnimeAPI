@@ -1,4 +1,4 @@
-module github.com/FloatTech/AnimeAPI
+module github.com/Haorwen/AnimeAPI
 
 go 1.18
 

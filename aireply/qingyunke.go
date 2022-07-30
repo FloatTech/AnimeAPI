@@ -2,8 +2,6 @@ package aireply
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
@@ -17,7 +15,7 @@ import (
 type QYKReply struct{}
 
 const (
-	qykURL     = "http://api.qingyunke.com/api.php?key=free&appid=0&msg=%s"
+	qykURL     = "http://api.qingyunke.com/api.php?key=free&appid=0&msg=%v"
 	qykBotName = "菲菲"
 )
 
@@ -32,28 +30,12 @@ func (*QYKReply) String() string {
 // Talk 取得带 CQ 码的回复消息
 func (*QYKReply) Talk(msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, qykBotName)
-
 	u := fmt.Sprintf(qykURL, url.QueryEscape(msg))
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", u, nil)
+	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA())
 	if err != nil {
 		return "ERROR:" + err.Error()
 	}
-	// 自定义Header
-	req.Header.Set("User-Agent", web.RandUA())
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Host", "api.qingyunke.com")
-	resp, err := client.Do(req)
-	if err != nil {
-		return "ERROR:" + err.Error()
-	}
-	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "ERROR:" + err.Error()
-	}
-
-	replystr := gjson.Get(binary.BytesToString(bytes), "content").String()
+	replystr := gjson.Get(binary.BytesToString(data), "content").String()
 	replystr = strings.ReplaceAll(replystr, "{face:", "[CQ:face,id=")
 	replystr = strings.ReplaceAll(replystr, "{br}", "\n")
 	replystr = strings.ReplaceAll(replystr, "}", "]")
@@ -67,26 +49,11 @@ func (*QYKReply) TalkPlain(msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, qykBotName)
 
 	u := fmt.Sprintf(qykURL, url.QueryEscape(msg))
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", u, nil)
+	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA())
 	if err != nil {
-		return "ERROR: " + err.Error()
+		return "ERROR:" + err.Error()
 	}
-	// 自定义Header
-	req.Header.Set("User-Agent", web.RandUA())
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Host", "api.qingyunke.com")
-	resp, err := client.Do(req)
-	if err != nil {
-		return "ERROR: " + err.Error()
-	}
-	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "ERROR: " + err.Error()
-	}
-
-	replystr := gjson.Get(binary.BytesToString(bytes), "content").String()
+	replystr := gjson.Get(binary.BytesToString(data), "content").String()
 	replystr = qykMatchFace.ReplaceAllLiteralString(replystr, "")
 	replystr = strings.ReplaceAll(replystr, "{br}", "\n")
 	replystr = strings.ReplaceAll(replystr, qykBotName, nickname)

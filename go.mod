@@ -8,7 +8,6 @@ require (
 	github.com/fogleman/gg v1.3.0
 	github.com/stretchr/testify v1.7.2
 	github.com/tidwall/gjson v1.14.1
-	github.com/wdvxdr1123/ZeroBot v1.5.2-0.20220610070647-9eeffcb277ee
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 )
 
@@ -26,6 +25,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/wdvxdr1123/ZeroBot v1.5.2-0.20220610070647-9eeffcb277ee // indirect
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/sys v0.0.0-20220608164250-635b8c9b7f68 // indirect
 	golang.org/x/text v0.3.7 // indirect

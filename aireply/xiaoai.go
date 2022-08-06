@@ -2,20 +2,19 @@ package aireply
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/FloatTech/zbputils/binary"
 	"github.com/FloatTech/zbputils/web"
+	"github.com/tidwall/gjson"
 )
 
 // XiaoAiReply 小爱回复类
 type XiaoAiReply struct{}
 
 const (
-	xiaoaiURL     = "http://81.70.100.130/api/xiaoai.php?msg=%s&n=text"
+	xiaoaiURL     = "https://yang520.ltd/api/xiaoai.php?msg=%v"
 	xiaoaiBotName = "小爱"
 )
 
@@ -26,27 +25,12 @@ func (*XiaoAiReply) String() string {
 // TalkPlain 取得回复消息
 func (*XiaoAiReply) TalkPlain(msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, xiaoaiBotName)
-
 	u := fmt.Sprintf(xiaoaiURL, url.QueryEscape(msg))
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", u, nil)
+	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA())
 	if err != nil {
-		return "ERROR: " + err.Error()
+		return "ERROR:" + err.Error()
 	}
-	// 自定义Header
-	req.Header.Set("User-Agent", web.RandUA())
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Host", "81.70.100.130")
-	resp, err := client.Do(req)
-	if err != nil {
-		return "ERROR: " + err.Error()
-	}
-	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "ERROR: " + err.Error()
-	}
-	replystr := binary.BytesToString(bytes)
+	replystr := gjson.Get(binary.BytesToString(data), "text").String()
 	textReply := strings.ReplaceAll(replystr, xiaoaiBotName, nickname)
 	if textReply == "" {
 		textReply = nickname + "听不懂你的话了, 能再说一遍吗"

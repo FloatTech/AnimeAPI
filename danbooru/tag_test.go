@@ -3,7 +3,7 @@ package danbooru
 import (
 	"testing"
 
-	"github.com/FloatTech/zbputils/img/writer"
+	"github.com/FloatTech/floatbox/img/writer"
 )
 
 func TestRender(t *testing.T) {

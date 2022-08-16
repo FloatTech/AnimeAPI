@@ -9,10 +9,10 @@ import (
 	"sort"
 
 	"github.com/Coloured-glaze/gg"
-	"github.com/FloatTech/zbputils/file"
+	"github.com/FloatTech/floatbox/file"
+	"github.com/FloatTech/floatbox/web"
 	imgutils "github.com/FloatTech/zbputils/img"
 	"github.com/FloatTech/zbputils/img/text" // jpg png gif
-	"github.com/FloatTech/zbputils/web"
 	_ "golang.org/x/image/webp"
 )
 

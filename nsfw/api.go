@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/url"
 
-	"github.com/FloatTech/zbputils/web"
+	"github.com/FloatTech/floatbox/web"
 )
 
 type Picture struct {

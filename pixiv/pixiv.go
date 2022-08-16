@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/FloatTech/zbputils/binary"
-	"github.com/FloatTech/zbputils/web"
+	"github.com/FloatTech/floatbox/binary"
+	"github.com/FloatTech/floatbox/web"
 	"github.com/tidwall/gjson"
 )
 

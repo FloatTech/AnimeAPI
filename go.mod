@@ -3,9 +3,9 @@ module github.com/FloatTech/AnimeAPI
 go 1.18
 
 require (
-	github.com/FloatTech/zbputils v1.5.0
+	github.com/Coloured-glaze/gg v1.3.2
+	github.com/FloatTech/zbputils v1.5.1-0.20220816020252-0f57a5ae28aa
 	github.com/antchfx/htmlquery v1.2.5
-	github.com/fogleman/gg v1.3.0
 	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/gjson v1.14.2
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539

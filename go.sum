@@ -1,5 +1,7 @@
-github.com/FloatTech/zbputils v1.5.0 h1:mfKZ+Ye+t8eArmgR4PzhhmdwvZM5VPjLfdikyhKffSE=
-github.com/FloatTech/zbputils v1.5.0/go.mod h1:Qet1L7sDLCkYectR0cwtTA9yDcW1n4/U1JvnAq2X18A=
+github.com/Coloured-glaze/gg v1.3.2 h1:HRWF0qoIxwhO1O0N5eN2eTPwaO+xHpFu1FfNhtls22w=
+github.com/Coloured-glaze/gg v1.3.2/go.mod h1:Ih5NLNNDHOy3RJbB0EPqGTreIzq/H02TGThIagh8HJg=
+github.com/FloatTech/zbputils v1.5.1-0.20220816020252-0f57a5ae28aa h1:nltmv5w1cdB0vU52zkLFI9a5FdBozaAhZZq/GCLi6Xs=
+github.com/FloatTech/zbputils v1.5.1-0.20220816020252-0f57a5ae28aa/go.mod h1:l06shz0lp4jqMBZDJaRRSUdOlIwg99cIKV4sx4YR0DI=
 github.com/antchfx/htmlquery v1.2.5 h1:1lXnx46/1wtv1E/kzmH8vrfMuUKYgkdDBA9pIdMJnk4=
 github.com/antchfx/htmlquery v1.2.5/go.mod h1:2MCVBzYVafPBmKbrmwB9F5xdd+IEgRY61ci2oOsOQVw=
 github.com/antchfx/xpath v1.2.1 h1:qhp4EW6aCOVr5XIkT+l6LJ9ck/JsUH/yyauNgTQkBF8=
@@ -11,8 +13,6 @@ github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 h1:BBade+JlV/f7JstZ4pitd4tHhpN+w+6I+LyOS7B4fyU=
 github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4/go.mod h1:H7chHJglrhPPzetLdzBleF8d22WYOv7UM/lEKYiwlKM=
-github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
-github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/fumiama/cron v1.3.0 h1:ZWlwuexF+HQHl3cYytEE5HNwD99q+3vNZF1GrEiXCFo=
 github.com/fumiama/cron v1.3.0/go.mod h1:bz5Izvgi/xEUI8tlBN8BI2jr9Moo8N4or0KV8xXuPDY=
 github.com/fumiama/go-registry v0.1.6 h1:Ee/tXCCIR/xt8celhbbw0W/xDMdhAXLwy2YFBB/LWFk=

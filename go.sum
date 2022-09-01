@@ -1,11 +1,9 @@
-github.com/Coloured-glaze/gg v1.3.2 h1:HRWF0qoIxwhO1O0N5eN2eTPwaO+xHpFu1FfNhtls22w=
-github.com/Coloured-glaze/gg v1.3.2/go.mod h1:Ih5NLNNDHOy3RJbB0EPqGTreIzq/H02TGThIagh8HJg=
-github.com/FloatTech/floatbox v0.0.0-20220816052111-cbf40c78757a h1:g5qRftm3bA6hzkwjT7NqVe0XhZUFTU+QNcN/jvNiTFk=
-github.com/FloatTech/floatbox v0.0.0-20220816052111-cbf40c78757a/go.mod h1:hK2HTQddBomA/sY2oD7VeW0GA5BxlIoYqcAOnamw1EU=
-github.com/FloatTech/zbputils v1.5.1-0.20220816020252-0f57a5ae28aa h1:nltmv5w1cdB0vU52zkLFI9a5FdBozaAhZZq/GCLi6Xs=
-github.com/FloatTech/zbputils v1.5.1-0.20220816020252-0f57a5ae28aa/go.mod h1:l06shz0lp4jqMBZDJaRRSUdOlIwg99cIKV4sx4YR0DI=
-github.com/FloatTech/zbputils v1.5.1-0.20220816052531-0efa59cfb7b5 h1:zfOuaFNjJx1zIg6hCGVhVb12PXAP30gS+mXk6EShEX8=
-github.com/FloatTech/zbputils v1.5.1-0.20220816052531-0efa59cfb7b5/go.mod h1:VChS4UO8fPnk08NJIvmjwkRpmh+Hzfm79gqEJqw/PhY=
+github.com/Coloured-glaze/gg v1.3.4 h1:l31zIF/HaVwkzjrj+A56RGQoSKyKuR1IWtIrqXGFStI=
+github.com/Coloured-glaze/gg v1.3.4/go.mod h1:Ih5NLNNDHOy3RJbB0EPqGTreIzq/H02TGThIagh8HJg=
+github.com/FloatTech/floatbox v0.0.0-20220822040527-f059031fec44 h1:gnNO7tpxXpTuLuqIK9ekZScvDKt3jwHR+/rkDU838Nw=
+github.com/FloatTech/floatbox v0.0.0-20220822040527-f059031fec44/go.mod h1:hK2HTQddBomA/sY2oD7VeW0GA5BxlIoYqcAOnamw1EU=
+github.com/FloatTech/zbputils v1.5.1-0.20220826103123-0c73a585e38f h1:R13GKhRZfB42nsCEqek/ZlGbKBopQOZFYwBU9qSCfhg=
+github.com/FloatTech/zbputils v1.5.1-0.20220826103123-0c73a585e38f/go.mod h1:ZT91eCYR6y1HbLRTO5EB7o8K7qEPbCsX7vjhYIuMijc=
 github.com/antchfx/htmlquery v1.2.5 h1:1lXnx46/1wtv1E/kzmH8vrfMuUKYgkdDBA9pIdMJnk4=
 github.com/antchfx/htmlquery v1.2.5/go.mod h1:2MCVBzYVafPBmKbrmwB9F5xdd+IEgRY61ci2oOsOQVw=
 github.com/antchfx/xpath v1.2.1 h1:qhp4EW6aCOVr5XIkT+l6LJ9ck/JsUH/yyauNgTQkBF8=

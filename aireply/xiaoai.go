@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/FloatTech/floatbox/binary"
 	"github.com/FloatTech/floatbox/web"
 )
 
@@ -28,7 +29,7 @@ func (*XiaoAiReply) TalkPlain(msg, nickname string) string {
 	if err != nil {
 		return "ERROR:" + err.Error()
 	}
-	textReply := strings.ReplaceAll(string(replyMsg), xiaoaiBotName, nickname)
+	textReply := strings.ReplaceAll(binary.BytesToString(replyMsg), xiaoaiBotName, nickname)
 	if textReply == "" {
 		textReply = nickname + "听不懂你的话了, 能再说一遍吗"
 	}

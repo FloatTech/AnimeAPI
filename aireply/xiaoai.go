@@ -7,14 +7,13 @@ import (
 
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/FloatTech/floatbox/web"
-	"github.com/tidwall/gjson"
 )
 
 // XiaoAiReply 小爱回复类
 type XiaoAiReply struct{}
 
 const (
-	xiaoaiURL     = "https://yang520.ltd/api/xiaoai.php?msg=%v"
+	xiaoaiURL     = "https://jintia.jintias.cn/api/xatx.php?type=text&msg=%v"
 	xiaoaiBotName = "小爱"
 )
 
@@ -26,12 +25,11 @@ func (*XiaoAiReply) String() string {
 func (*XiaoAiReply) TalkPlain(msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, xiaoaiBotName)
 	u := fmt.Sprintf(xiaoaiURL, url.QueryEscape(msg))
-	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA())
+	replyMsg, err := web.GetData(u)
 	if err != nil {
 		return "ERROR:" + err.Error()
 	}
-	replystr := gjson.Get(binary.BytesToString(data), "text").String()
-	textReply := strings.ReplaceAll(replystr, xiaoaiBotName, nickname)
+	textReply := strings.ReplaceAll(binary.BytesToString(replyMsg), xiaoaiBotName, nickname)
 	if textReply == "" {
 		textReply = nickname + "听不懂你的话了, 能再说一遍吗"
 	}

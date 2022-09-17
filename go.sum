@@ -6,6 +6,8 @@ github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b h1:tvciXWq2nuvTbFeJG
 github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b/go.mod h1:fHZFWGquNXuHttu9dUYoKuNbm3dzLETnIOnm1muSfDs=
 github.com/FloatTech/zbputils v1.5.1-0.20220917124100-a2214e060762 h1:/+TwNL10tdjy/ttrOemGCAIBJTsdmr5K0ZnJ0njy0zY=
 github.com/FloatTech/zbputils v1.5.1-0.20220917124100-a2214e060762/go.mod h1:q+8GMW23dhhL1+3H2XRRwSIwTbY0y0WhIP19NR9BOWA=
+github.com/FloatTech/zbputils v1.5.1-0.20220917124747-de1640283316 h1:JaKs9Ok+UEOYsq8lRODpZu8UwdKTCjhfgmozIEaDCps=
+github.com/FloatTech/zbputils v1.5.1-0.20220917124747-de1640283316/go.mod h1:HOd/6l4iDbyvmLuRlcSoh7LikMQss06ewqlmozAibkM=
 github.com/antchfx/htmlquery v1.2.5 h1:1lXnx46/1wtv1E/kzmH8vrfMuUKYgkdDBA9pIdMJnk4=
 github.com/antchfx/htmlquery v1.2.5/go.mod h1:2MCVBzYVafPBmKbrmwB9F5xdd+IEgRY61ci2oOsOQVw=
 github.com/antchfx/xpath v1.2.1 h1:qhp4EW6aCOVr5XIkT+l6LJ9ck/JsUH/yyauNgTQkBF8=

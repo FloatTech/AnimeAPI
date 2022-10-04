@@ -4,8 +4,8 @@ github.com/FloatTech/floatbox v0.0.0-20221004092550-1ebf9b4e6198 h1:AkwB7LKMK74y
 github.com/FloatTech/floatbox v0.0.0-20221004092550-1ebf9b4e6198/go.mod h1:4UDl6E/I2HqAqRnKdsxxfO28fkqGo3CzFOP2BhyI6ag=
 github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b h1:tvciXWq2nuvTbFeJGLDNIdRX3BI546D3O7k7vrVueZw=
 github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b/go.mod h1:fHZFWGquNXuHttu9dUYoKuNbm3dzLETnIOnm1muSfDs=
-github.com/FloatTech/zbputils v1.5.1-0.20221004092706-035eba3a9bb6 h1:O6lBC9m2zI3wpdE2kQA94WWkuZ5mEfJSd/6yKa6hBFw=
-github.com/FloatTech/zbputils v1.5.1-0.20221004092706-035eba3a9bb6/go.mod h1:0hU2b4bnYGHBll52SHErCf34yU/PditejgAOkGZ/Czw=
+github.com/FloatTech/zbputils v1.5.1-0.20221004094248-ad5a9235757e h1:3B58NvXqYrIEDhFOl2535yL9zj2cwDAv1eq63adh/Wg=
+github.com/FloatTech/zbputils v1.5.1-0.20221004094248-ad5a9235757e/go.mod h1:0hU2b4bnYGHBll52SHErCf34yU/PditejgAOkGZ/Czw=
 github.com/antchfx/htmlquery v1.2.5 h1:1lXnx46/1wtv1E/kzmH8vrfMuUKYgkdDBA9pIdMJnk4=
 github.com/antchfx/htmlquery v1.2.5/go.mod h1:2MCVBzYVafPBmKbrmwB9F5xdd+IEgRY61ci2oOsOQVw=
 github.com/antchfx/xpath v1.2.1 h1:qhp4EW6aCOVr5XIkT+l6LJ9ck/JsUH/yyauNgTQkBF8=

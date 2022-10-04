@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/Coloured-glaze/gg v1.3.4
-	github.com/FloatTech/floatbox v0.0.0-20221003150509-1eb268ad10ff
-	github.com/FloatTech/zbputils v1.5.1-0.20221003150718-106abe37a694
+	github.com/FloatTech/floatbox v0.0.0-20221004092550-1ebf9b4e6198
+	github.com/FloatTech/zbputils v1.5.1-0.20221004092706-035eba3a9bb6
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/gjson v1.14.3

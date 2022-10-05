@@ -7,9 +7,11 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/FloatTech/floatbox/binary"
+	"github.com/FloatTech/floatbox/web"
 )
 
 const (
@@ -70,7 +72,11 @@ func (nv *NovalAI) Draw(tags string) (seed int, tagsproceeded string, img []byte
 		return
 	}
 	req.Header.Add("Authorization", "Bearer "+nv.Tok)
+	req.Header.Add("Content-Length", strconv.Itoa(buf.Len()))
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Origin", "https://novelai.net")
+	req.Header.Add("Referer", "https://novelai.net/")
+	req.Header.Add("User-Agent", web.RandUA())
 	var resp *http.Response
 	resp, err = http.DefaultClient.Do(req)
 	if err != nil {

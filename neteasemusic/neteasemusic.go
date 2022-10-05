@@ -83,7 +83,7 @@ type musicLrc struct {
 //
 // list:map[歌曲名称]歌曲ID
 func SearchMusic(keyword string, n int) (list map[string]int, err error) {
-	list = make(map[string]int, n)
+	list = make(map[string]int, 2*n)
 	requestURL := "http://music.163.com/api/search/get/web?type=1&limit=" + strconv.Itoa(n) + "&s=" + url.QueryEscape(keyword)
 	data, err := web.GetData(requestURL)
 	if err != nil {
@@ -135,14 +135,10 @@ func DownloadMusic(musicID int, musicName, pathOfMusic string) error {
 		}
 		_ = response.Body.Close()
 		if response.StatusCode != 200 {
-			err = errors.Errorf("Status Code: %d", response.StatusCode)
-			return err
+			return errors.Errorf("Status Code: %d", response.StatusCode)
 		}
 		// 下载歌曲
-		err = file.DownloadTo(musicURL, downMusic, true)
-		if err != nil {
-			return err
-		}
+		return file.DownloadTo(musicURL, downMusic, true)
 	}
 	return nil
 }
@@ -156,10 +152,9 @@ func SreachLrc(musicID int) (lrc string, err error) {
 	}
 	var lrcinfo musicLrc
 	err = json.Unmarshal(data, &lrcinfo)
-	if err != nil {
-		return
+	if err == nil {
+		lrc = lrcinfo.Lyric
 	}
-	lrc = lrcinfo.Lyric
 	return
 }
 
@@ -182,18 +177,12 @@ func DownloadLrc(musicID int, musicName, pathOfMusic string) error {
 			return err
 		}
 		if lrcinfo.Code != 200 {
-			err = errors.Errorf("Status Code: %d", lrcinfo.Code)
-			return err
+			return errors.Errorf("Status Code: %d", lrcinfo.Code)
 		}
 		if lrcinfo.Lyric != "" {
-			err = os.WriteFile(downfile, binary.StringToBytes(lrcinfo.Lyric), 0666)
-			if err != nil {
-				return err
-			}
-		} else {
-			err = errors.Errorf("该歌曲无歌词")
-			return err
+			return os.WriteFile(downfile, binary.StringToBytes(lrcinfo.Lyric), 0666)
 		}
+		return errors.New("该歌曲无歌词")
 	}
 	return nil
 }

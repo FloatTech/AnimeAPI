@@ -4,10 +4,6 @@
 调用 AI 回复对话
 ## ascii2d
 ascii2d 搜图
-## bilibili
-bilibili卡片解析
-## danbooru
-DeepDanbooru 二次元图片标签识别
 ## nsfw
 图片合规性审查
 ## pixiv

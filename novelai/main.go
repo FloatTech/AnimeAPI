@@ -56,9 +56,10 @@ func (nv *NovalAI) Draw(tags string) (seed int, tagsproceeded string, img []byte
 	config := *nv.conf
 	config.Input = tags
 	for config.Parameters.Seed == 0 {
-		config.Parameters.Seed = rand.Int()
+		config.Parameters.Seed = int(rand.Int31())
 	}
 	seed = config.Parameters.Seed
+	tagsproceeded = tags
 	buf := bytes.NewBuffer(nil)
 	err = config.WrtieTo(buf)
 	if err != nil {
@@ -69,6 +70,7 @@ func (nv *NovalAI) Draw(tags string) (seed int, tagsproceeded string, img []byte
 		return
 	}
 	req.Header.Add("Authorization", "Bearer "+nv.Tok)
+	req.Header.Add("Content-Type", "application/json")
 	var resp *http.Response
 	resp, err = http.DefaultClient.Do(req)
 	if err != nil {

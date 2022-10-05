@@ -112,13 +112,13 @@ type Para struct {
 type Payload struct {
 	Input      string `json:"input"`
 	Model      string `json:"model"`
-	Parameters *Para  `json:"parameters"`
+	Parameters Para   `json:"parameters"`
 }
 
 func NewDefaultPayload() *Payload {
 	return &Payload{
 		Model: "safe-diffusion",
-		Parameters: &Para{
+		Parameters: Para{
 			Width:    512,
 			Height:   768,
 			Scale:    12,

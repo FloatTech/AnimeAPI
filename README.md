@@ -4,10 +4,10 @@
 调用 AI 回复对话
 ## ascii2d
 ascii2d 搜图
-## novelai
-二次元 AI tag 作画
 ## neteasemusic
 网易云的一些简单功能
+## novelai
+二次元 AI tag 作画
 ## nsfw
 图片合规性审查
 ## pixiv

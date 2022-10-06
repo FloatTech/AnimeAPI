@@ -17,7 +17,13 @@ type tokendata struct {
 	Data string `json:"data"`
 }
 
-// 获取当天的token(clientID:API key,clientSecret:Secret key)
+// 获取当天的token
+//
+// 申请账号链接:https://wenxin.baidu.com/moduleApi/key
+//
+// clientID为API key,clientSecret为Secret key
+//
+// token有效时间为24小时
 func GetToken(clientID, clientSecret string) (token string, err error) {
 	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/oauth/token?grant_type=client_credentials&client_id=" + url.QueryEscape(clientID) + "&client_secret=" + url.QueryEscape(clientSecret)
 	postData := url.Values{}

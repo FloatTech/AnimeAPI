@@ -20,7 +20,7 @@ P站解析与图片下载
 翻译
 ## tts
 文字转语音
-## 百度文心AI
+## wenxinAI 百度文心AI
 ### 1.Ernie Vilg
 文心AI画图API
 ## yandex

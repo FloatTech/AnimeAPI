@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/FloatTech/floatbox v0.0.0-20221004092550-1ebf9b4e6198
 	github.com/antchfx/htmlquery v1.2.5
+	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.0
 	github.com/tidwall/gjson v1.14.3
 )

@@ -22,7 +22,9 @@ P站解析与图片下载
 文字转语音
 ## wenxinAI 
 百度文心AI
- * ### Ernie Vilg
-\t\t文心AI画图API
+- [x] Ernie Vilg
+文心AI画图API
+- [ ] ernie3
+文本理解与创作
 ## yandex
 Yandex 搜图

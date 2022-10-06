@@ -20,5 +20,11 @@ P站解析与图片下载
 翻译
 ## tts
 文字转语音
+## wenxinAI 
+百度文心AI
+- [x] Ernie Vilg
+文心一格AI画图
+- [ ] ernie3
+文本理解与创作
 ## yandex
 Yandex 搜图

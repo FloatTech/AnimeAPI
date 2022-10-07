@@ -339,6 +339,12 @@ type CookieConfig struct {
 	file           string
 }
 
+func NewCookieConfig(file string) *CookieConfig {
+	return &CookieConfig{
+		file: file,
+	}
+}
+
 func (cfg *CookieConfig) Set(cookie string) (err error) {
 	cfg.BilibiliCookie = cookie
 	return cfg.Save()

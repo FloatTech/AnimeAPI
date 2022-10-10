@@ -3,7 +3,7 @@ module github.com/FloatTech/AnimeAPI
 go 1.18
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20221010032535-3acc1e46c8a9
+	github.com/FloatTech/floatbox v0.0.0-20221010154018-16998fe73c7b
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.0
@@ -22,7 +22,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
-	github.com/wdvxdr1123/ZeroBot v1.5.2-0.20221010014449-b4fd5aee6033 // indirect
+	github.com/wdvxdr1123/ZeroBot v1.5.2-0.20221010153647-ef3e42aff1ff // indirect
 	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
 	golang.org/x/sys v0.0.0-20220915200043-7b5979e65e41 // indirect
 	golang.org/x/text v0.3.7 // indirect

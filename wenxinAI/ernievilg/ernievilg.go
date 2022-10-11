@@ -66,7 +66,7 @@ type workstate struct {
 // 传入的是尺寸数值，非文字。
 //
 // taskID:任务ID，用于查询结果
-func BuildWork(toekn, keyword, picType, picSize string) (taskID int, err error) {
+func BuildWork(token, keyword, picType, picSize string) (taskID int, err error) {
 	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/txt2img?access_token=" + url.QueryEscape(toekn) +
 		"&text=" + url.QueryEscape(keyword) + "&style=" + url.QueryEscape(picType) + "&resolution=" + url.QueryEscape(picSize)
 	postData := url.Values{}
@@ -121,7 +121,7 @@ type picUrls struct {
 // 评分目前都是null,我不知道有什么用，既然API预留了，我也预留吧
 //
 // stauts:结果状态,"30s"代表还在排队生成,"0"表示结果OK
-func GetPic(toekn string, taskID int) (picurls []picUrls, status string, err error) {
+func GetPic(token string, taskID int) (picurls []picUrls, status string,, err error) {
 	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/getImg?access_token=" + url.QueryEscape(toekn) +
 		"&taskId=" + strconv.Itoa(taskID)
 	postData := url.Values{}

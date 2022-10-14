@@ -67,7 +67,7 @@ type workstate struct {
 //
 // taskID:任务ID，用于查询结果
 func BuildWork(token, keyword, picType, picSize string) (taskID int, err error) {
-	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/txt2img?access_token=" + url.QueryEscape(toekn) +
+	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/txt2img?access_token=" + url.QueryEscape(token) +
 		"&text=" + url.QueryEscape(keyword) + "&style=" + url.QueryEscape(picType) + "&resolution=" + url.QueryEscape(picSize)
 	postData := url.Values{}
 	postData.Add("name", "ATRI")
@@ -121,8 +121,8 @@ type picUrls struct {
 // 评分目前都是null,我不知道有什么用，既然API预留了，我也预留吧
 //
 // stauts:结果状态,"30s"代表还在排队生成,"0"表示结果OK
-func GetPic(token string, taskID int) (picurls []picUrls, status string,, err error) {
-	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/getImg?access_token=" + url.QueryEscape(toekn) +
+func GetPic(token string, taskID int) (picurls []picUrls, status string, err error) {
+	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/getImg?access_token=" + url.QueryEscape(token) +
 		"&taskId=" + strconv.Itoa(taskID)
 	postData := url.Values{}
 	postData.Add("name", "ATRI")

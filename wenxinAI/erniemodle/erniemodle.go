@@ -1,5 +1,5 @@
-// Package erniemodle 百度文心AI大模型
-package erniemodle
+// Package erniemodel 百度文心AI大模型
+package erniemodel
 
 import (
 	"encoding/json"
@@ -58,7 +58,7 @@ type parsed struct {
 //
 // token:GetToken函数获取,
 //
-// modle:请求类型
+// model:请求类型
 //
 // txt:用户输入文本
 //
@@ -70,12 +70,12 @@ type parsed struct {
 //
 // task_prompt:任务类型(非必需)
 //
-// modle：写作文: 1;  写文案: 2;  写摘要: 3;  对对联: 4;  自由问答: 5;  写小说: 6;  补全文本: 7;  自定义: 8;
+// model：写作文: 1;  写文案: 2;  写摘要: 3;  对对联: 4;  自由问答: 5;  写小说: 6;  补全文本: 7;  自定义: 8;
 //
 // task_prompt只支持以下：
 // PARAGRAPH：引导模型生成一段文章； SENT：引导模型生成一句话； ENTITY：引导模型生成词组； Summarization：摘要； MT：翻译； Text2Annotation：抽取； Correction：纠错； QA_MRC：阅读理解； Dialogue：对话； QA_Closed_book: 闭卷问答； QA_Multi_Choice：多选问答； QuestionGeneration：问题生成； Paraphrasing：复述； NLI：文本蕴含识别； SemanticMatching：匹配； Text2SQL：文本描述转SQL；TextClassification：文本分类； SentimentClassification：情感分析； zuowen：写作文； adtext：写文案； couplet：对对联； novel：写小说； cloze：文
-func GetResult(token string, modle int, txt string, min_dec_len, seq_len int, task_prompt ...string) (result string, err error) {
-	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernie/3.0.2" + strconv.Itoa(modle) + "/zeus?" +
+func GetResult(token string, model int, txt string, min_dec_len, seq_len int, task_prompt ...string) (result string, err error) {
+	requestURL := "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernie/3.0.2" + strconv.Itoa(model) + "/zeus?" +
 		"access_token=" + url.QueryEscape(token)
 	postData := url.Values{}
 	postData.Add("text", txt)

@@ -28,7 +28,7 @@ P站解析与图片下载
 百度文心AI
 - [x] Ernie Vilg
 文心一格AI画图
-- [ ] ernie3
+- [x] ernieModel
 文本理解与创作
 ## yandex
 Yandex 搜图

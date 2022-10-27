@@ -1,7 +1,5 @@
-github.com/FloatTech/floatbox v0.0.0-20221011153549-68005767c531 h1:Z0yn6LFhEyC12hj+TBXc2P7/kWlCd/jlwv4JFndgpnw=
-github.com/FloatTech/floatbox v0.0.0-20221011153549-68005767c531/go.mod h1:4tfIeB74L1RzhNp3nNjaTw8m3IEnc+q/k6k/MhL07ks=
-github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b h1:tvciXWq2nuvTbFeJGLDNIdRX3BI546D3O7k7vrVueZw=
-github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b/go.mod h1:fHZFWGquNXuHttu9dUYoKuNbm3dzLETnIOnm1muSfDs=
+github.com/FloatTech/floatbox v0.0.0-20221027084859-e9a3ef49992e h1:DIdJPEkEGdlhddmy0YM+dzsPbo18iM07xee0pKmX+PE=
+github.com/FloatTech/floatbox v0.0.0-20221027084859-e9a3ef49992e/go.mod h1:LJiLC+DHE0iCJeqBjXu7cqirxRkEdkvfeFTh1EZFjbE=
 github.com/antchfx/htmlquery v1.2.5 h1:1lXnx46/1wtv1E/kzmH8vrfMuUKYgkdDBA9pIdMJnk4=
 github.com/antchfx/htmlquery v1.2.5/go.mod h1:2MCVBzYVafPBmKbrmwB9F5xdd+IEgRY61ci2oOsOQVw=
 github.com/antchfx/xpath v1.2.1 h1:qhp4EW6aCOVr5XIkT+l6LJ9ck/JsUH/yyauNgTQkBF8=
@@ -11,8 +9,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fumiama/cron v1.3.0 h1:ZWlwuexF+HQHl3cYytEE5HNwD99q+3vNZF1GrEiXCFo=
 github.com/fumiama/cron v1.3.0/go.mod h1:bz5Izvgi/xEUI8tlBN8BI2jr9Moo8N4or0KV8xXuPDY=
-github.com/fumiama/go-registry v0.1.6 h1:Ee/tXCCIR/xt8celhbbw0W/xDMdhAXLwy2YFBB/LWFk=
-github.com/fumiama/go-registry v0.1.6/go.mod h1:dIUVbiOgfk9oZcsgwDvNLC72i+ctibVukSXR/9bLviI=
+github.com/fumiama/go-registry v0.2.0 h1:W+suthFJUaP2+PynvoC+wMv1DI1+kf1wJi2it8r/hnw=
+github.com/fumiama/go-registry v0.2.0/go.mod h1:OBhXgDYzmVpHRdTEBmIMrHn5ojkYcEodPVuc1X531mU=
+github.com/fumiama/go-simple-protobuf v0.1.0 h1:rLzJgNqB6LHNDVMl81yyNt6ZKziWtVfu+ioF0edlEVw=
+github.com/fumiama/go-simple-protobuf v0.1.0/go.mod h1:5yYNapXq1tQMOZg9bOIVhQlZk9pQqpuFIO4DZLbsdy4=
 github.com/fumiama/gofastTEA v0.0.10 h1:JJJ+brWD4kie+mmK2TkspDXKzqq0IjXm89aGYfoGhhQ=
 github.com/fumiama/gofastTEA v0.0.10/go.mod h1:RIdbYZyB4MbH6ZBlPymRaXn3cD6SedlCu5W/HHfMPBk=
 github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e h1:1r7pUrabqp18hOBcwBwiTsbnFeTZHV9eER/QT5JVZxY=

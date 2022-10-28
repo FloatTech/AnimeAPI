@@ -1,5 +1,5 @@
-github.com/FloatTech/floatbox v0.0.0-20221027084859-e9a3ef49992e h1:DIdJPEkEGdlhddmy0YM+dzsPbo18iM07xee0pKmX+PE=
-github.com/FloatTech/floatbox v0.0.0-20221027084859-e9a3ef49992e/go.mod h1:LJiLC+DHE0iCJeqBjXu7cqirxRkEdkvfeFTh1EZFjbE=
+github.com/FloatTech/floatbox v0.0.0-20221028033104-a243fca6f2a3 h1:yiq5kEr51FTfz7xxDY+xjbcdgDWyvZ6U93cf1xSsGs4=
+github.com/FloatTech/floatbox v0.0.0-20221028033104-a243fca6f2a3/go.mod h1:GVbLqexg8XJGuZs2zBZHO7jswCAPkZ9M/IKBYD0I/L0=
 github.com/antchfx/htmlquery v1.2.5 h1:1lXnx46/1wtv1E/kzmH8vrfMuUKYgkdDBA9pIdMJnk4=
 github.com/antchfx/htmlquery v1.2.5/go.mod h1:2MCVBzYVafPBmKbrmwB9F5xdd+IEgRY61ci2oOsOQVw=
 github.com/antchfx/xpath v1.2.1 h1:qhp4EW6aCOVr5XIkT+l6LJ9ck/JsUH/yyauNgTQkBF8=
@@ -9,8 +9,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fumiama/cron v1.3.0 h1:ZWlwuexF+HQHl3cYytEE5HNwD99q+3vNZF1GrEiXCFo=
 github.com/fumiama/cron v1.3.0/go.mod h1:bz5Izvgi/xEUI8tlBN8BI2jr9Moo8N4or0KV8xXuPDY=
-github.com/fumiama/go-registry v0.2.0 h1:W+suthFJUaP2+PynvoC+wMv1DI1+kf1wJi2it8r/hnw=
-github.com/fumiama/go-registry v0.2.0/go.mod h1:OBhXgDYzmVpHRdTEBmIMrHn5ojkYcEodPVuc1X531mU=
+github.com/fumiama/go-base16384 v1.6.1 h1:4yb4JgmBJDnQtq3XGXXdLrVwEnRpjhMUt4eAcsNeA30=
+github.com/fumiama/go-base16384 v1.6.1/go.mod h1:OEn+947GV5gsbTAnyuUW/SrfxJYUdYupSIQXOuGOcXM=
+github.com/fumiama/go-registry v0.2.1 h1:PCu4d1OIYkLmoSufyxov3QXRul4lXrAfXfK1pVS2wrQ=
+github.com/fumiama/go-registry v0.2.1/go.mod h1:GP45kejHuDLFxcWdksrt75r5rHBqYwtfeUl3JzGWxfQ=
 github.com/fumiama/go-simple-protobuf v0.1.0 h1:rLzJgNqB6LHNDVMl81yyNt6ZKziWtVfu+ioF0edlEVw=
 github.com/fumiama/go-simple-protobuf v0.1.0/go.mod h1:5yYNapXq1tQMOZg9bOIVhQlZk9pQqpuFIO4DZLbsdy4=
 github.com/fumiama/gofastTEA v0.0.10 h1:JJJ+brWD4kie+mmK2TkspDXKzqq0IjXm89aGYfoGhhQ=
@@ -48,6 +50,7 @@ golang.org/x/sys v0.0.0-20220915200043-7b5979e65e41/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.7 h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk=
 golang.org/x/text v0.3.7/go.mod h1:u+2+/6zg+i71rQMx5EYifcz6MCKuco9NR6JIITiCfzQ=
+golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

@@ -12,7 +12,7 @@ import (
 	sql "github.com/FloatTech/sqlite"
 )
 
-// Shop 货币系统
+// WalletSYS 货币系统
 type WalletSYS struct {
 	sync.RWMutex
 	Db *sql.Sqlite

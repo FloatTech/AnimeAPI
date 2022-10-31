@@ -2,9 +2,10 @@
 package wallet
 
 import (
+	"errors"
 	"os"
-	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -12,10 +13,10 @@ import (
 	sql "github.com/FloatTech/sqlite"
 )
 
-// WalletSYS 货币系统
-type WalletSYS struct {
+// Storage 货币系统
+type Storage struct {
 	sync.RWMutex
-	Db *sql.Sqlite
+	db *sql.Sqlite
 }
 
 // Wallet 钱包
@@ -25,60 +26,63 @@ type Wallet struct {
 }
 
 var (
-	sdb = &WalletSYS{
-		Db: &sql.Sqlite{},
+	ErrNullResult = errors.New("sqlite: null result")
+	sdb           = &Storage{
+		db: &sql.Sqlite{
+			DBPath: "data/wallet/wallet.db",
+		},
 	}
 )
 
 func init() {
-	if file.IsNotExist("data/Wallet/wallet.db") {
-		_, err := os.Create("data/Wallet/wallet.db")
+	if file.IsNotExist("data/wallet") {
+		err := os.MkdirAll("data/wallet", 0777)
 		if err != nil {
 			panic(err)
 		}
 	}
-	sdb.Db.DBPath = "data/Wallet/wallet.db"
-	err := sdb.Db.Open(time.Hour * 24)
+	err := sdb.db.Open(time.Hour * 24)
 	if err != nil {
 		panic(err)
 	}
 }
 
-// GetScoreInfo 获取钱包数据
-func GetWalletInfo(uid int64) (money int, err error) {
-	return sdb.getWallet(uid)
+// GetWalletOf 获取钱包数据
+func GetWalletOf(uid int64) (money int, err error) {
+	return sdb.getWalletOf(uid)
 }
 
-// GetWalletInfoGroup 获取多人钱包数据(sort = true,由高到低排序)
-func GetWalletInfoGroup(uids []int64, sortable bool) (money []Wallet, err error) {
-	return sdb.getWalletGroup(uids, sortable)
+// GetWalletInfoGroup 获取多人钱包数据
+//
+// if sort == true,由高到低排序; if sort == false,由低到高排序
+func GetGroupWalletOf(uids []int64, sortable bool) (money []Wallet, err error) {
+	return sdb.getGroupWalletOf(uids, sortable)
 }
 
-// InsertScoreInfo 更新钱包(money > 0 增加,money < 0 减少)
-func InsertWalletInfo(uid int64, money int) error {
-	lastMoney, err := sdb.getWallet(uid)
+// InsertWalletOf 更新钱包(money > 0 增加,money < 0 减少)
+func InsertWalletOf(uid int64, money int) error {
+	lastMoney, err := sdb.getWalletOf(uid)
 	if err == nil {
-		err = sdb.setWallet(uid, lastMoney+money)
+		err = sdb.updateWalletOf(uid, lastMoney+money)
 	}
 	return err
 }
 
 // 获取钱包数据
-func (sql *WalletSYS) getWallet(uid int64) (money int, err error) {
+func (sql *Storage) getWalletOf(uid int64) (money int, err error) {
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.Db.Create("WalletSYS", &Wallet{})
+	err = sql.db.Create("WalletSYS", &Wallet{})
 	if err != nil {
 		return
 	}
 	info := Wallet{}
 	uidstr := strconv.FormatInt(uid, 10)
-	err = sql.Db.Find("WalletSYS", &info, "where uid is "+uidstr)
+	err = sql.db.Find("WalletSYS", &info, "where uid is "+uidstr)
 	if err != nil {
-		err = sql.Db.Insert("WalletSYS", &Wallet{
-			UID:   uid,
-			Money: 0,
-		})
+		if err == ErrNullResult {
+			return 0, nil
+		}
 		return
 	}
 	money = info.Money
@@ -86,37 +90,37 @@ func (sql *WalletSYS) getWallet(uid int64) (money int, err error) {
 }
 
 // 获取钱包数据组
-func (sql *WalletSYS) getWalletGroup(uid []int64, sortable bool) (money []Wallet, err error) {
+func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (money []Wallet, err error) {
+	uidstr := make([]string, 0, len(uids))
+	for _, uid := range uids {
+		uidstr = append(uidstr, strconv.FormatInt(uid, 10))
+	}
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.Db.Create("WalletSYS", &Wallet{})
+	err = sql.db.Create("WalletSYS", &Wallet{})
 	if err != nil {
 		return
 	}
-	money = make([]Wallet, len(uid))
-	for _, info := range uid {
-		var walletinfo Wallet
-		uidstr := strconv.FormatInt(info, 10)
-		err := sql.Db.Find("WalletSYS", &walletinfo, "where uid is "+uidstr)
-		if err == nil {
-			money = append(money, walletinfo)
-		}
+	money = make([]Wallet, 0, len(uids))
+	sort := "ASC"
+	if issorted {
+		sort = "DESC"
 	}
-	if sortable {
-		sort.SliceStable(money, func(i, j int) bool {
-			return money[i].Money > money[j].Money
-		})
-	}
+	info := Wallet{}
+	err = sql.db.FindFor("WalletSYS", &info, "where uid IN ("+strings.Join(uidstr, ", ")+") ORDER BY money "+sort, func() error {
+		money = append(money, info)
+		return nil
+	})
 	return
 }
 
 // 更新钱包
-func (sql *WalletSYS) setWallet(uid int64, money int) (err error) {
+func (sql *Storage) updateWalletOf(uid int64, money int) (err error) {
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.Db.Create("WalletSYS", &Wallet{})
+	err = sql.db.Create("WalletSYS", &Wallet{})
 	if err == nil {
-		err = sql.Db.Insert("WalletSYS", &Wallet{
+		err = sql.db.Insert("WalletSYS", &Wallet{
 			UID:   uid,
 			Money: money,
 		})

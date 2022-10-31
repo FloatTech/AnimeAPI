@@ -2,7 +2,6 @@
 package wallet
 
 import (
-	"errors"
 	"os"
 	"strconv"
 	"strings"
@@ -26,8 +25,7 @@ type Wallet struct {
 }
 
 var (
-	ErrNullResult = errors.New("sqlite: null result")
-	sdb           = &Storage{
+	sdb = &Storage{
 		db: &sql.Sqlite{
 			DBPath: "data/wallet/wallet.db",
 		},
@@ -36,7 +34,7 @@ var (
 
 func init() {
 	if file.IsNotExist("data/wallet") {
-		err := os.MkdirAll("data/wallet", 0777)
+		err := os.MkdirAll("data/wallet", 0755)
 		if err != nil {
 			panic(err)
 		}
@@ -72,19 +70,13 @@ func InsertWalletOf(uid int64, money int) error {
 func (sql *Storage) getWalletOf(uid int64) (money int, err error) {
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.db.Create("WalletSYS", &Wallet{})
+	err = sql.db.Create("storage", &Wallet{})
 	if err != nil {
 		return
 	}
 	info := Wallet{}
 	uidstr := strconv.FormatInt(uid, 10)
-	err = sql.db.Find("WalletSYS", &info, "where uid is "+uidstr)
-	if err != nil {
-		if err == ErrNullResult {
-			return 0, nil
-		}
-		return
-	}
+	_ = sql.db.Find("storage", &info, "where uid is "+uidstr)
 	money = info.Money
 	return
 }
@@ -97,7 +89,7 @@ func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (money []Walle
 	}
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.db.Create("WalletSYS", &Wallet{})
+	err = sql.db.Create("storage", &Wallet{})
 	if err != nil {
 		return
 	}
@@ -107,7 +99,7 @@ func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (money []Walle
 		sort = "DESC"
 	}
 	info := Wallet{}
-	err = sql.db.FindFor("WalletSYS", &info, "where uid IN ("+strings.Join(uidstr, ", ")+") ORDER BY money "+sort, func() error {
+	err = sql.db.FindFor("storage", &info, "where uid IN ("+strings.Join(uidstr, ", ")+") ORDER BY money "+sort, func() error {
 		money = append(money, info)
 		return nil
 	})
@@ -118,9 +110,9 @@ func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (money []Walle
 func (sql *Storage) updateWalletOf(uid int64, money int) (err error) {
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.db.Create("WalletSYS", &Wallet{})
+	err = sql.db.Create("storage", &Wallet{})
 	if err == nil {
-		err = sql.db.Insert("WalletSYS", &Wallet{
+		err = sql.db.Insert("storage", &Wallet{
 			UID:   uid,
 			Money: money,
 		})

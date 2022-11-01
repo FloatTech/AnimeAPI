@@ -57,7 +57,7 @@ func GetWalletOf(uid int64) (money int) {
 // GetWalletInfoGroup 获取多人钱包数据
 //
 // if sort == true,由高到低排序; if sort == false,由低到高排序
-func GetGroupWalletOf(uids []int64, sortable bool) (Wallets []Wallet, err error) {
+func GetGroupWalletOf(uids []int64, sortable bool) (wallets []Wallet, err error) {
 	return sdb.getGroupWalletOf(uids, sortable)
 }
 
@@ -77,21 +77,21 @@ func (sql *Storage) getWalletOf(uid int64) (Wallet Wallet) {
 }
 
 // 获取钱包数据组
-func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (Wallets []Wallet, err error) {
+func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (wallets []Wallet, err error) {
 	uidstr := make([]string, 0, len(uids))
 	for _, uid := range uids {
 		uidstr = append(uidstr, strconv.FormatInt(uid, 10))
 	}
 	sql.RLock()
 	defer sql.RUnlock()
-	Wallets = make([]Wallet, 0, len(uids))
+	wallets = make([]Wallet, 0, len(uids))
 	sort := "ASC"
 	if issorted {
 		sort = "DESC"
 	}
 	info := Wallet{}
 	err = sql.db.FindFor("storage", &info, "where uid IN ("+strings.Join(uidstr, ", ")+") ORDER BY money "+sort, func() error {
-		Wallets = append(Wallets, info)
+		wallets = append(wallets, info)
 		return nil
 	})
 	return

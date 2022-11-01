@@ -43,64 +43,55 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = sdb.db.Create("storage", &Wallet{})
+	if err != nil {
+		panic(err)
+	}
 }
 
 // GetWalletOf 获取钱包数据
-func GetWalletOf(uid int64) (money int, err error) {
-	return sdb.getWalletOf(uid)
+func GetWalletOf(uid int64) (money int) {
+	return sdb.getWalletOf(uid).Money
 }
 
 // GetWalletInfoGroup 获取多人钱包数据
 //
 // if sort == true,由高到低排序; if sort == false,由低到高排序
-func GetGroupWalletOf(uids []int64, sortable bool) (money []Wallet, err error) {
+func GetGroupWalletOf(uids []int64, sortable bool) (Wallets []Wallet, err error) {
 	return sdb.getGroupWalletOf(uids, sortable)
 }
 
 // InsertWalletOf 更新钱包(money > 0 增加,money < 0 减少)
 func InsertWalletOf(uid int64, money int) error {
-	lastMoney, err := sdb.getWalletOf(uid)
-	if err == nil {
-		err = sdb.updateWalletOf(uid, lastMoney+money)
-	}
-	return err
+	lastMoney := sdb.getWalletOf(uid)
+	return sdb.updateWalletOf(uid, lastMoney.Money+money)
 }
 
 // 获取钱包数据
-func (sql *Storage) getWalletOf(uid int64) (money int, err error) {
-	sql.Lock()
-	defer sql.Unlock()
-	err = sql.db.Create("storage", &Wallet{})
-	if err != nil {
-		return
-	}
-	info := Wallet{}
+func (sql *Storage) getWalletOf(uid int64) (Wallet Wallet) {
+	sql.RLock()
+	defer sql.RUnlock()
 	uidstr := strconv.FormatInt(uid, 10)
-	_ = sql.db.Find("storage", &info, "where uid is "+uidstr)
-	money = info.Money
+	_ = sql.db.Find("storage", &Wallet, "where uid is "+uidstr)
 	return
 }
 
 // 获取钱包数据组
-func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (money []Wallet, err error) {
+func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (Wallets []Wallet, err error) {
 	uidstr := make([]string, 0, len(uids))
 	for _, uid := range uids {
 		uidstr = append(uidstr, strconv.FormatInt(uid, 10))
 	}
-	sql.Lock()
-	defer sql.Unlock()
-	err = sql.db.Create("storage", &Wallet{})
-	if err != nil {
-		return
-	}
-	money = make([]Wallet, 0, len(uids))
+	sql.RLock()
+	defer sql.RUnlock()
+	Wallets = make([]Wallet, 0, len(uids))
 	sort := "ASC"
 	if issorted {
 		sort = "DESC"
 	}
 	info := Wallet{}
 	err = sql.db.FindFor("storage", &info, "where uid IN ("+strings.Join(uidstr, ", ")+") ORDER BY money "+sort, func() error {
-		money = append(money, info)
+		Wallets = append(Wallets, info)
 		return nil
 	})
 	return
@@ -110,12 +101,8 @@ func (sql *Storage) getGroupWalletOf(uids []int64, issorted bool) (money []Walle
 func (sql *Storage) updateWalletOf(uid int64, money int) (err error) {
 	sql.Lock()
 	defer sql.Unlock()
-	err = sql.db.Create("storage", &Wallet{})
-	if err == nil {
-		err = sql.db.Insert("storage", &Wallet{
-			UID:   uid,
-			Money: money,
-		})
-	}
-	return
+	return sql.db.Insert("storage", &Wallet{
+		UID:   uid,
+		Money: money,
+	})
 }

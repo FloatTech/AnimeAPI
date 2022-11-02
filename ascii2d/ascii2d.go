@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/FloatTech/zbputils/web"
+	"github.com/FloatTech/floatbox/web"
 	xpath "github.com/antchfx/htmlquery"
 )
 

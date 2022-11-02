@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/FloatTech/zbputils/web"
+	"github.com/FloatTech/floatbox/web"
 )
 
 const (

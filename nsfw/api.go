@@ -1,11 +1,10 @@
 package nsfw
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/url"
 
-	"github.com/FloatTech/zbputils/web"
+	"github.com/FloatTech/floatbox/web"
 )
 
 type Picture struct {
@@ -26,7 +25,7 @@ func Classify(u string) (*Picture, error) {
 		return nil, err
 	}
 	ps := make([]Picture, 1)
-	err = json.Unmarshal(bytes.ReplaceAll(data, []byte("'"), []byte("\"")), &ps)
+	err = json.Unmarshal(data, &ps)
 	if err != nil {
 		return nil, err
 	}

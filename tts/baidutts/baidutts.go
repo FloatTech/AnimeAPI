@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/FloatTech/zbputils/binary"
-	"github.com/FloatTech/zbputils/file"
-	"github.com/FloatTech/zbputils/web"
+	"github.com/FloatTech/floatbox/binary"
+	"github.com/FloatTech/floatbox/file"
+	"github.com/FloatTech/floatbox/web"
 	"github.com/tidwall/gjson"
 )
 

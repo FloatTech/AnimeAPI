@@ -27,7 +27,7 @@ func TestSearch(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		f.Write(b)
+		_, _ = f.Write(b)
 		t.Fatal("new result has been written to result.txt")
 	}
 }

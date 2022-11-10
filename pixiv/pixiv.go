@@ -98,10 +98,7 @@ func (value RankValue) Rank() (r [18]int, err error) {
 	gjson.Get(binary.BytesToString(body), "body.ranking").ForEach(func(key, value gjson.Result) bool {
 		r[i] = int(value.Get("illustId").Int())
 		i++
-		if i == 18 {
-			return false
-		}
-		return true
+		return i != 18
 	})
 	return
 }

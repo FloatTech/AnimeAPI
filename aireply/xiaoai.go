@@ -13,7 +13,7 @@ import (
 type XiaoAiReply struct{}
 
 const (
-	xiaoaiURL     = "https://jintia.jintias.cn/api/xatx.php?type=text&msg=%v"
+	xiaoaiURL     = "http://81.70.100.130/api/xiaoai.php?n=text&msg=%v"
 	xiaoaiBotName = "小爱"
 )
 

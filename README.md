@@ -24,6 +24,8 @@ P站解析与图片下载
 翻译
 ## tts
 文字转语音
+## wallet 
+货币系统
 ## wenxinAI 
 百度文心AI
 - [x] Ernie Vilg

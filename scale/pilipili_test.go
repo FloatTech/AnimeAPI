@@ -14,8 +14,8 @@ func TestGet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.Write(data)
-	f.Close()
+	_, _ = f.Write(data)
+	_ = f.Close()
 }
 
 func TestPost(t *testing.T) {
@@ -32,6 +32,6 @@ func TestPost(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.Write(data)
-	f.Close()
+	_, _ = f.Write(data)
+	_ = f.Close()
 }

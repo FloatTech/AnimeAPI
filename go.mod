@@ -3,7 +3,7 @@ module github.com/FloatTech/AnimeAPI
 go 1.18
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20221029160423-446812ec82d9
+	github.com/FloatTech/floatbox v0.0.0-20221110070748-e0d0b3af3e57
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.0
@@ -15,7 +15,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fumiama/cron v1.3.0 // indirect
 	github.com/fumiama/go-base16384 v1.6.1 // indirect
-	github.com/fumiama/go-registry v0.2.1 // indirect
+	github.com/fumiama/go-registry v0.2.2 // indirect
 	github.com/fumiama/go-simple-protobuf v0.1.0 // indirect
 	github.com/fumiama/gofastTEA v0.0.10 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect

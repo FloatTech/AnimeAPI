@@ -319,7 +319,7 @@ type Danmakusuki struct {
 			} `json:"live"`
 			Danmakus []struct {
 				Name     string  `json:"name"`
-				Type     int64   `json:"type"`
+				Type     string  `json:"type"`
 				UID      int64   `json:"uId"`
 				SendDate int64   `json:"sendDate"`
 				Price    float64 `json:"price"`

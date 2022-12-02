@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/FloatTech/floatbox v0.0.0-20221202084309-ad154513ab2f
-	github.com/FloatTech/sqlite v1.5.5
+	github.com/FloatTech/sqlite v1.5.6
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.1

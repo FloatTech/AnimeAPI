@@ -56,16 +56,22 @@ func (c *ChatGPT) getbody(prompt string) *bytes.Buffer {
 	body.WriteString(c.id())
 	body.WriteString(`","role":"user","content":{"content_type":"text","parts":["`)
 	body.WriteString(prompt)
-	if c.ConvID != "" {
+	switch {
+	case c.ConvID != "":
 		body.WriteString(`"]}}],"conversation_id":"`)
 		body.WriteString(c.ConvID)
 		body.WriteString(`","parent_message_id":"`)
 		body.WriteString(c.ParnID)
-	} else {
+		body.WriteByte('"')
+	case c.ParnID != "":
 		body.WriteString(`"]}}],"parent_message_id":"`)
 		body.WriteString(c.ParnID)
+		body.WriteByte('"')
+	default:
+		body.WriteString(`"]}}]`)
 	}
-	body.WriteString(`","model":"text-davinci-002-render"}`)
+	body.WriteString(`,"model":"text-davinci-002-render"}`)
+	fmt.Println(body.String())
 	return body
 }
 
@@ -88,6 +94,9 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 		if err != nil {
 			return "", err
 		}
+	}
+	if c.ParnID == "" {
+		c.ParnID = uuid.Must(uuid.NewRandom()).String()
 	}
 	body := c.getbody(prompt)
 	req, err := http.NewRequest("POST", API+"backend-api/conversation", body)
@@ -121,6 +130,7 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 		if l == "" {
 			continue
 		}
+		fmt.Println(l)
 		lastline = line
 		line = l
 	}

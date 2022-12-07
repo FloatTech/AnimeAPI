@@ -69,3 +69,7 @@ func (c *ChatGPT) Talk(uid int64, msg, nickname string) string {
 func (c *ChatGPT) TalkPlain(uid int64, msg, nickname string) string {
 	return c.Talk(uid, msg, nickname)
 }
+
+func (c *ChatGPT) Reset(uid int64) {
+	c.s.Delete(uid)
+}

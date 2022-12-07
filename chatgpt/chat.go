@@ -71,7 +71,6 @@ func (c *ChatGPT) getbody(prompt string) *bytes.Buffer {
 		body.WriteString(`"]}}]`)
 	}
 	body.WriteString(`,"model":"text-davinci-002-render"}`)
-	fmt.Println(body.String())
 	return body
 }
 
@@ -130,7 +129,6 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 		if l == "" {
 			continue
 		}
-		fmt.Println(l)
 		lastline = line
 		line = l
 	}
@@ -138,7 +136,7 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 		return "", ErrEmptyResponse
 	}
 	var rsp chatresponse
-	err = json.Unmarshal(binary.StringToBytes(lastline), &rsp)
+	err = json.Unmarshal(binary.StringToBytes(lastline[6:]), &rsp)
 	if err != nil {
 		return "", err
 	}

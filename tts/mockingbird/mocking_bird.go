@@ -55,17 +55,17 @@ func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 	}
 	switch synt {
 	case 0:
-		_, err := file.GetLazyData(azfile, false)
+		_, err := file.GetLazyData(azfile, "data/control/stor.spb", false)
 		if err != nil {
 			return nil, err
 		}
 	case 1:
-		_, err := file.GetLazyData(wjfile, false)
+		_, err := file.GetLazyData(wjfile, "data/control/stor.spb", false)
 		if err != nil {
 			return nil, err
 		}
 	case 2:
-		_, err := file.GetLazyData(ysgfile, false)
+		_, err := file.GetLazyData(ysgfile, "data/control/stor.spb", false)
 		if err != nil {
 			return nil, err
 		}

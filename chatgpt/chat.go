@@ -50,25 +50,26 @@ func (c *ChatGPT) setchatheaders(req *http.Request) {
 	req.Header.Set("Referer", "https://chat.openai.com/chat")
 }
 
-func (c *ChatGPT) getbody(prompt string) *bytes.Buffer {
+func (c *ChatGPT) getbody(prompts ...string) *bytes.Buffer {
 	body := bytes.NewBuffer(make([]byte, 0, 4096))
 	body.WriteString(`{"action":"next","messages":[{"id":"`)
 	body.WriteString(c.id())
-	body.WriteString(`","role":"user","content":{"content_type":"text","parts":["`)
-	body.WriteString(prompt)
+	body.WriteString(`","role":"user","content":{"content_type":"text","parts":`)
+	_ = json.NewEncoder(body).Encode(&prompts)
+	body.Truncate(body.Len()-1)
 	switch {
 	case c.ConvID != "":
-		body.WriteString(`"]}}],"conversation_id":"`)
+		body.WriteString(`}}],"conversation_id":"`)
 		body.WriteString(c.ConvID)
 		body.WriteString(`","parent_message_id":"`)
 		body.WriteString(c.ParnID)
 		body.WriteByte('"')
 	case c.ParnID != "":
-		body.WriteString(`"]}}],"parent_message_id":"`)
+		body.WriteString(`}}],"parent_message_id":"`)
 		body.WriteString(c.ParnID)
 		body.WriteByte('"')
 	default:
-		body.WriteString(`"]}}]`)
+		body.WriteString(`}}]`)
 	}
 	body.WriteString(`,"model":"text-davinci-002-render"}`)
 	return body

@@ -11,7 +11,6 @@ import (
 	"strconv"
 
 	"github.com/FloatTech/floatbox/binary"
-	"github.com/FloatTech/floatbox/web"
 	"github.com/google/uuid"
 )
 
@@ -56,7 +55,7 @@ func (c *ChatGPT) getbody(prompts ...string) *bytes.Buffer {
 	body.WriteString(c.id())
 	body.WriteString(`","role":"user","content":{"content_type":"text","parts":`)
 	_ = json.NewEncoder(body).Encode(&prompts)
-	body.Truncate(body.Len()-1)
+	body.Truncate(body.Len() - 1)
 	switch {
 	case c.ConvID != "":
 		body.WriteString(`}}],"conversation_id":"`)
@@ -159,8 +158,14 @@ func (c *ChatGPT) RefreshSession() error {
 	}
 	req.AddCookie(&http.Cookie{Name: SESSION_TOKEN, Value: c.config.SessionToken})
 	req.Header.Set("User-Agent", c.config.UA)
-	cli := web.NewTLS12Client()
-	cli.Timeout = c.config.Timeout
+	cli := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				MaxVersion: tls.VersionTLS12,
+			},
+		},
+		Timeout: c.config.Timeout,
+	}
 	resp, err := cli.Do(req)
 	if err != nil {
 		return err

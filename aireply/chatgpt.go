@@ -1,6 +1,7 @@
 package aireply
 
 import (
+	"errors"
 	"strings"
 	"sync"
 	"time"
@@ -9,6 +10,10 @@ import (
 	"github.com/FloatTech/ttl"
 	"github.com/RomiChan/syncx"
 	"github.com/sirupsen/logrus"
+)
+
+var (
+	ErrHaveNotInit = errors.New("chatgpt have not init")
 )
 
 // ChatGPT 回复类
@@ -51,6 +56,9 @@ func (c *ChatGPT) String() string {
 }
 
 func (c *ChatGPT) Talk(uid int64, msg, nickname string) string {
+	if c.s == nil {
+		return ErrHaveNotInit.Error()
+	}
 	c.Lock()
 	defer c.Unlock()
 	chat := c.s.Get(uid)
@@ -70,6 +78,10 @@ func (c *ChatGPT) TalkPlain(uid int64, msg, nickname string) string {
 	return c.Talk(uid, msg, nickname)
 }
 
-func (c *ChatGPT) Reset(uid int64) {
+func (c *ChatGPT) Reset(uid int64) error {
+	if c.s == nil {
+		return ErrHaveNotInit
+	}
 	c.s.Delete(uid)
+	return nil
 }

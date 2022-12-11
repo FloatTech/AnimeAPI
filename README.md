@@ -6,6 +6,10 @@
 ascii2d 搜图
 ## bilibili
 b站相关API
+## chatgpt
+ChatGPT API
+## huggingface
+huggingface API
 ## neteasemusic
 网易云的一些简单功能
 ## novelai
@@ -26,9 +30,9 @@ QQ空间API
 翻译
 ## tts
 文字转语音
-## wallet 
+## wallet
 货币系统
-## wenxinAI 
+## wenxinAI
 百度文心AI
 - [x] Ernie Vilg
 文心一格AI画图

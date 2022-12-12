@@ -11,12 +11,11 @@ import (
 
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/google/uuid"
-	"github.com/lucas-clemente/quic-go/http3"
 )
 
 const (
 	SESSION_TOKEN = "__Secure-next-auth.session-token"
-	UA            = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15"
+	CF_CLEARANCE  = "cf_clearance"
 )
 
 var (
@@ -45,8 +44,8 @@ func (c *ChatGPT) setchatheaders(req *http.Request) {
 	req.Header.Set("Accept", "text/event-stream")
 	req.Header.Set("Authorization", "Bearer "+c.Auth)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Origin", "https://chat.openai.com")
-	req.Header.Set("Referer", "https://chat.openai.com/chat")
+	req.Header.Set("Origin", API[:len(API)-1])
+	req.Header.Set("Referer", API+"chat")
 }
 
 func (c *ChatGPT) getbody(prompts ...string) *bytes.Buffer {
@@ -105,9 +104,9 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 	c.setchatheaders(req)
 	req.Header.Set("Content-Length", strconv.Itoa(body.Len()))
 	req.Header.Set("User-Agent", c.config.UA)
+	req.AddCookie(&http.Cookie{Name: CF_CLEARANCE, Value: c.config.CFClearance})
 	cli := &http.Client{
-		Transport: &http3.RoundTripper{},
-		Timeout:   c.config.Timeout,
+		Timeout: c.config.Timeout,
 	}
 	resp, err := cli.Do(req)
 	if err != nil {
@@ -153,10 +152,10 @@ func (c *ChatGPT) RefreshSession() error {
 		return err
 	}
 	req.AddCookie(&http.Cookie{Name: SESSION_TOKEN, Value: c.config.SessionToken})
+	req.AddCookie(&http.Cookie{Name: CF_CLEARANCE, Value: c.config.CFClearance})
 	req.Header.Set("User-Agent", c.config.UA)
 	cli := &http.Client{
-		Transport: &http3.RoundTripper{},
-		Timeout:   c.config.Timeout,
+		Timeout: c.config.Timeout,
 	}
 	resp, err := cli.Do(req)
 	if err != nil {

@@ -3,7 +3,6 @@ package chatgpt
 import (
 	"bufio"
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/google/uuid"
+	"github.com/lucas-clemente/quic-go/http3"
 )
 
 const (
@@ -106,12 +106,8 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 	req.Header.Set("Content-Length", strconv.Itoa(body.Len()))
 	req.Header.Set("User-Agent", c.config.UA)
 	cli := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				MaxVersion: tls.VersionTLS12,
-			},
-		},
-		Timeout: c.config.Timeout,
+		Transport: &http3.RoundTripper{},
+		Timeout:   c.config.Timeout,
 	}
 	resp, err := cli.Do(req)
 	if err != nil {
@@ -159,12 +155,8 @@ func (c *ChatGPT) RefreshSession() error {
 	req.AddCookie(&http.Cookie{Name: SESSION_TOKEN, Value: c.config.SessionToken})
 	req.Header.Set("User-Agent", c.config.UA)
 	cli := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				MaxVersion: tls.VersionTLS12,
-			},
-		},
-		Timeout: c.config.Timeout,
+		Transport: &http3.RoundTripper{},
+		Timeout:   c.config.Timeout,
 	}
 	resp, err := cli.Do(req)
 	if err != nil {

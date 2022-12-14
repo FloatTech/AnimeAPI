@@ -1,7 +1,7 @@
 package genshin
 
 const (
-	cnapi = "https://genshin.azurewebsites.net/api/speak?format=mp3&id=%d&text=%s&code=%s"
+	cnapi = "https://genshin.azurewebsites.net/api/speak?format=ogg&id=%d&text=%s&code=%s"
 )
 
 // TestRecord 每个角色的测试文案

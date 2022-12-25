@@ -49,9 +49,12 @@ func Works(id int64) (i *Illust, err error) {
 	i.Title = json.Get("illustTitle").Str
 	i.Caption = caption
 	i.Tags = fmt.Sprintln(json.Get("tags.tags.#.tag").Array())
-	u := strings.ReplaceAll(json.Get("urls.original").Str, "_p0.", "_p%d.")
-	for j := 0; j < int(json.Get("pageCount").Int()); j++ {
-		i.ImageUrls = append(i.ImageUrls, fmt.Sprintf(u, j))
+	orgs := json.Get("urls.original")
+	if orgs.Type != gjson.Null {
+		u := strings.ReplaceAll(orgs.Str, "_p0.", "_p%d.")
+		for j := 0; j < int(json.Get("pageCount").Int()); j++ {
+			i.ImageUrls = append(i.ImageUrls, fmt.Sprintf(u, j))
+		}
 	}
 	i.AgeLimit = ageLimit
 	i.CreatedTime = json.Get("createDate").Str

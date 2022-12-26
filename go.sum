@@ -1,5 +1,5 @@
-github.com/FloatTech/floatbox v0.0.0-20221210051813-4bd44af40c60 h1:S4KfcdK6LdOa0+TTyacHYOZ8aWkR6YbvlnI6GWe66Jc=
-github.com/FloatTech/floatbox v0.0.0-20221210051813-4bd44af40c60/go.mod h1:/k2zxRJtAJ17w9fSpc7xf2QjPDTUBmqhBsOGyHVyX0U=
+github.com/FloatTech/floatbox v0.0.0-20221223151526-b0b2b1101f78 h1:5JovP9OGWxzWwglAjIUulD+EBcBwEHqpeagx9y5BKYA=
+github.com/FloatTech/floatbox v0.0.0-20221223151526-b0b2b1101f78/go.mod h1:/k2zxRJtAJ17w9fSpc7xf2QjPDTUBmqhBsOGyHVyX0U=
 github.com/FloatTech/sqlite v1.5.7 h1:Bvo4LSojcZ6dVtbHrkqvt6z4v8e+sj0G5PSUIvdawsk=
 github.com/FloatTech/sqlite v1.5.7/go.mod h1:zFbHzRfB+CJ+VidfjuVbrcin3DAz283F7hF1hIeHzpY=
 github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b h1:tvciXWq2nuvTbFeJGLDNIdRX3BI546D3O7k7vrVueZw=

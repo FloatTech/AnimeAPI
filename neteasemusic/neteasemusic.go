@@ -10,6 +10,7 @@ import (
 
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/FloatTech/floatbox/file"
+	"github.com/FloatTech/floatbox/process"
 	"github.com/FloatTech/floatbox/web"
 	"github.com/pkg/errors"
 )
@@ -138,7 +139,9 @@ func DownloadMusic(musicID int, musicName, pathOfMusic string) error {
 			return errors.Errorf("Status Code: %d", response.StatusCode)
 		}
 		// 下载歌曲
-		return file.DownloadTo(musicURL, downMusic, true)
+		err = file.DownloadTo(musicURL, downMusic)
+		process.SleepAbout1sTo2s()
+		return err
 	}
 	return nil
 }

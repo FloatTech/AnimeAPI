@@ -130,6 +130,18 @@ func GetMedalWall(cookiecfg *CookieConfig, uid string) (result []Medal, err erro
 	return
 }
 
+// GetAllGuard 查询mid的上舰信息
+func GetAllGuard(mid string) (guardUser GuardUser, err error) {
+	var data []byte
+	data, err = web.GetData(AllGuardURL)
+	m := gjson.ParseBytes(data).Get("@this").Map()
+	err = json.Unmarshal(binary.StringToBytes(m[mid].String()), &guardUser)
+	if err != nil {
+		return
+	}
+	return
+}
+
 // GetArticleInfo 用id查专栏信息
 func GetArticleInfo(id string) (card Card, err error) {
 	var data []byte

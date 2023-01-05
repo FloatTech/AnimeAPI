@@ -43,6 +43,8 @@ const (
 	DanmakuAPI = "https://danmaku.suki.club/api/search/user/detail?uid=%v&pagenum=%v&pagesize=5"
 	// DanmakuURL 弹幕网链接
 	DanmakuURL = "https://danmaku.suki.club/user/%v"
+	// AllGuardURL 查询所有舰长,提督,总督
+	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
 )
 
 // DynamicCard 总动态结构体,包括desc,card
@@ -290,6 +292,14 @@ type VtbDetail struct {
 	Follower int    `json:"follower"`
 	GuardNum int    `json:"guardNum"`
 	AreaRank int    `json:"areaRank"`
+}
+
+// GuardUser dd用户
+type GuardUser struct {
+	Uname string    `json:"uname"`
+	Face  string    `json:"face"`
+	Mid   int64     `json:"mid"`
+	Dd    [][]int64 `json:"dd"`
 }
 
 // Danmakusuki 弹幕网结构体

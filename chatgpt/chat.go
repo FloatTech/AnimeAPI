@@ -3,7 +3,6 @@ package chatgpt
 import (
 	"bufio"
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,13 +10,12 @@ import (
 	"strconv"
 
 	"github.com/FloatTech/floatbox/binary"
-	"github.com/FloatTech/floatbox/web"
 	"github.com/google/uuid"
 )
 
 const (
 	SESSION_TOKEN = "__Secure-next-auth.session-token"
-	UA            = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15"
+	CF_CLEARANCE  = "cf_clearance"
 )
 
 var (
@@ -46,29 +44,30 @@ func (c *ChatGPT) setchatheaders(req *http.Request) {
 	req.Header.Set("Accept", "text/event-stream")
 	req.Header.Set("Authorization", "Bearer "+c.Auth)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Origin", "https://chat.openai.com")
-	req.Header.Set("Referer", "https://chat.openai.com/chat")
+	req.Header.Set("Origin", API[:len(API)-1])
+	req.Header.Set("Referer", API+"chat")
 }
 
-func (c *ChatGPT) getbody(prompt string) *bytes.Buffer {
+func (c *ChatGPT) getbody(prompts ...string) *bytes.Buffer {
 	body := bytes.NewBuffer(make([]byte, 0, 4096))
 	body.WriteString(`{"action":"next","messages":[{"id":"`)
 	body.WriteString(c.id())
-	body.WriteString(`","role":"user","content":{"content_type":"text","parts":["`)
-	body.WriteString(prompt)
+	body.WriteString(`","role":"user","content":{"content_type":"text","parts":`)
+	_ = json.NewEncoder(body).Encode(&prompts)
+	body.Truncate(body.Len() - 1)
 	switch {
 	case c.ConvID != "":
-		body.WriteString(`"]}}],"conversation_id":"`)
+		body.WriteString(`}}],"conversation_id":"`)
 		body.WriteString(c.ConvID)
 		body.WriteString(`","parent_message_id":"`)
 		body.WriteString(c.ParnID)
 		body.WriteByte('"')
 	case c.ParnID != "":
-		body.WriteString(`"]}}],"parent_message_id":"`)
+		body.WriteString(`}}],"parent_message_id":"`)
 		body.WriteString(c.ParnID)
 		body.WriteByte('"')
 	default:
-		body.WriteString(`"]}}]`)
+		body.WriteString(`}}]`)
 	}
 	body.WriteString(`,"model":"text-davinci-002-render"}`)
 	return body
@@ -105,12 +104,8 @@ func (c *ChatGPT) GetChatResponse(prompt string) (string, error) {
 	c.setchatheaders(req)
 	req.Header.Set("Content-Length", strconv.Itoa(body.Len()))
 	req.Header.Set("User-Agent", c.config.UA)
+	req.AddCookie(&http.Cookie{Name: CF_CLEARANCE, Value: c.config.CFClearance})
 	cli := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				MaxVersion: tls.VersionTLS12,
-			},
-		},
 		Timeout: c.config.Timeout,
 	}
 	resp, err := cli.Do(req)
@@ -157,9 +152,11 @@ func (c *ChatGPT) RefreshSession() error {
 		return err
 	}
 	req.AddCookie(&http.Cookie{Name: SESSION_TOKEN, Value: c.config.SessionToken})
+	req.AddCookie(&http.Cookie{Name: CF_CLEARANCE, Value: c.config.CFClearance})
 	req.Header.Set("User-Agent", c.config.UA)
-	cli := web.NewTLS12Client()
-	cli.Timeout = c.config.Timeout
+	cli := &http.Client{
+		Timeout: c.config.Timeout,
+	}
 	resp, err := cli.Do(req)
 	if err != nil {
 		return err

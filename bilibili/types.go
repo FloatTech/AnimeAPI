@@ -294,6 +294,7 @@ type VtbDetail struct {
 	AreaRank int    `json:"areaRank"`
 }
 
+// GuardUser dd用户
 type GuardUser struct {
 	Uname string    `json:"uname"`
 	Face  string    `json:"face"`

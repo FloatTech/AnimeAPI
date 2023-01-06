@@ -40,9 +40,9 @@ const (
 	// LiveListURL 获得直播状态
 	LiveListURL = "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids"
 	// DanmakuAPI 弹幕网获得用户弹幕api
-	DanmakuAPI = "https://danmaku.suki.club/api/search/user/detail?uid=%v&pagenum=%v&pagesize=5"
+	DanmakuAPI = "https://danmakus.com/api/search/user/detail?uid=%v&pagenum=%v&pagesize=5"
 	// DanmakuURL 弹幕网链接
-	DanmakuURL = "https://danmaku.suki.club/user/%v"
+	DanmakuURL = "https://danmakus.com/user/%v"
 	// AllGuardURL 查询所有舰长,提督,总督
 	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
 )

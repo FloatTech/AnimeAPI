@@ -24,6 +24,8 @@ QQ空间API
 菜鸟教程代码运行API
 ## scale
 采用[叔叔的模型](https://github.com/bilibili/ailab)放大二次元图片
+## setu
+供各个插件使用的随机图片池
 ## shindanmaker
 基于 https://shindanmaker.com 的 API
 ## tl

@@ -57,9 +57,6 @@ func NewPool(folder string, rolimg func(string) (string, error), getdat func(str
 
 func (p *Pool) Roll(typ string) (string, error) {
 	d := p.folder + typ
-	if file.IsNotExist(d) {
-		return "", ErrNoSuchType
-	}
 	if p.rolimg == nil {
 		return p.rollLocal(d)
 	}

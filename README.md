@@ -6,8 +6,6 @@
 ascii2d 搜图
 ## bilibili
 b站相关API
-## chatgpt
-ChatGPT API
 ## huggingface
 huggingface API
 ## neteasemusic

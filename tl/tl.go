@@ -13,12 +13,8 @@ func Translate(target string) (string, error) {
 	}
 	return binary.BytesToString(binary.NewWriterF(func(w *binary.Writer) {
 		for _, v := range gjson.ParseBytes(data).Get("data.0").Get("value").Array() {
-			s := v.String()
-			if len(s) == 0 {
-				w.WriteString(",")
-				continue
-			}
-			w.WriteString(s)
+			w.WriteString(v.String())
+			w.WriteString(",")
 		}
 	})), nil
 }

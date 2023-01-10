@@ -1,7 +1,8 @@
+// Package yandex yandex搜图
 package yandex
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	xpath "github.com/antchfx/htmlquery"
 )
 
+// Yandex yandex搜图
 func Yandex(image string) (*pixiv.Illust, error) {
 	search, _ := url.Parse("https://yandex.com/images/search")
 	search.RawQuery = url.Values{
@@ -40,18 +42,18 @@ func Yandex(image string) (*pixiv.Illust, error) {
 	// 取出每个返回的结果
 	list := xpath.Find(doc, `/html/body/div[3]/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[2]/div/section/div[2]/div[1]/div[1]/a`)
 	if len(list) != 1 {
-		return nil, fmt.Errorf("Yandex not found")
+		return nil, errors.New("Yandex not found")
 	}
 	link := list[0].Attr[1].Val
 	dest, _ := url.Parse(link)
 	rawid := dest.Query().Get("illust_id")
 	if rawid == "" {
-		return nil, fmt.Errorf("Yandex not found")
+		return nil, errors.New("Yandex not found")
 	}
 	// 链接取出PIXIV id
 	id, _ := strconv.ParseInt(rawid, 10, 64)
 	if id == 0 {
-		return nil, fmt.Errorf("convert to pid error")
+		return nil, errors.New("convert to pid error")
 	}
 
 	illust, err := pixiv.Works(id)

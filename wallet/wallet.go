@@ -68,11 +68,11 @@ func InsertWalletOf(uid int64, money int) error {
 }
 
 // 获取钱包数据
-func (sql *Storage) getWalletOf(uid int64) (Wallet Wallet) {
+func (sql *Storage) getWalletOf(uid int64) (wallet Wallet) {
 	sql.RLock()
 	defer sql.RUnlock()
 	uidstr := strconv.FormatInt(uid, 10)
-	_ = sql.db.Find("storage", &Wallet, "where uid is "+uidstr)
+	_ = sql.db.Find("storage", &wallet, "where uid is "+uidstr)
 	return
 }
 

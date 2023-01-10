@@ -134,6 +134,9 @@ func GetMedalWall(cookiecfg *CookieConfig, uid string) (result []Medal, err erro
 func GetAllGuard(mid string) (guardUser GuardUser, err error) {
 	var data []byte
 	data, err = web.GetData(AllGuardURL)
+	if err != nil {
+		return
+	}
 	m := gjson.ParseBytes(data).Get("@this").Map()
 	err = json.Unmarshal(binary.StringToBytes(m[mid].String()), &guardUser)
 	if err != nil {

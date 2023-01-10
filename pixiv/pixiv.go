@@ -1,3 +1,4 @@
+// Package pixiv pixiv相关api
 package pixiv
 
 import (

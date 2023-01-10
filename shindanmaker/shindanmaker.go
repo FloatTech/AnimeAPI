@@ -1,3 +1,4 @@
+// Package shindanmaker 基于 https://shindanmaker.com 的 API
 package shindanmaker
 
 import (
@@ -25,7 +26,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 	// seed 使每一天的结果都不同
 	now := time.Now()
 	seed := fmt.Sprintf("%d%d%d", now.Year(), now.Month(), now.Day())
-	name = name + seed
+	name += seed
 
 	// 刷新 token 和 cookie
 	if token == "" || cookie == "" {
@@ -66,16 +67,18 @@ func Shindanmaker(id int64, name string) (string, error) {
 	}
 	var output = []string{}
 	for child := list[0].FirstChild; child != nil; child = child.NextSibling {
-		if text := xpath.InnerText(child); text != "" {
+		text := xpath.InnerText(child)
+		switch {
+		case text != "":
 			output = append(output, text)
-		} else if child.Data == "img" {
+		case child.Data == "img":
 			img := child.Attr[1].Val
 			if strings.Contains(img, "http") {
 				output = append(output, "[CQ:image,file="+img[strings.Index(img, ",")+1:]+"]")
 			} else {
 				output = append(output, "[CQ:image,file=base64://"+img[strings.Index(img, ",")+1:]+"]")
 			}
-		} else {
+		default:
 			output = append(output, "\n")
 		}
 	}

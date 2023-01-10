@@ -139,7 +139,7 @@ type MsgListRequest struct {
 	Uin                string `json:"uin"`
 }
 
-// MsgListRequest 说说列表响应体
+// MsgListVo 说说列表响应体
 type MsgListVo struct {
 	AuthFlag     int          `json:"auth_flag"`
 	CensorCount  int          `json:"censor_count"`
@@ -196,7 +196,7 @@ type Pic struct {
 	Width            int    `json:"width"`
 }
 
-// 单个说说的详细信息
+// Msglist 单个说说的详细信息
 type Msglist struct {
 	Certified   int       `json:"certified"`
 	Cmtnum      int       `json:"cmtnum"`
@@ -242,7 +242,7 @@ type Usrinfo struct {
 	Uin        int    `json:"uin"`
 }
 
-// 空间点赞请求体
+// LikeRequest 空间点赞请求体
 type LikeRequest struct {
 	Curkey     string `json:"curkey"`
 	Face       string `json:"face"`

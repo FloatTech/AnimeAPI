@@ -1,3 +1,4 @@
+// Package genshin 原神vits语音api
 package genshin
 
 import (

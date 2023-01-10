@@ -22,8 +22,8 @@ type Result struct {
 	Type   string // Type pixiv / twitter ...
 }
 
-// Ascii2d ...
-func Ascii2d(image string) (r []*Result, err error) {
+// ASCII2d ...
+func ASCII2d(image string) (r []*Result, err error) {
 	const api = "https://ascii2d.net/search/uri"
 	client := web.NewTLS12Client()
 	// 包装请求参数

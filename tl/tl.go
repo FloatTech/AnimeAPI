@@ -12,9 +12,12 @@ func Translate(target string) (string, error) {
 		return "", err
 	}
 	return binary.BytesToString(binary.NewWriterF(func(w *binary.Writer) {
-		for _, v := range gjson.ParseBytes(data).Get("data.0").Get("value").Array() {
+		tl := gjson.ParseBytes(data).Get("data.0").Get("value").Array()
+		for i, v := range tl {
 			w.WriteString(v.String())
-			w.WriteString(",")
+			if i+1 != len(tl) {
+				w.WriteString(", ")
+			}
 		}
 	})), nil
 }

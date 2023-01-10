@@ -1,6 +1,7 @@
 package genshin
 
 const (
+	// CNAPI api地址
 	CNAPI = "https://genshin.azurewebsites.net/api/speak?format=ogg&id=%d&text=%s&code=%s"
 )
 
@@ -58,6 +59,7 @@ var TestRecord = map[string]string{
 	"鹿野院平藏": "我叫鹿野院平藏，是天领奉行里破案最多最快的侦探……",
 }
 
+// SoundList ...
 var SoundList = [...]string{
 	"派蒙", "凯亚", "安柏", "丽莎", "琴",
 	"香菱", "枫原万叶", "迪卢克", "温迪", "可莉",

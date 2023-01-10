@@ -18,6 +18,7 @@ import (
 	"github.com/FloatTech/floatbox/web"
 )
 
+// CacheDir ...
 const CacheDir = "data/pixiv/"
 
 func init() {

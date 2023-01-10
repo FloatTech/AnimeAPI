@@ -50,6 +50,7 @@ var (
 		"typescript": "const hello : string = \"Hello World!\"\nconsole.log(hello)",
 		"ts":         "const hello : string = \"Hello World!\"\nconsole.log(hello)",
 	}
+	// LangTable ...
 	LangTable = map[string][2]string{
 		"py2":        {"0", "py"},
 		"ruby":       {"1", "rb"},

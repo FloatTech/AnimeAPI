@@ -13,8 +13,8 @@ func HumanNum(res int) string {
 	return strconv.Itoa(res)
 }
 
-// GetRealUrl 获取跳转后的链接
-func GetRealUrl(url string) (realurl string, err error) {
+// GetRealURL 获取跳转后的链接
+func GetRealURL(url string) (realurl string, err error) {
 	data, err := http.Head(url)
 	if err != nil {
 		return

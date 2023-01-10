@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	// ErrAPINeedCookie ...
 	ErrAPINeedCookie = errors.New("api need cookie")
 )
 

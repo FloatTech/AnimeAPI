@@ -30,6 +30,7 @@ const (
 )
 
 var (
+	// BaiduttsModes ...
 	BaiduttsModes = map[int]string{0: "女声", 1: "男声", 3: "度逍遥", 4: "度丫丫"}
 )
 

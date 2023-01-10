@@ -78,7 +78,7 @@ type musicLrc struct {
 	Code         int    `json:"code"`
 }
 
-// 搜索网易云音乐歌曲
+// SearchMusic 搜索网易云音乐歌曲
 //
 // keyword:搜索内容 n:输出数量
 //
@@ -124,7 +124,7 @@ func SearchMusic(keyword string, n int) (list map[string]int, err error) {
 	return
 }
 
-// 下载网易云音乐(歌曲ID，歌曲名称，下载路径)
+// DownloadMusic 下载网易云音乐(歌曲ID，歌曲名称，下载路径)
 func DownloadMusic(musicID int, musicName, pathOfMusic string) error {
 	downMusic := pathOfMusic + "/" + musicName + ".mp3"
 	musicURL := "http://music.163.com/song/media/outer/url?id=" + strconv.Itoa(musicID)
@@ -146,7 +146,7 @@ func DownloadMusic(musicID int, musicName, pathOfMusic string) error {
 	return nil
 }
 
-// 搜索网易云音乐歌词(歌曲ID)
+// SreachLrc 搜索网易云音乐歌词(歌曲ID)
 func SreachLrc(musicID int) (lrc string, err error) {
 	musicURL := "http://music.163.com/api/song/media?id=" + strconv.Itoa(musicID)
 	data, err := web.GetData(musicURL)
@@ -161,7 +161,7 @@ func SreachLrc(musicID int) (lrc string, err error) {
 	return
 }
 
-// 下载网易云音乐歌词(歌曲ID，歌曲名称，下载路径)
+// DownloadLrc 下载网易云音乐歌词(歌曲ID，歌曲名称，下载路径)
 func DownloadLrc(musicID int, musicName, pathOfMusic string) error {
 	err := os.MkdirAll(pathOfMusic, 0777)
 	if err != nil {

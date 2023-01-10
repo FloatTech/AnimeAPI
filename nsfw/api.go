@@ -1,3 +1,4 @@
+// Package nsfw 图片鉴赏
 package nsfw
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/FloatTech/floatbox/web"
 )
 
+// Picture ...
 type Picture struct {
 	Sexy     float64 `json:"sexy"`
 	Neutral  float64 `json:"neutral"`
@@ -17,6 +19,7 @@ type Picture struct {
 
 const apiurl = "https://nsfwtag.azurewebsites.net/api/nsfw?url="
 
+// Classify ...
 func Classify(u string) (*Picture, error) {
 	u = apiurl + url.QueryEscape(u)
 	var data []byte

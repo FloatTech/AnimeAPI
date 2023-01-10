@@ -11,7 +11,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// 插画结构体
+// Illust 插画结构体
 type Illust struct {
 	Pid         int64    `db:"pid"`
 	Title       string   `db:"title"`

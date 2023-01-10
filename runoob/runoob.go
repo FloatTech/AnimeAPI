@@ -1,3 +1,4 @@
+// Package runoob 在线运行代码
 package runoob
 
 import (
@@ -13,6 +14,7 @@ import (
 )
 
 var (
+	// Templates ...
 	Templates = map[string]string{
 		"py2":        "print 'Hello World!'",
 		"ruby":       "puts \"Hello World!\";",

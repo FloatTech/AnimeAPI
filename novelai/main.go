@@ -1,3 +1,4 @@
+// Package novelai ...
 package novelai
 
 import (
@@ -19,12 +20,14 @@ const (
 	genapi   = "https://api.novelai.net/ai/generate-image"
 )
 
+// NovalAI ...
 type NovalAI struct {
 	Tok  string `json:"accessToken"`
 	key  string
 	conf *Payload
 }
 
+// NewNovalAI ...
 func NewNovalAI(key string, config *Payload) *NovalAI {
 	return &NovalAI{
 		key:  key,
@@ -32,6 +35,7 @@ func NewNovalAI(key string, config *Payload) *NovalAI {
 	}
 }
 
+// Login ...
 func (nv *NovalAI) Login() error {
 	if nv.Tok != "" {
 		return nil
@@ -47,6 +51,7 @@ func (nv *NovalAI) Login() error {
 	return json.NewDecoder(resp.Body).Decode(nv)
 }
 
+// Draw ...
 func (nv *NovalAI) Draw(tags string) (seed int, tagsproceeded string, img []byte, err error) {
 	tags = strings.ReplaceAll(tags, "，", ",")
 	if !strings.Contains(tags, ",") {
@@ -101,6 +106,7 @@ func (nv *NovalAI) Draw(tags string) (seed int, tagsproceeded string, img []byte
 	return
 }
 
+// Para ...
 type Para struct {
 	Width    int     `json:"width"`
 	Height   int     `json:"height"`
@@ -115,12 +121,14 @@ type Para struct {
 	Uc       string  `json:"uc"`
 }
 
+// Payload ...
 type Payload struct {
 	Input      string `json:"input"`
 	Model      string `json:"model"`
 	Parameters Para   `json:"parameters"`
 }
 
+// NewDefaultPayload ...
 func NewDefaultPayload() *Payload {
 	return &Payload{
 		Model: "safe-diffusion",
@@ -139,6 +147,7 @@ func NewDefaultPayload() *Payload {
 	}
 }
 
+// String ...
 func (p *Payload) String() string {
 	b, err := json.Marshal(p)
 	if err != nil {
@@ -147,6 +156,7 @@ func (p *Payload) String() string {
 	return binary.BytesToString(b)
 }
 
+// WrtieTo ...
 func (p *Payload) WrtieTo(w io.Writer) error {
 	return json.NewEncoder(w).Encode(p)
 }

@@ -19,7 +19,9 @@ type QYK struct {
 }
 
 const (
-	QYKURL     = "http://api.qingyunke.com/api.php?key=free&appid=0&msg=%v"
+	// QYKURL api地址
+	QYKURL = "http://api.qingyunke.com/api.php?key=free&appid=0&msg=%v"
+	// QYKBotName
 	QYKBotName = "菲菲"
 )
 
@@ -27,10 +29,12 @@ var (
 	qykMatchFace = regexp.MustCompile(`\{face:(\d+)\}(.*)`)
 )
 
+// NewQYK
 func NewQYK(u, name string, banwords ...string) *QYK {
 	return &QYK{u: u, n: name, b: banwords}
 }
 
+// String
 func (*QYK) String() string {
 	return "青云客"
 }

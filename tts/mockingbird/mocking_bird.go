@@ -49,6 +49,7 @@ func (tts *MockingBirdTTS) String() string {
 	return modeName + tts.name
 }
 
+// NewMockingBirdTTS ...
 func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 	if synt < 0 || synt < 1 {
 		synt = 0

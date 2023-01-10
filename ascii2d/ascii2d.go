@@ -1,3 +1,4 @@
+// Package ascii2d ascii2d搜图api
 package ascii2d
 
 import (
@@ -10,6 +11,7 @@ import (
 	xpath "github.com/antchfx/htmlquery"
 )
 
+// Result ...
 type Result struct {
 	Info   string // Info 图片分辨率 格式 大小信息
 	Link   string // Link 图片链接
@@ -20,6 +22,7 @@ type Result struct {
 	Type   string // Type pixiv / twitter ...
 }
 
+// Ascii2d ...
 func Ascii2d(image string) (r []*Result, err error) {
 	const api = "https://ascii2d.net/search/uri"
 	client := web.NewTLS12Client()

@@ -54,7 +54,7 @@ func GetWalletOf(uid int64) (money int) {
 	return sdb.getWalletOf(uid).Money
 }
 
-// GetWalletInfoGroup 获取多人钱包数据
+// GetGroupWalletOf 获取多人钱包数据
 //
 // if sort == true,由高到低排序; if sort == false,由低到高排序
 func GetGroupWalletOf(sortable bool, uids ...int64) (wallets []Wallet, err error) {

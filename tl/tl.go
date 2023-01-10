@@ -1,3 +1,4 @@
+// Package tl 翻译api
 package tl
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// Translate ...
 func Translate(target string) (string, error) {
 	data, err := web.GetData("http://api.cloolc.club/fanyi?data=" + target)
 	if err != nil {

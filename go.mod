@@ -3,7 +3,7 @@ module github.com/FloatTech/AnimeAPI
 go 1.18
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20230109123116-c544925718fe
+	github.com/FloatTech/floatbox v0.0.0-20230111053652-a03d6334fadf
 	github.com/FloatTech/sqlite v1.5.7
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/corona10/goimagehash v1.1.0

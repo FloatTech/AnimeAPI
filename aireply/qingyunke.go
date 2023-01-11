@@ -39,7 +39,7 @@ func (*QYK) String() string {
 func (q *QYK) Talk(_ int64, msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, q.n)
 	u := fmt.Sprintf(q.u, url.QueryEscape(msg))
-	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA())
+	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA(), nil)
 	if err != nil {
 		return "ERROR: " + err.Error()
 	}
@@ -61,7 +61,7 @@ func (q *QYK) TalkPlain(_ int64, msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, q.n)
 
 	u := fmt.Sprintf(q.u, url.QueryEscape(msg))
-	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA())
+	data, err := web.RequestDataWith(web.NewDefaultClient(), u, "GET", "", web.RandUA(), nil)
 	if err != nil {
 		return "ERROR: " + err.Error()
 	}

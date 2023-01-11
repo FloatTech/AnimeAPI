@@ -8,7 +8,7 @@ import (
 )
 
 func TestSearch(t *testing.T) {
-	r, err := Ascii2d("https://gchat.qpic.cn/gchatpic_new//--05F47960F2546E874F515A403FD174DF/0?term=3")
+	r, err := ASCII2d("https://gchat.qpic.cn/gchatpic_new//--05F47960F2546E874F515A403FD174DF/0?term=3")
 	if err != nil {
 		t.Fatal(err)
 	}

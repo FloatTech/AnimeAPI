@@ -1,3 +1,4 @@
+// Package pixiv pixiv相关api
 package pixiv
 
 import (
@@ -10,7 +11,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// 插画结构体
+// Illust 插画结构体
 type Illust struct {
 	Pid         int64    `db:"pid"`
 	Title       string   `db:"title"`
@@ -19,7 +20,7 @@ type Illust struct {
 	ImageUrls   []string `db:"image_urls"`
 	AgeLimit    string   `db:"age_limit"`
 	CreatedTime string   `db:"created_time"`
-	UserId      int64    `db:"user_id"`
+	UserID      int64    `db:"user_id"`
 	UserName    string   `db:"user_name"`
 }
 
@@ -58,12 +59,12 @@ func Works(id int64) (i *Illust, err error) {
 	}
 	i.AgeLimit = ageLimit
 	i.CreatedTime = json.Get("createDate").Str
-	i.UserId = json.Get("userId").Int()
+	i.UserID = json.Get("userId").Int()
 	i.UserName = json.Get("userName").Str
 	return i, err
 }
 
-// 搜索元素
+// RankValue 搜索元素
 type RankValue struct {
 	/* required, possible rank modes:
 		- daily (default)
@@ -91,7 +92,7 @@ type RankValue struct {
 	Date string
 }
 
-// 画作排行榜
+// Rank 画作排行榜
 func (value RankValue) Rank() (r [18]int, err error) {
 	if value.Mode == "male_r18" || value.Mode == "male" || value.Mode == "female_r18" || value.Mode == "female" {
 		value.Type = "all"

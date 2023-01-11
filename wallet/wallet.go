@@ -54,7 +54,7 @@ func GetWalletOf(uid int64) (money int) {
 	return sdb.getWalletOf(uid).Money
 }
 
-// GetWalletInfoGroup 获取多人钱包数据
+// GetGroupWalletOf 获取多人钱包数据
 //
 // if sort == true,由高到低排序; if sort == false,由低到高排序
 func GetGroupWalletOf(sortable bool, uids ...int64) (wallets []Wallet, err error) {
@@ -68,11 +68,11 @@ func InsertWalletOf(uid int64, money int) error {
 }
 
 // 获取钱包数据
-func (sql *Storage) getWalletOf(uid int64) (Wallet Wallet) {
+func (sql *Storage) getWalletOf(uid int64) (wallet Wallet) {
 	sql.RLock()
 	defer sql.RUnlock()
 	uidstr := strconv.FormatInt(uid, 10)
-	_ = sql.db.Find("storage", &Wallet, "where uid is "+uidstr)
+	_ = sql.db.Find("storage", &wallet, "where uid is "+uidstr)
 	return
 }
 

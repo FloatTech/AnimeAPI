@@ -21,6 +21,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Pool ...
 type Pool struct {
 	folder  string
 	rolimg  func(string) (string, error) // (typ) path
@@ -29,11 +30,15 @@ type Pool struct {
 }
 
 var (
-	ErrNilFolder  = errors.New("nil folder")
+	// ErrNilFolder ...
+	ErrNilFolder = errors.New("nil folder")
+	// ErrNoSuchType ...
 	ErrNoSuchType = errors.New("no such type")
-	ErrEmptyType  = errors.New("empty type")
+	// ErrEmptyType ...
+	ErrEmptyType = errors.New("empty type")
 )
 
+// NewPool 新的缓存池
 func NewPool(folder string, rolimg func(string) (string, error), getdat func(string) ([]byte, error), timeout time.Duration) (*Pool, error) {
 	if folder == "" {
 		return nil, ErrNilFolder
@@ -55,6 +60,7 @@ func NewPool(folder string, rolimg func(string) (string, error), getdat func(str
 	}, nil
 }
 
+// Roll 从缓存池随机挑一张
 func (p *Pool) Roll(typ string) (string, error) {
 	d := p.folder + typ
 	if p.rolimg == nil {
@@ -117,6 +123,7 @@ func (p *Pool) Roll(typ string) (string, error) {
 	}
 }
 
+// RollLocal ...
 func (p *Pool) RollLocal(typ string) (string, error) {
 	d := p.folder + typ
 	if file.IsNotExist(d) {

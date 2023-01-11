@@ -33,7 +33,7 @@ const (
 	TimeoutMax = 300
 )
 
-// 推送默认请求
+// PushRequest 推送默认请求
 type PushRequest struct {
 	Action      string        `json:"action,omitempty"`
 	FnIndex     int           `json:"fn_index"`
@@ -41,18 +41,18 @@ type PushRequest struct {
 	SessionHash string        `json:"session_hash"`
 }
 
-// 推送默认响应
+// PushResponse 推送默认响应
 type PushResponse struct {
 	Hash          string `json:"hash"`
 	QueuePosition int    `json:"queue_position"`
 }
 
-// 状态默认请求
+// StatusRequest 状态默认请求
 type StatusRequest struct {
 	Hash string `json:"hash"`
 }
 
-// 状态默认响应
+// StatusResponse 状态默认响应
 type StatusResponse struct {
 	Status string `json:"status"`
 	Data   struct {
@@ -62,7 +62,7 @@ type StatusResponse struct {
 	}
 }
 
-// 推送请求
+// Push 推送请求
 func Push(pushURL string, pushReq PushRequest) (pushRes PushResponse, err error) {
 	b, err := json.Marshal(pushReq)
 	if err != nil {
@@ -76,7 +76,7 @@ func Push(pushURL string, pushReq PushRequest) (pushRes PushResponse, err error)
 	return
 }
 
-// 状态请求
+// Status 状态请求
 func Status(statusURL string, statusReq StatusRequest) (data []byte, err error) {
 	b, err := json.Marshal(statusReq)
 	if err != nil {

@@ -17,14 +17,18 @@ type XiaoAi struct {
 }
 
 const (
-	XiaoAiURL     = "http://81.70.100.130/api/xiaoai.php?n=text&msg=%v"
+	// XiaoAiURL api地址
+	XiaoAiURL = "http://81.70.100.130/api/xiaoai.php?n=text&msg=%v"
+	// XiaoAiBotName ...
 	XiaoAiBotName = "小爱"
 )
 
+// NewXiaoAi ...
 func NewXiaoAi(u, name string, banwords ...string) *XiaoAi {
 	return &XiaoAi{u: u, n: name, b: banwords}
 }
 
+// String ...
 func (*XiaoAi) String() string {
 	return "小爱"
 }

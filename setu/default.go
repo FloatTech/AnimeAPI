@@ -8,8 +8,10 @@ import (
 	"github.com/FloatTech/floatbox/web"
 )
 
+// DefaultPoolDir ...
 const DefaultPoolDir = "data/setupool"
 
+// DefaultPool ...
 var DefaultPool = func() *Pool {
 	p, err := NewPool(DefaultPoolDir, func(s string) (string, error) {
 		typ := DefaultPoolDir + "/" + s

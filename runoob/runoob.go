@@ -1,3 +1,4 @@
+// Package runoob 在线运行代码
 package runoob
 
 import (
@@ -13,6 +14,7 @@ import (
 )
 
 var (
+	// Templates ...
 	Templates = map[string]string{
 		"py2":        "print 'Hello World!'",
 		"ruby":       "puts \"Hello World!\";",
@@ -48,6 +50,7 @@ var (
 		"typescript": "const hello : string = \"Hello World!\"\nconsole.log(hello)",
 		"ts":         "const hello : string = \"Hello World!\"\nconsole.log(hello)",
 	}
+	// LangTable ...
 	LangTable = map[string][2]string{
 		"py2":        {"0", "py"},
 		"ruby":       {"1", "rb"},

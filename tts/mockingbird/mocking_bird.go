@@ -36,8 +36,8 @@ var (
 	exampleFileMap   = map[int]string{0: azfile, 1: wjfile, 2: ysgfile}
 )
 
-// MockingBirdTTS 类
-type MockingBirdTTS struct {
+// TTS 类
+type TTS struct {
 	vocoder         int
 	synt            int
 	name            string
@@ -45,11 +45,12 @@ type MockingBirdTTS struct {
 }
 
 // String 服务名
-func (tts *MockingBirdTTS) String() string {
+func (tts *TTS) String() string {
 	return modeName + tts.name
 }
 
-func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
+// NewMockingBirdTTS ...
+func NewMockingBirdTTS(synt int) (*TTS, error) {
 	if synt < 0 || synt < 1 {
 		synt = 0
 	}
@@ -70,11 +71,11 @@ func NewMockingBirdTTS(synt int) (*MockingBirdTTS, error) {
 			return nil, err
 		}
 	}
-	return &MockingBirdTTS{1, synt, mockingbirdModes[synt], exampleFileMap[synt]}, nil
+	return &TTS{1, synt, mockingbirdModes[synt], exampleFileMap[synt]}, nil
 }
 
 // Speak 返回音频本地路径
-func (tts *MockingBirdTTS) Speak(uid int64, text func() string) (fileName string, err error) {
+func (tts *TTS) Speak(uid int64, text func() string) (fileName string, err error) {
 	// 异步
 	rch := make(chan string, 1)
 	sch := make(chan string, 1)
@@ -97,7 +98,7 @@ func (tts *MockingBirdTTS) Speak(uid int64, text func() string) (fileName string
 	return
 }
 
-func (tts *MockingBirdTTS) getSyntPath() (syntPath string, err error) {
+func (tts *TTS) getSyntPath() (syntPath string, err error) {
 	data, err := web.GetData(synthesizersURL)
 	if err != nil {
 		return
@@ -106,7 +107,7 @@ func (tts *MockingBirdTTS) getSyntPath() (syntPath string, err error) {
 	return
 }
 
-func (tts *MockingBirdTTS) getWav(text, syntPath, vocoder string, uid int64) (fileName string, err error) {
+func (tts *TTS) getWav(text, syntPath, vocoder string, uid int64) (fileName string, err error) {
 	if syntPath == "" {
 		err = errors.New("nil syntPath")
 		return

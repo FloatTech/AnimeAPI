@@ -265,24 +265,31 @@ type MedalInfo struct {
 	MedalColorBorder int64  `json:"medal_color_border"`
 }
 
+// Medal ...
 type Medal struct {
 	Uname     string `json:"target_name"`
 	MedalInfo `json:"medal_info"`
 }
 
+// MedalSorter ...
 type MedalSorter []Medal
 
+// Len ...
 func (m MedalSorter) Len() int {
 	return len(m)
 }
+
+// Swap ...
 func (m MedalSorter) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
 }
+
+// Less ...
 func (m MedalSorter) Less(i, j int) bool {
 	return m[i].Level > m[j].Level
 }
 
-// vtb信息
+// VtbDetail vtb信息
 type VtbDetail struct {
 	Mid      int    `json:"mid"`
 	Uname    string `json:"uname"`
@@ -343,23 +350,26 @@ type Danmakusuki struct {
 	} `json:"data"`
 }
 
-// 配置结构体
+// CookieConfig 配置结构体
 type CookieConfig struct {
 	BilibiliCookie string `json:"bilibili_cookie"`
 	file           string
 }
 
+// NewCookieConfig ...
 func NewCookieConfig(file string) *CookieConfig {
 	return &CookieConfig{
 		file: file,
 	}
 }
 
+// Set ...
 func (cfg *CookieConfig) Set(cookie string) (err error) {
 	cfg.BilibiliCookie = cookie
 	return cfg.Save()
 }
 
+// Load ...
 func (cfg *CookieConfig) Load() (cookie string, err error) {
 	if cfg.BilibiliCookie != "" {
 		cookie = cfg.BilibiliCookie
@@ -379,6 +389,7 @@ func (cfg *CookieConfig) Load() (cookie string, err error) {
 	return
 }
 
+// Save ...
 func (cfg *CookieConfig) Save() (err error) {
 	reader, err := os.Create(cfg.file)
 	if err != nil {

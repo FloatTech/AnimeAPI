@@ -1,3 +1,4 @@
+// Package scale 叔叔的放大二次元图片模型
 package scale
 
 import (
@@ -10,18 +11,27 @@ import (
 )
 
 const (
+	// ModelConservative ...
 	ModelConservative = "conservative"
-	ModelNoDenoise    = "no-denoise"
-	ModelDenoise1x    = "denoise1x"
-	ModelDenoise2x    = "denoise2x"
-	ModelDenoise3x    = "denoise3x"
+	// ModelNoDenoise ...
+	ModelNoDenoise = "no-denoise"
+	// ModelDenoise1x ...
+	ModelDenoise1x = "denoise1x"
+	// ModelDenoise2x ...
+	ModelDenoise2x = "denoise2x"
+	// ModelDenoise3x ...
+	ModelDenoise3x = "denoise3x"
 )
 
 var (
-	Models      = [...]string{ModelConservative, ModelNoDenoise, ModelDenoise1x, ModelDenoise2x, ModelDenoise3x}
+	// Models ...
+	Models = [...]string{ModelConservative, ModelNoDenoise, ModelDenoise1x, ModelDenoise2x, ModelDenoise3x}
+	// ErrInvModel ...
 	ErrInvModel = errors.New("invaild model")
+	// ErrInvScale ...
 	ErrInvScale = errors.New("invaild scale")
-	ErrInvTile  = errors.New("invaild tile")
+	// ErrInvTile ...
+	ErrInvTile = errors.New("invaild tile")
 )
 
 // Get model 0-4, scale 2-4, tile 0-4

@@ -18,7 +18,7 @@ func Translate(target string) (string, error) {
 			return
 		}
 		w.WriteString(meanings[0].String())
-		for i, v := range meanings[1:] {
+		for _, v := range meanings[1:] {
 			w.WriteString(", ")
 			w.WriteString(v.String())
 		}

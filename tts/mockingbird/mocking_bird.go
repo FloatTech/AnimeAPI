@@ -99,7 +99,7 @@ func (tts *TTS) Speak(uid int64, text func() string) (fileName string, err error
 }
 
 func (tts *TTS) getSyntPath() (syntPath string, err error) {
-	data, err := web.RequestDataWith(web.NewDefaultClient(), synthesizersURL, "GET", "", "")
+	data, err := web.GetData(synthesizersURL)
 	if err != nil {
 		return
 	}

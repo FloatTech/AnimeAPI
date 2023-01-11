@@ -83,7 +83,7 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) (fileName string, err 
 }
 
 func getToken() (accessToken string, err error) {
-	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(tokenURL, grantType, clientID, clientSecret), "GET", "", ua)
+	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(tokenURL, grantType, clientID, clientSecret), "GET", "", ua, nil)
 	if err != nil {
 		return
 	}

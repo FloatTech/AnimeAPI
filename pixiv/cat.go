@@ -12,6 +12,7 @@ import (
 	"github.com/FloatTech/floatbox/web"
 )
 
+// Generate API 返回结果
 type Generate struct {
 	Success  bool   `json:"success"`
 	ErrorMsg string `json:"error"`
@@ -29,6 +30,7 @@ type Generate struct {
 	Thumbnails        []string `json:"thumbnails"`
 }
 
+// Cat 调用 pixiv.cat 的 generate API
 func Cat(id int64) (*Generate, error) {
 	data, err := web.RequestDataWithHeaders(&http.Client{
 		Transport: &http.Transport{

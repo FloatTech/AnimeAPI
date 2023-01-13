@@ -56,6 +56,15 @@ func Works(id int64) (i *Illust, err error) {
 		for j := 0; j < int(json.Get("pageCount").Int()); j++ {
 			i.ImageUrls = append(i.ImageUrls, fmt.Sprintf(u, j))
 		}
+	} else { // try third-party API
+		g, err := Cat(id)
+		if err == nil {
+			if g.Multiple {
+				i.ImageUrls = g.OriginalUrls
+			} else {
+				i.ImageUrls = []string{g.OriginalURL}
+			}
+		}
 	}
 	i.AgeLimit = ageLimit
 	i.CreatedTime = json.Get("createDate").Str

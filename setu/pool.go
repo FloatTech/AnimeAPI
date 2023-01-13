@@ -6,14 +6,14 @@ import (
 	"encoding/binary"
 	"errors"
 	"image"
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
+	_ "image/gif"  // register decode gif
+	_ "image/jpeg" // register decode jpeg
+	_ "image/png"  // register decode png
 	"math/rand"
 	"os"
 	"time"
 
-	_ "golang.org/x/image/webp"
+	_ "golang.org/x/image/webp" // register decode webp
 
 	"github.com/FloatTech/floatbox/file"
 	"github.com/corona10/goimagehash"

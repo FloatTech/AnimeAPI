@@ -97,7 +97,7 @@ func refresh() error {
 	// 获取 cookie
 	if temp := resp.Header.Values("Set-Cookie"); len(temp) == 0 {
 		return errors.New("刷新 cookie 时发生错误")
-	} else if !strings.Contains(temp[len(temp)-1], "_session") {
+	} else if cookie = temp[len(temp)-1]; !strings.Contains(cookie, "_session") {
 		return errors.New("刷新 cookie 时发生错误")
 	}
 	// 获取 token

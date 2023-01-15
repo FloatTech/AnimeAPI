@@ -11,7 +11,7 @@ import (
 const (
 	// HuggingfaceSpaceHTTPS huggingface space https api
 	HuggingfaceSpaceHTTPS = "https://hf.space"
-	//Embed huggingface space api embed
+	// Embed huggingface space api embed
 	Embed = HuggingfaceSpaceHTTPS + "/embed"
 	// HTTPSPushPath 推送队列
 	HTTPSPushPath = Embed + "/%v/api/queue/push/"

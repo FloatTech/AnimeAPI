@@ -232,7 +232,6 @@ func (m *Manager) UploadImage(base64img string) (result UploadImageVo, err error
 
 // EmotionPublish 发送说说,content是文字,base64imgList是base64图片
 func (m *Manager) EmotionPublish(content string, base64imgList []string) (result EmotionPublishVo, err error) {
-
 	var (
 		uir         UploadImageVo
 		picBo       string

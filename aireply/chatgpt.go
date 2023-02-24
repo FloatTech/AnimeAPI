@@ -3,7 +3,7 @@ package aireply
 import (
 	"bytes"
 	"encoding/json"
-	"io"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -15,7 +15,7 @@ type ChatGPT struct {
 	b []string
 }
 
-// chatGPTResponseBody 请求体
+// chatGPTResponseBody 响应体
 type chatGPTResponseBody struct {
 	ID      string                   `json:"id"`
 	Object  string                   `json:"object"`
@@ -25,7 +25,7 @@ type chatGPTResponseBody struct {
 	Usage   map[string]interface{}   `json:"usage"`
 }
 
-// chatGPTRequestBody 响应体
+// chatGPTRequestBody 请求体
 type chatGPTRequestBody struct {
 	Model            string  `json:"model"`
 	Prompt           string  `json:"prompt"`
@@ -80,12 +80,12 @@ func chat(msg string, apiKey string, url string) (string, error) {
 		FrequencyPenalty: 0,
 		PresencePenalty:  0,
 	}
-	requestData, err := json.Marshal(requestBody)
-
+	requestData := new(bytes.Buffer)
+	err := json.NewEncoder(requestData).Encode(requestBody)
 	if err != nil {
 		return "", err
 	}
-	req, err := http.NewRequest("POST", url+"completions", bytes.NewBuffer(requestData))
+	req, err := http.NewRequest("POST", url+"completions", requestData)
 	if err != nil {
 		return "", err
 	}
@@ -98,21 +98,15 @@ func chat(msg string, apiKey string, url string) (string, error) {
 		return "", err
 	}
 	defer response.Body.Close()
-
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", err
-	}
-
-	gptResponseBody := &chatGPTResponseBody{}
-	err = json.Unmarshal(body, gptResponseBody)
+	var gptResponseBody chatGPTResponseBody
+	err = json.NewDecoder(response.Body).Decode(&gptResponseBody)
 	if err != nil {
 		return "", err
 	}
 	var reply string
 	if len(gptResponseBody.Choices) > 0 {
 		for _, v := range gptResponseBody.Choices {
-			reply = v["text"].(string)
+			reply = fmt.Sprint(v["text"])
 			break
 		}
 	}

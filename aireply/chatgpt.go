@@ -37,7 +37,7 @@ type chatGPTRequestBody struct {
 }
 
 const (
-	// OpenAI api地址
+	// ChatGPTURL api地址
 	ChatGPTURL = "https://api.openai.com/v1/"
 )
 

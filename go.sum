@@ -1,5 +1,5 @@
-github.com/FloatTech/floatbox v0.0.0-20230301074105-03017a267762 h1:UU9kPDPm9vRA2/qRTK33fa07AEnE6skjdyyvImAlel0=
-github.com/FloatTech/floatbox v0.0.0-20230301074105-03017a267762/go.mod h1:J0zCOJayFOyswwCNlqBQGu2q7OPjiu78kjr0oVF+MrM=
+github.com/FloatTech/floatbox v0.0.0-20230312033609-f3826d7c8d00 h1:KvQd0IaJqBPkc4mpyldX9UcRVlUPVazlcmS79LU0pJ8=
+github.com/FloatTech/floatbox v0.0.0-20230312033609-f3826d7c8d00/go.mod h1:0l1xHjcTlONupyOY5lB5PY6kFWFMHQh89e1Zqm5QZlo=
 github.com/FloatTech/sqlite v1.5.7 h1:Bvo4LSojcZ6dVtbHrkqvt6z4v8e+sj0G5PSUIvdawsk=
 github.com/FloatTech/sqlite v1.5.7/go.mod h1:zFbHzRfB+CJ+VidfjuVbrcin3DAz283F7hF1hIeHzpY=
 github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b h1:tvciXWq2nuvTbFeJGLDNIdRX3BI546D3O7k7vrVueZw=
@@ -46,6 +46,8 @@ github.com/mattn/go-isatty v0.0.16 h1:bq3VjFmv/sOjHtdEhmkEV4x1AJtvUvOJ2PFAZ5+peK
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
+github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 h1:onHthvaw9LFnH4t2DcNVpwGmV9E1BkGknEliJkfwQj0=
+github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58/go.mod h1:DXv8WO4yhMYhSNPKjeNKa5WY9YCIEBRbNzFFPJbWO6Y=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkumza/numcn v1.0.0 h1:ZT5cf9IJkUZgRgEtCiNNykk0RwsrKXSTsvDHOwUTzgE=

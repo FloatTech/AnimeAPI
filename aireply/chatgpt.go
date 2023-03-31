@@ -52,7 +52,7 @@ func (*ChatGPT) String() string {
 }
 
 // Talk 取得带 CQ 码的回复消息
-func (c *ChatGPT) Talk(_ int64, msg, nickname string) string {
+func (c *ChatGPT) Talk(_ int64, msg, _ string) string {
 	replystr := chat(msg, c.k, c.u)
 	for _, w := range c.b {
 		if strings.Contains(replystr, w) {

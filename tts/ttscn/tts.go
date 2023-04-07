@@ -42,6 +42,7 @@ const (
 var embededspeakers []byte
 
 var (
+	// Langs 语言
 	Langs = func() (m map[string]*LangSpeakers) {
 		data, err := web.GetData(speakerlistapi)
 		if err != nil {
@@ -68,7 +69,7 @@ func (tts *TTS) String() string {
 	return tts.language + tts.voice
 }
 
-// NewMockingBirdTTS ...
+// NewTTSCN ...
 func NewTTSCN(lang, speaker, kbrate string) (*TTS, error) {
 	spks, ok := Langs[lang]
 	if !ok {

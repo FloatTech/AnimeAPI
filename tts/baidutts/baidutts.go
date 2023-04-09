@@ -18,15 +18,13 @@ import (
 )
 
 const (
-	grantType    = "client_credentials"
-	clientID     = "6ACWsLOg3b7OyGUKGfHZfbXa"
-	clientSecret = "nA6WP1d05qBoUYqxplNAV1inf8IHGwj9"
-	tokenURL     = "https://aip.baidubce.com/oauth/2.0/token?grant_type=%s&client_id=%s&client_secret=%s"
-	dbpath       = "data/baidutts/"
-	cachePath    = dbpath + "cache/"
-	ttsURL       = "http://tsn.baidu.com/text2audio"
-	ua           = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
-	modeName     = "百度"
+	grantType = "client_credentials"
+	tokenURL  = "https://aip.baidubce.com/oauth/2.0/token?grant_type=%s&client_id=%s&client_secret=%s"
+	dbpath    = "data/baidutts/"
+	cachePath = dbpath + "cache/"
+	ttsURL    = "http://tsn.baidu.com/text2audio"
+	ua        = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+	modeName  = "百度"
 )
 
 var (
@@ -36,8 +34,10 @@ var (
 
 // BaiduTTS 百度类
 type BaiduTTS struct {
-	per  int
-	name string
+	per          int
+	name         string
+	clientID     string
+	clientSecret string
 }
 
 // String 服务名
@@ -46,12 +46,12 @@ func (tts *BaiduTTS) String() string {
 }
 
 // NewBaiduTTS 新的百度语音
-func NewBaiduTTS(per int) *BaiduTTS {
+func NewBaiduTTS(per int, clientID, clientSecret string) *BaiduTTS {
 	switch per {
 	case 0, 1, 3, 4:
-		return &BaiduTTS{per, BaiduttsModes[per]}
+		return &BaiduTTS{per, BaiduttsModes[per], clientID, clientSecret}
 	default:
-		return &BaiduTTS{4, BaiduttsModes[4]}
+		return &BaiduTTS{4, BaiduttsModes[4], clientID, clientSecret}
 	}
 }
 
@@ -67,7 +67,7 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) (fileName string, err 
 	// 取到token
 	go func() {
 		var tok string
-		tok, err = getToken()
+		tok, err = tts.getToken()
 		tch <- tok
 	}()
 	tok := <-tch
@@ -82,8 +82,8 @@ func (tts *BaiduTTS) Speak(uid int64, text func() string) (fileName string, err 
 	return "file:///" + file.BOTPATH + "/" + cachePath + fileName, nil
 }
 
-func getToken() (accessToken string, err error) {
-	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(tokenURL, grantType, clientID, clientSecret), "GET", "", ua, nil)
+func (tts *BaiduTTS) getToken() (accessToken string, err error) {
+	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(tokenURL, grantType, tts.clientID, tts.clientSecret), "GET", "", ua, nil)
 	if err != nil {
 		return
 	}

@@ -42,6 +42,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 	_ = writer.WriteField("_token", token)
 	_ = writer.WriteField("shindanName", name)
 	_ = writer.WriteField("hiddenName", "名無しのR")
+	_ = writer.WriteField("type", "name")
 	_ = writer.Close()
 	// 发送请求
 	req, _ := http.NewRequest("POST", url, payload)

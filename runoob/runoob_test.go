@@ -3,7 +3,7 @@ package runoob
 import "testing"
 
 func TestRun(t *testing.T) {
-	ro := NewRunOOB("b6365362a90ac2ac7098ba52c13e352b")
+	ro := NewRunOOB("066417defb80d038228de76ec581a50a")
 	r, err := ro.Run(`package main
 
 	import "fmt"

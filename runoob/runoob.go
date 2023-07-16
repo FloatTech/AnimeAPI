@@ -104,7 +104,7 @@ type result struct {
 // Run ...
 func (ro RunOOB) Run(code string, lang string, stdin string) (string, error) {
 	// 对菜鸟api发送数据并返回结果
-	api := "https://tool.runoob.com/compile2.php"
+	api := "https://www.runoob.com/try/compile2.php"
 	runType, ok := LangTable[lang]
 	if !ok {
 		return "", errors.New("no such language")
@@ -112,8 +112,8 @@ func (ro RunOOB) Run(code string, lang string, stdin string) (string, error) {
 
 	header := http.Header{
 		"Content-Type": []string{"application/x-www-form-urlencoded; charset=UTF-8"},
-		"Origin":       []string{"https://m.runoob.com"},
-		"Referer":      []string{"https://m.runoob.com/"},
+		"Origin":       []string{"https://c.runoob.com"},
+		"Referer":      []string{"https://c.runoob.com/"},
 		"User-Agent":   []string{web.RandUA()},
 	}
 

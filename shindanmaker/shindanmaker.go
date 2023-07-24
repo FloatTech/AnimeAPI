@@ -28,11 +28,10 @@ func Shindanmaker(id int64, name string) (string, error) {
 	seed := fmt.Sprintf("%d%d%d", now.Year(), now.Month(), now.Day())
 	name += seed
 
-	// 刷新 token 和 cookie
-	if token == "" || cookie == "" {
-		if err := refresh(); err != nil {
-			return "", err
-		}
+	// 刷新 token 和 cookie or 获取shindan_token
+	shindantoken, err := refresh(url)
+	if err != nil {
+		return "", err
 	}
 
 	// 组装参数
@@ -43,6 +42,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 	_ = writer.WriteField("shindanName", name)
 	_ = writer.WriteField("hiddenName", "名無しのR")
 	_ = writer.WriteField("type", "name")
+	_ = writer.WriteField("shindan_token", shindantoken)
 	_ = writer.Close()
 	// 发送请求
 	req, _ := http.NewRequest("POST", url, payload)
@@ -87,30 +87,37 @@ func Shindanmaker(id int64, name string) (string, error) {
 }
 
 // refresh 刷新 cookie 和 token
-func refresh() error {
+func refresh(url string) (string, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("POST", "https://shindanmaker.com/587874", nil)
+	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	// 获取 cookie
-	if temp := resp.Header.Values("Set-Cookie"); len(temp) == 0 {
-		return errors.New("刷新 cookie 时发生错误")
-	} else if cookie = temp[len(temp)-1]; !strings.Contains(cookie, "_session") {
-		return errors.New("刷新 cookie 时发生错误")
-	}
-	// 获取 token
-	defer resp.Body.Close()
 	doc, err := xpath.Parse(resp.Body)
 	if err != nil {
-		return err
+		return "", err
 	}
-	list := xpath.Find(doc, `//*[@id="shindanForm"]/input`)
-	if len(list) == 0 {
-		return errors.New("刷新 token 时发生错误")
+	if token == "" || cookie == "" {
+		if temp := resp.Header.Values("Set-Cookie"); len(temp) == 0 {
+			return "", errors.New("刷新 cookie 时发生错误")
+		} else if cookie = temp[len(temp)-1]; !strings.Contains(cookie, "_session") {
+			return "", errors.New("刷新 cookie 时发生错误")
+		}
+		// 获取 token
+		defer resp.Body.Close()
+
+		list := xpath.Find(doc, `//*[@id="shindanForm"]/input`)
+		if len(list) == 0 {
+			return "", errors.New("刷新 token 时发生错误")
+		}
+		token = list[0].Attr[2].Val
 	}
-	token = list[0].Attr[2].Val
-	return nil
+	shindanTokenList := xpath.Find(doc, `//*[@id="shindan_token"]`)
+	if len(shindanTokenList) == 0 {
+		return "", errors.New("获取 shindan_token 时发生错误")
+	}
+	return shindanTokenList[0].Attr[3].Val, nil
 }

@@ -20,8 +20,8 @@ github.com/fumiama/bigfft v0.0.0-20211011143303-6e0bfa3c836b h1:Zt3pFQditAdWTHCO
 github.com/fumiama/bigfft v0.0.0-20211011143303-6e0bfa3c836b/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/fumiama/cron v1.3.0 h1:ZWlwuexF+HQHl3cYytEE5HNwD99q+3vNZF1GrEiXCFo=
 github.com/fumiama/cron v1.3.0/go.mod h1:bz5Izvgi/xEUI8tlBN8BI2jr9Moo8N4or0KV8xXuPDY=
-github.com/fumiama/go-base16384 v1.6.4 h1:rYDRwD/th2cG4U7QLokpzmST1cCxZGXtHmolOUePt5o=
-github.com/fumiama/go-base16384 v1.6.4/go.mod h1:OEn+947GV5gsbTAnyuUW/SrfxJYUdYupSIQXOuGOcXM=
+github.com/fumiama/go-base16384 v1.7.0 h1:6fep7XPQWxRlh4Hu+KsdH+6+YdUp+w6CwRXtMWSsXCA=
+github.com/fumiama/go-base16384 v1.7.0/go.mod h1:OEn+947GV5gsbTAnyuUW/SrfxJYUdYupSIQXOuGOcXM=
 github.com/fumiama/go-registry v0.2.6 h1:+vEeBUwa1+GC87ujW3Km42fi8O/H7QcpVJWu1iuGNh0=
 github.com/fumiama/go-registry v0.2.6/go.mod h1:HjYagPZXzR2xCCxaSQerqX7JRzC0yiv2kslDdBiTq/g=
 github.com/fumiama/go-simple-protobuf v0.1.0 h1:rLzJgNqB6LHNDVMl81yyNt6ZKziWtVfu+ioF0edlEVw=

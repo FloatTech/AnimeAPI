@@ -7,7 +7,7 @@ require (
 	github.com/FloatTech/sqlite v1.6.2
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/corona10/goimagehash v1.1.0
-	github.com/fumiama/go-base16384 v1.6.4
+	github.com/fumiama/go-base16384 v1.7.0
 	github.com/pkg/errors v0.9.1
 	github.com/pkumza/numcn v1.0.0
 	github.com/sirupsen/logrus v1.9.0

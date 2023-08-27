@@ -68,7 +68,7 @@ func (tts *Genshin) Speak(_ int64, text func() string) (fileName string, err err
 			}
 			return numcn.EncodeFromFloat64(f)
 		}),
-	), tts.code)
+	), url.QueryEscape(tts.code))
 	var b [8]byte
 	goBinary.LittleEndian.PutUint64(b[:], uint64(tts.mode))
 	h := crc64.New(crc64.MakeTable(crc64.ISO))

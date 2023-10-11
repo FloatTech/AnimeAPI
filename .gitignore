@@ -2,3 +2,4 @@
 data
 tts/mockingbird/data
 .idea
+*.json

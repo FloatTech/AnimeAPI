@@ -75,9 +75,19 @@ func LoadDynamicDetail(str string) (card DynamicCard, err error) {
 }
 
 // GetDynamicDetail 用动态id查动态信息
-func GetDynamicDetail(dynamicIDStr string) (card DynamicCard, err error) {
+func GetDynamicDetail(cookiecfg *CookieConfig, dynamicIDStr string) (card DynamicCard, err error) {
 	var data []byte
-	data, err = web.GetData(fmt.Sprintf(DynamicDetailURL, dynamicIDStr))
+	data, err = web.RequestDataWithHeaders(web.NewDefaultClient(), fmt.Sprintf(DynamicDetailURL, dynamicIDStr), "GET", func(req *http.Request) error {
+		if cookiecfg != nil {
+			cookie := ""
+			cookie, err = cookiecfg.Load()
+			if err != nil {
+				return err
+			}
+			req.Header.Add("cookie", cookie)
+		}
+		return nil
+	}, nil)
 	if err != nil {
 		return
 	}
@@ -181,5 +191,37 @@ func GetVideoInfo(id string) (card Card, err error) {
 		return
 	}
 	err = json.Unmarshal(binary.StringToBytes(gjson.ParseBytes(data).Get("data").Raw), &card)
+	return
+}
+
+// GetVideoSummary 用av或bv查看AI视频总结
+func GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
+	var (
+		data            []byte
+		card            Card
+		videoSummaryURL string
+	)
+	_, err = strconv.Atoi(id)
+	if err == nil {
+		data, err = web.GetData(fmt.Sprintf(VideoInfoURL, id, ""))
+	} else {
+		data, err = web.GetData(fmt.Sprintf(VideoInfoURL, "", id))
+	}
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(binary.StringToBytes(gjson.ParseBytes(data).Get("data").Raw), &card)
+	if err != nil {
+		return
+	}
+	videoSummaryURL, err = signAndGenerateURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID))
+	if err != nil {
+		return
+	}
+	data, err = web.GetData(videoSummaryURL)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &videoSummary)
 	return
 }

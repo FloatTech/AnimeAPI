@@ -45,6 +45,8 @@ const (
 	DanmakuURL = "https://danmakus.com/user/%v"
 	// AllGuardURL 查询所有舰长,提督,总督
 	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
+	// VideoSummaryURL AI视频总结
+	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v"
 )
 
 // DynamicCard 总动态结构体,包括desc,card
@@ -79,6 +81,7 @@ type Card struct {
 	AID             any      `json:"aid"`
 	BvID            any      `json:"bvid"`
 	Dynamic         any      `json:"dynamic"`
+	CID             int      `json:"cid"`
 	Pic             string   `json:"pic"`
 	Title           string   `json:"title"`
 	ID              int      `json:"id"`
@@ -347,6 +350,32 @@ type Danmakusuki struct {
 		PageNum  int64 `json:"pageNum"`
 		PageSize int64 `json:"pageSize"`
 		HasMore  bool  `json:"hasMore"`
+	} `json:"data"`
+}
+
+// VideoSummary AI视频总结结构体
+type VideoSummary struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	TTL     int    `json:"ttl"`
+	Data    struct {
+		Code        int `json:"code"`
+		ModelResult struct {
+			ResultType int    `json:"result_type"`
+			Summary    string `json:"summary"`
+			Outline    []struct {
+				Title       string `json:"title"`
+				PartOutline []struct {
+					Timestamp int    `json:"timestamp"`
+					Content   string `json:"content"`
+				} `json:"part_outline"`
+				Timestamp int `json:"timestamp"`
+			} `json:"outline"`
+		} `json:"model_result"`
+		Stid       string `json:"stid"`
+		Status     int    `json:"status"`
+		LikeNum    int    `json:"like_num"`
+		DislikeNum int    `json:"dislike_num"`
 	} `json:"data"`
 }
 

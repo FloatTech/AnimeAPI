@@ -44,8 +44,8 @@ func signAndGenerateURL(urlStr string) (string, error) {
 		query.Set(k, v)
 	}
 	urlObj.RawQuery = query.Encode()
-	newUrlStr := urlObj.String()
-	return newUrlStr, nil
+	newURLStr := urlObj.String()
+	return newURLStr, nil
 }
 
 func encWbi(params map[string]string, imgKey, subKey string) map[string]string {

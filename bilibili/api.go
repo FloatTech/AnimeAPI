@@ -213,7 +213,7 @@ func GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
 	if err != nil {
 		return
 	}
-	data, err = web.GetData(signURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID)))
+	data, err = web.GetData(SignURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID)))
 	if err != nil {
 		return
 	}

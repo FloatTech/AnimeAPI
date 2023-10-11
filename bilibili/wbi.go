@@ -28,8 +28,8 @@ var (
 	replacements   = [...]string{"!", "'", "(", ")", "*"}
 )
 
-// signURL wbi签名包装 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md
-func signURL(urlStr string) string {
+// SignURL wbi签名包装 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md
+func SignURL(urlStr string) string {
 	urlObj, _ := url.Parse(urlStr)
 	imgKey, subKey := getWbiKeysCached()
 	query := urlObj.Query()

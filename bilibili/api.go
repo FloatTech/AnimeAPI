@@ -197,9 +197,8 @@ func GetVideoInfo(id string) (card Card, err error) {
 // GetVideoSummary 用av或bv查看AI视频总结
 func GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
 	var (
-		data            []byte
-		card            Card
-		videoSummaryURL string
+		data []byte
+		card Card
 	)
 	_, err = strconv.Atoi(id)
 	if err == nil {
@@ -214,11 +213,7 @@ func GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
 	if err != nil {
 		return
 	}
-	videoSummaryURL, err = signAndGenerateURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID))
-	if err != nil {
-		return
-	}
-	data, err = web.GetData(videoSummaryURL)
+	data, err = web.GetData(signURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID)))
 	if err != nil {
 		return
 	}

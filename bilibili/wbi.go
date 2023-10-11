@@ -3,16 +3,16 @@ package bilibili
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
-	"io"
-	"net/http"
 	"net/url"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
+	"github.com/FloatTech/floatbox/binary"
+	"github.com/FloatTech/floatbox/web"
+	"github.com/RomiChan/syncx"
 	"github.com/tidwall/gjson"
 )
 
@@ -23,113 +23,95 @@ var (
 		61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
 		36, 20, 34, 44, 52,
 	}
-	cache          sync.Map
+	cache          syncx.Map[string, string]
 	lastUpdateTime time.Time
+	replacements   = [...]string{"!", "'", "(", ")", "*"}
 )
 
-// signAndGenerateURL wbi签名包装 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md
-func signAndGenerateURL(urlStr string) (string, error) {
-	urlObj, err := url.Parse(urlStr)
-	if err != nil {
-		return "", err
-	}
+// signURL wbi签名包装 https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/docs/misc/sign/wbi.md
+func signURL(urlStr string) string {
+	urlObj, _ := url.Parse(urlStr)
 	imgKey, subKey := getWbiKeysCached()
 	query := urlObj.Query()
 	params := map[string]string{}
 	for k, v := range query {
-		params[k] = v[0]
+		if len(v) > 0 {
+			params[k] = v[0]
+		}
 	}
-	newParams := encWbi(params, imgKey, subKey)
+	newParams := wbiSign(params, imgKey, subKey)
 	for k, v := range newParams {
 		query.Set(k, v)
 	}
 	urlObj.RawQuery = query.Encode()
-	newURLStr := urlObj.String()
-	return newURLStr, nil
-}
-
-func encWbi(params map[string]string, imgKey, subKey string) map[string]string {
-	mixinKey := getMixinKey(imgKey + subKey)
-	currTime := strconv.FormatInt(time.Now().Unix(), 10)
-	params["wts"] = currTime
-
-	// Sort keys
-	keys := make([]string, 0, len(params))
-	for k := range params {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	// Remove unwanted characters
-	for k, v := range params {
-		v = sanitizeString(v)
-		params[k] = v
-	}
-
-	// Build URL parameters
-	query := url.Values{}
-	for _, k := range keys {
-		query.Set(k, params[k])
-	}
-	queryStr := query.Encode()
-
-	// Calculate w_rid
-	hash := md5.Sum([]byte(queryStr + mixinKey))
-	params["w_rid"] = hex.EncodeToString(hash[:])
-	return params
+	newURL := urlObj.String()
+	return newURL
 }
 
 func getMixinKey(orig string) string {
 	var str strings.Builder
+	t := 0
 	for _, v := range mixinKeyEncTab {
 		if v < len(orig) {
 			str.WriteByte(orig[v])
+			t++
+		}
+		if t > 31 {
+			break
 		}
 	}
-	return str.String()[:32]
+	return str.String()
 }
 
-func sanitizeString(s string) string {
-	unwantedChars := []string{"!", "'", "(", ")", "*"}
-	for _, char := range unwantedChars {
-		s = strings.ReplaceAll(s, char, "")
+func wbiSign(params map[string]string, imgKey string, subKey string) map[string]string {
+	mixinKey := getMixinKey(imgKey + subKey)
+	currTime := strconv.FormatInt(time.Now().Unix(), 10)
+	params["wts"] = currTime
+	// Sort keys
+	keys := make([]string, 0, len(params))
+	for k, v := range params {
+		keys = append(keys, k)
+		for _, old := range replacements {
+			v = strings.ReplaceAll(v, old, "")
+		}
+		params[k] = v
 	}
-	return s
-}
-
-func updateCache() {
-	if time.Since(lastUpdateTime).Minutes() < 10 {
-		return
+	sort.Strings(keys)
+	h := md5.New()
+	for k, v := range keys {
+		h.Write([]byte(v))
+		h.Write([]byte{'='})
+		h.Write([]byte(params[v]))
+		if k < len(keys)-1 {
+			h.Write([]byte{'&'})
+		}
 	}
-	imgKey, subKey := getWbiKeys()
-	cache.Store("imgKey", imgKey)
-	cache.Store("subKey", subKey)
-	lastUpdateTime = time.Now()
+	h.Write([]byte(mixinKey))
+	params["w_rid"] = hex.EncodeToString(h.Sum(make([]byte, 0, md5.Size)))
+	return params
 }
 
 func getWbiKeysCached() (string, string) {
-	updateCache()
+	if time.Since(lastUpdateTime).Minutes() > 10 {
+		imgKey, subKey := getWbiKeys()
+		cache.Store("imgKey", imgKey)
+		cache.Store("subKey", subKey)
+		lastUpdateTime = time.Now()
+		return imgKey, subKey
+	}
 	imgKeyI, _ := cache.Load("imgKey")
 	subKeyI, _ := cache.Load("subKey")
-	return imgKeyI.(string), subKeyI.(string)
+	return imgKeyI, subKeyI
 }
 
 func getWbiKeys() (string, string) {
-	resp, err := http.Get("https://api.bilibili.com/x/web-interface/nav")
-	if err != nil {
-		fmt.Printf("Error: %s", err)
-		return "", ""
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("Error: %s", err)
-		return "", ""
-	}
-	json := string(body)
+	data, _ := web.GetData(NavURL)
+	json := binary.BytesToString(data)
 	imgURL := gjson.Get(json, "data.wbi_img.img_url").String()
 	subURL := gjson.Get(json, "data.wbi_img.sub_url").String()
-	imgKey := strings.Split(strings.Split(imgURL, "/")[len(strings.Split(imgURL, "/"))-1], ".")[0]
-	subKey := strings.Split(strings.Split(subURL, "/")[len(strings.Split(subURL, "/"))-1], ".")[0]
+	imgKey := imgURL[strings.LastIndex(imgURL, "/")+1:]
+	imgKey = strings.TrimSuffix(imgKey, filepath.Ext(imgKey))
+	subKey := subURL[strings.LastIndex(subURL, "/")+1:]
+	subKey = strings.TrimSuffix(subKey, filepath.Ext(subKey))
 	return imgKey, subKey
 }

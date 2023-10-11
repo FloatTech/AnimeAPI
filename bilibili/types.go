@@ -47,6 +47,8 @@ const (
 	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
 	// VideoSummaryURL AI视频总结
 	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v"
+	// NavURL 导航URL
+	NavURL = "https://api.bilibili.com/x/web-interface/nav"
 )
 
 // DynamicCard 总动态结构体,包括desc,card

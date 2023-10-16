@@ -112,8 +112,8 @@ func (ro RunOOB) Run(code string, lang string, stdin string) (string, error) {
 
 	header := http.Header{
 		"Content-Type": []string{"application/x-www-form-urlencoded; charset=UTF-8"},
-		"Origin":       []string{"https://c.runoob.com"},
-		"Referer":      []string{"https://c.runoob.com/"},
+		"Origin":       []string{"https://www.runoob.com"},
+		"Referer":      []string{"https://www.runoob.com/try/runcode.php?"},
 		"User-Agent":   []string{web.RandUA()},
 	}
 

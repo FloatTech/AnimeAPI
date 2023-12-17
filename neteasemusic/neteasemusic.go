@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/FloatTech/floatbox/file"
@@ -138,6 +139,13 @@ func DownloadMusic(musicID int, musicName, pathOfMusic string) error {
 		if response.StatusCode != 200 {
 			return errors.Errorf("Status Code: %d", response.StatusCode)
 		}
+
+		// 检查 Content-Type 是否为 HTML
+		contentType := response.Header.Get("Content-Type")
+		if strings.HasPrefix(contentType, "text/html") {
+			return errors.New("URL points to an HTML page instead of an MP3 file")
+		}
+
 		// 下载歌曲
 		err = file.DownloadTo(musicURL, downMusic)
 		process.SleepAbout1sTo2s()

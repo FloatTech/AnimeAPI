@@ -342,7 +342,7 @@ type Danmakusuki struct {
 					TotalLiveSecond      int           `json:"totalLiveSecond"`
 					AddDate              string        `json:"addDate"`
 					CommentCount         int           `json:"commentCount"`
-					LastLiveIncome       int           `json:"lastLiveIncome"`
+					LastLiveIncome       float64       `json:"lastLiveIncome"`
 				} `json:"channel"`
 				Live struct {
 					LiveID           string  `json:"liveId"`

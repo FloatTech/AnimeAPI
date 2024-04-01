@@ -316,42 +316,62 @@ type GuardUser struct {
 
 // Danmakusuki 弹幕网结构体
 type Danmakusuki struct {
-	Code    int64  `json:"code"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    struct {
-		Data []struct {
-			Channel struct {
-				Name      string `json:"name"`
-				IsLiving  bool   `json:"isLiving"`
-				UID       int64  `json:"uId"`
-				RoomID    int64  `json:"roomId"`
-				FaceURL   string `json:"faceUrl"`
-				LiveCount int64  `json:"liveCount"`
-			} `json:"channel"`
-			Live struct {
-				LiveID        string  `json:"liveId"`
-				Title         string  `json:"title"`
-				IsFinish      bool    `json:"isFinish"`
-				CoverURL      string  `json:"coverUrl"`
-				StartDate     int64   `json:"startDate"`
-				StopDate      int64   `json:"stopDate"`
-				DanmakusCount int64   `json:"danmakusCount"`
-				TotalIncome   float64 `json:"totalIncome"`
-				WatchCount    int64   `json:"watchCount"`
-			} `json:"live"`
-			Danmakus []struct {
-				Name     string  `json:"name"`
-				Type     int64   `json:"type"`
-				UID      int64   `json:"uId"`
-				SendDate int64   `json:"sendDate"`
-				Price    float64 `json:"price"`
-				Message  string  `json:"message"`
-			} `json:"danmakus"`
+		Total    int  `json:"total"`
+		PageNum  int  `json:"pageNum"`
+		PageSize int  `json:"pageSize"`
+		HasMore  bool `json:"hasMore"`
+		Data     struct {
+			Records []struct {
+				Channel struct {
+					UID                  int           `json:"uId"`
+					UName                string        `json:"uName"`
+					RoomID               int           `json:"roomId"`
+					FaceURL              string        `json:"faceUrl"`
+					FrameURL             string        `json:"frameUrl"`
+					IsLiving             bool          `json:"isLiving"`
+					Title                string        `json:"title"`
+					Tags                 []interface{} `json:"tags"`
+					LastLiveDate         int64         `json:"lastLiveDate"`
+					LastLiveDanmakuCount int           `json:"lastLiveDanmakuCount"`
+					TotalDanmakuCount    int           `json:"totalDanmakuCount"`
+					TotalIncome          int           `json:"totalIncome"`
+					TotalLiveCount       int           `json:"totalLiveCount"`
+					TotalLiveSecond      int           `json:"totalLiveSecond"`
+					AddDate              string        `json:"addDate"`
+					CommentCount         int           `json:"commentCount"`
+					LastLiveIncome       int           `json:"lastLiveIncome"`
+				} `json:"channel"`
+				Live struct {
+					LiveID           string  `json:"liveId"`
+					IsFinish         bool    `json:"isFinish"`
+					IsFull           bool    `json:"isFull"`
+					ParentArea       string  `json:"parentArea"`
+					Area             string  `json:"area"`
+					CoverURL         string  `json:"coverUrl"`
+					DanmakusCount    int     `json:"danmakusCount"`
+					StartDate        int64   `json:"startDate"`
+					StopDate         int64   `json:"stopDate"`
+					Title            string  `json:"title"`
+					TotalIncome      float64 `json:"totalIncome"`
+					WatchCount       int     `json:"watchCount"`
+					LikeCount        int     `json:"likeCount"`
+					PayCount         int     `json:"payCount"`
+					InteractionCount int     `json:"interactionCount"`
+					MaxOnlineCount   int     `json:"maxOnlineCount"`
+				} `json:"live"`
+				Danmakus []struct {
+					UID      int     `json:"uId"`
+					UName    string  `json:"uName"`
+					Type     int64   `json:"type"`
+					SendDate int64   `json:"sendDate"`
+					Message  string  `json:"message"`
+					Price    float64 `json:"price"`
+				} `json:"danmakus"`
+			} `json:"records"`
 		} `json:"data"`
-		Total    int64 `json:"total"`
-		PageNum  int64 `json:"pageNum"`
-		PageSize int64 `json:"pageSize"`
-		HasMore  bool  `json:"hasMore"`
 	} `json:"data"`
 }
 

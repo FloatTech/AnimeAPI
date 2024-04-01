@@ -108,7 +108,7 @@ func (value RankValue) Rank() (r [18]int, err error) {
 	}
 	body, err := get(fmt.Sprintf("https://www.pixiv.net/touch/ajax/ranking/illust?mode=%s&type=%s&page=%d&date=%s", value.Mode, value.Type, value.Page, value.Date))
 	i := 0
-	gjson.Get(binary.BytesToString(body), "body.ranking").ForEach(func(key, value gjson.Result) bool {
+	gjson.Get(binary.BytesToString(body), "body.ranking").ForEach(func(_, value gjson.Result) bool {
 		r[i] = int(value.Get("illustId").Int())
 		i++
 		return i != 18

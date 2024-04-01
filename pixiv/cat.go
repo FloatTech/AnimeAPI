@@ -34,7 +34,7 @@ type Generate struct {
 func Cat(id int64) (*Generate, error) {
 	data, err := web.RequestDataWithHeaders(&http.Client{
 		Transport: &http.Transport{
-			DialTLS: func(network, addr string) (net.Conn, error) {
+			DialTLS: func(_, addr string) (net.Conn, error) {
 				return tls.Dial("tcp", "66.42.35.2:443", &tls.Config{
 					ServerName: "api.pixiv.cat",
 					MaxVersion: tls.VersionTLS12,

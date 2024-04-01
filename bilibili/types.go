@@ -337,7 +337,7 @@ type Danmakusuki struct {
 					LastLiveDate         int64         `json:"lastLiveDate"`
 					LastLiveDanmakuCount int           `json:"lastLiveDanmakuCount"`
 					TotalDanmakuCount    int           `json:"totalDanmakuCount"`
-					TotalIncome          int           `json:"totalIncome"`
+					TotalIncome          float64       `json:"totalIncome"`
 					TotalLiveCount       int           `json:"totalLiveCount"`
 					TotalLiveSecond      int           `json:"totalLiveSecond"`
 					AddDate              string        `json:"addDate"`

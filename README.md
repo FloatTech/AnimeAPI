@@ -20,8 +20,6 @@ P站解析与图片下载
 QQ空间API
 ## runoob
 菜鸟教程代码运行API
-## scale
-采用[叔叔的模型](https://github.com/bilibili/ailab)放大二次元图片
 ## setu
 供各个插件使用的随机图片池
 ## shindanmaker

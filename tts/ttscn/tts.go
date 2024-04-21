@@ -49,7 +49,11 @@ var (
 			_ = json.Unmarshal(embededspeakers, &m)
 			return
 		}
-		_ = json.Unmarshal(data, &m)
+		err = json.Unmarshal(data, &m)
+		if err != nil {
+			_ = json.Unmarshal(embededspeakers, &m)
+			return
+		}
 		return
 	}()
 	// KBRates 质量

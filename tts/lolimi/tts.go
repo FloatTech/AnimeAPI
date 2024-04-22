@@ -14,7 +14,6 @@ import (
 	"github.com/FloatTech/floatbox/web"
 	"github.com/pkumza/numcn"
 	"github.com/sirupsen/logrus"
-	"github.com/tidwall/gjson"
 )
 
 const (
@@ -65,24 +64,18 @@ func (tts *Lolimi) Speak(_ int64, text func() string) (fileName string, err erro
 		}
 		return numcn.EncodeFromFloat64(f)
 	})
-	var ttsURL string
-	switch tts.name {
-	case "嘉然":
-		ttsURL = fmt.Sprintf(jiaranURL, t)
-	case "塔菲":
-		ttsURL = fmt.Sprintf(tafeiURL, t)
-	case "东雪莲":
-		ttsURL = fmt.Sprintf(dxlURL, t)
-	default:
-		ttsURL = fmt.Sprintf(genshinURL, t, tts.name)
-	}
 	var (
-		b    [8]byte
-		data []byte
+		b      [8]byte
+		data   []byte
+		ttsURL string
 	)
 	goBinary.LittleEndian.PutUint64(b[:], uint64(tts.mode))
 	h := crc64.New(crc64.MakeTable(crc64.ISO))
 	h.Write(b[:])
+	ttsURL, err = TTS(tts.name, t)
+	if err != nil {
+		return
+	}
 	_, _ = h.Write(binary.StringToBytes(ttsURL))
 	n := fmt.Sprintf(cachePath+"%016x.wav", h.Sum64())
 	if file.IsExist(n) {
@@ -92,14 +85,6 @@ func (tts *Lolimi) Speak(_ int64, text func() string) (fileName string, err erro
 	data, err = web.GetData(ttsURL)
 	if err != nil {
 		return
-	}
-	// 嘉然的处理方式不同，直接发送
-	if tts.name != "嘉然" {
-		recordURL := gjson.Get(binary.BytesToString(data), "music").String()
-		data, err = web.GetData(recordURL)
-		if err != nil {
-			return
-		}
 	}
 	err = os.WriteFile(n, data, 0644)
 	if err != nil {

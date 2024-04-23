@@ -2,6 +2,7 @@ package lolimi
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/FloatTech/floatbox/web"
@@ -43,6 +44,7 @@ func TTS(name string, text string) (recURL string, err error) {
 		data   []byte
 		ok     bool
 	)
+	text = strings.ReplaceAll(text, " ", "")
 	ttsURL, ok = lolimiMap[name]
 	if !ok {
 		ttsURL = fmt.Sprintf(genshinURL, text, name)

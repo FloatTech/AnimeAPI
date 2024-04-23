@@ -48,6 +48,9 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 		return "ERROR: " + err.Error()
 	}
 	replystr := gjson.Get(binary.BytesToString(data), "data.output").String()
+	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")
+	replystr = strings.ReplaceAll(replystr, "<br>", "\n")
+	replystr = strings.ReplaceAll(replystr, "\" />", "]")
 	textReply := strings.ReplaceAll(replystr, l.n, nickname)
 	for _, w := range l.b {
 		if strings.Contains(textReply, w) {

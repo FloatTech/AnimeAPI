@@ -1,9 +1,9 @@
 module github.com/FloatTech/AnimeAPI
 
-go 1.22.1
+go 1.20
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20240501145529-b60969003d95
+	github.com/FloatTech/floatbox v0.0.0-20240501145840-4b5a3b2a6806
 	github.com/FloatTech/sqlite v1.6.3
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/antchfx/htmlquery v1.2.5

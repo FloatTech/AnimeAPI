@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	xpath "github.com/antchfx/htmlquery"
+	trshttp "github.com/fumiama/terasu/http"
 
 	"github.com/FloatTech/AnimeAPI/pixiv"
 )
@@ -20,17 +21,11 @@ func Yandex(image string) (*pixiv.Illust, error) {
 		"url":  []string{image},
 		"site": []string{"pixiv.net"},
 	}.Encode()
-	transport := http.Transport{
-		DisableKeepAlives: true,
-	}
-	client := &http.Client{
-		Transport: &transport,
-	}
 
 	// 网络请求
 	req, _ := http.NewRequest("GET", search.String(), nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
-	resp, err := client.Do(req)
+	resp, err := trshttp.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

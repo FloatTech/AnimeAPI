@@ -14,7 +14,7 @@ func Translate(target string) (string, error) {
 		return "", err
 	}
 	return binary.BytesToString(binary.NewWriterF(func(w *binary.Writer) {
-		meanings := gjson.ParseBytes(data).Get("data.0").Get("value").Array()
+		meanings := gjson.ParseBytes(data).Get("translation").Array()
 		if len(meanings) == 0 {
 			w.WriteString("ERROR: 无返回")
 			return

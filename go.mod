@@ -1,14 +1,15 @@
 module github.com/FloatTech/AnimeAPI
 
-go 1.20
+go 1.22.1
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20240304064110-78a83f1af9a6
+	github.com/FloatTech/floatbox v0.0.0-20240501143339-6f4df644b943
 	github.com/FloatTech/sqlite v1.6.3
-	github.com/RomiChan/syncx v0.0.0-20221202055724-5f842c53020e
+	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/corona10/goimagehash v1.1.0
 	github.com/fumiama/go-base16384 v1.7.0
+	github.com/fumiama/terasu v0.0.0-20240420161109-c8c0088d72cd
 	github.com/pkg/errors v0.9.1
 	github.com/pkumza/numcn v1.0.0
 	github.com/sirupsen/logrus v1.9.3
@@ -18,7 +19,7 @@ require (
 )
 
 require (
-	github.com/FloatTech/ttl v0.0.0-20220715042055-15612be72f5b // indirect
+	github.com/FloatTech/ttl v0.0.0-20230307105452-d6f7b2b647d1 // indirect
 	github.com/antchfx/xpath v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fumiama/cron v1.3.0 // indirect
@@ -36,9 +37,9 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/wdvxdr1123/ZeroBot v1.7.5-0.20231009162356-57f71b9f5258 // indirect
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
-	golang.org/x/sys v0.1.1-0.20221102194838-fc697a31fa06 // indirect
-	golang.org/x/text v0.6.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.21.5 // indirect

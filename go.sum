@@ -1,5 +1,5 @@
-github.com/FloatTech/floatbox v0.0.0-20240501143339-6f4df644b943 h1:mRwHubaaApiku/AdetR2VdHmJjx1RR2JIXiXnwYRsXk=
-github.com/FloatTech/floatbox v0.0.0-20240501143339-6f4df644b943/go.mod h1:153Q0q6uq9EsG3Yk6NM13GEloCc4rW964iVvJht8t/k=
+github.com/FloatTech/floatbox v0.0.0-20240501145529-b60969003d95 h1:dUskGhd+C20aZsQB9sMO0zOrW+C5S7iPRjgCRECgCwI=
+github.com/FloatTech/floatbox v0.0.0-20240501145529-b60969003d95/go.mod h1:9nlZDAslROjepjc2fPUcxgYI4GAQOrPqsYN4lbz134Y=
 github.com/FloatTech/sqlite v1.6.3 h1:MQkqBNlkPuCoKQQgoNLuTL/2Ci3tBTFAnVYBdD0Wy4M=
 github.com/FloatTech/sqlite v1.6.3/go.mod h1:zFbHzRfB+CJ+VidfjuVbrcin3DAz283F7hF1hIeHzpY=
 github.com/FloatTech/ttl v0.0.0-20230307105452-d6f7b2b647d1 h1:g4pTnDJUW4VbJ9NvoRfUvdjDrHz/6QhfN/LoIIpICbo=
@@ -30,8 +30,8 @@ github.com/fumiama/gofastTEA v0.0.10 h1:JJJ+brWD4kie+mmK2TkspDXKzqq0IjXm89aGYfoG
 github.com/fumiama/gofastTEA v0.0.10/go.mod h1:RIdbYZyB4MbH6ZBlPymRaXn3cD6SedlCu5W/HHfMPBk=
 github.com/fumiama/sqlite3 v1.20.0-with-win386 h1:ZR1AXGBEtkfq9GAXehOVcwn+aaCG8itrkgEsz4ggx5k=
 github.com/fumiama/sqlite3 v1.20.0-with-win386/go.mod h1:Os58MHwYCcYZCy2PGChBrQtBAw5/LS1ZZOkfc+C/I7s=
-github.com/fumiama/terasu v0.0.0-20240420161109-c8c0088d72cd h1:cEUaAUdb1uVyOfEenCMtU3lUMELTVwepn/g7UL/CK54=
-github.com/fumiama/terasu v0.0.0-20240420161109-c8c0088d72cd/go.mod h1:afchyfKAb7J/zvaENtYzjIEPVbwiEjJaow05zzT4usM=
+github.com/fumiama/terasu v0.0.0-20240501145420-db464c711441 h1:q0vDKe85kWh+ag9+RD1z7VAJNy4/NA+4SbY2jpWwAzQ=
+github.com/fumiama/terasu v0.0.0-20240501145420-db464c711441/go.mod h1:UVx8YP1jKKL1Cj+uy+OnQRM2Ih6U36Mqy9GSf7jabsI=
 github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da h1:oI5xCqsCo564l8iNU+DwB5epxmsaqB+rhGL0m5jtYqE=
 github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=

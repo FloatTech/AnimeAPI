@@ -57,7 +57,7 @@ func NewGenshin(mode int, code string) *Genshin {
 
 // Speak 返回音频 url
 func (tts *Genshin) Speak(_ int64, text func() string) (fileName string, err error) {
-	t := text()
+	t := text() + "。"
 	u := fmt.Sprintf(CNAPI, url.QueryEscape(tts.name), url.QueryEscape(
 		// 将数字转文字
 		re.ReplaceAllStringFunc(t, func(s string) string {

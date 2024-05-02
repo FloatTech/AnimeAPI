@@ -3,13 +3,13 @@ module github.com/FloatTech/AnimeAPI
 go 1.20
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20240501153733-21c4fd53fcba
+	github.com/FloatTech/floatbox v0.0.0-20240502092157-9deaab837c04
 	github.com/FloatTech/sqlite v1.6.3
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/antchfx/htmlquery v1.2.5
 	github.com/corona10/goimagehash v1.1.0
 	github.com/fumiama/go-base16384 v1.7.0
-	github.com/fumiama/terasu v0.0.0-20240501153608-871703d64492
+	github.com/fumiama/terasu v0.0.0-20240502091919-c887e26289a8
 	github.com/pkg/errors v0.9.1
 	github.com/pkumza/numcn v1.0.0
 	github.com/sirupsen/logrus v1.9.3

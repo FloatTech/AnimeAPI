@@ -46,7 +46,7 @@ const (
 	// AllGuardURL 查询所有舰长,提督,总督
 	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
 	// VideoSummaryURL AI视频总结
-	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v"
+	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v&up_mid=%v"
 	// NavURL 导航URL
 	NavURL = "https://api.bilibili.com/x/web-interface/nav"
 )

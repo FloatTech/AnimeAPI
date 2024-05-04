@@ -225,6 +225,9 @@ func GetVideoSummary(cookiecfg *CookieConfig, id string) (videoSummary VideoSumm
 		req.Header.Set("User-Agent", web.RandUA())
 		return nil
 	}, nil)
+	if err != nil {
+		return
+	}
 	err = json.Unmarshal(data, &videoSummary)
 	return
 }

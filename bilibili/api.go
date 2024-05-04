@@ -195,7 +195,7 @@ func GetVideoInfo(id string) (card Card, err error) {
 }
 
 // GetVideoSummary 用av或bv查看AI视频总结
-func GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
+func GetVideoSummary(cookiecfg *CookieConfig, id string) (videoSummary VideoSummary, err error) {
 	var (
 		data []byte
 		card Card
@@ -213,10 +213,18 @@ func GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
 	if err != nil {
 		return
 	}
-	data, err = web.GetData(SignURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID)))
-	if err != nil {
-		return
-	}
+	data, err = web.RequestDataWithHeaders(web.NewDefaultClient(), SignURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID, card.Owner.Mid)), "GET", func(req *http.Request) error {
+		if cookiecfg != nil {
+			cookie := ""
+			cookie, err = cookiecfg.Load()
+			if err != nil {
+				return err
+			}
+			req.Header.Add("cookie", cookie)
+		}
+		req.Header.Set("User-Agent", web.RandUA())
+		return nil
+	}, nil)
 	err = json.Unmarshal(data, &videoSummary)
 	return
 }

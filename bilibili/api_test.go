@@ -12,14 +12,6 @@ func TestGetAllGuard(t *testing.T) {
 	t.Logf("%+v\n", guardUser)
 }
 
-func TestGetVideoSummary(t *testing.T) {
-	videoSummary, err := GetVideoSummary("BV1ju4y1s7kn")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("%+v\n", videoSummary)
-}
-
 func TestGetDynamicDetail(t *testing.T) {
 	cfg := NewCookieConfig("config.json")
 	detail, err := GetDynamicDetail(cfg, "851252197280710664")

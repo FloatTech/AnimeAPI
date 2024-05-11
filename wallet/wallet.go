@@ -30,6 +30,7 @@ var (
 			DBPath: "data/wallet/wallet.db",
 		},
 	}
+	walletName = "Atri币"
 )
 
 func init() {
@@ -47,6 +48,14 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func GetWalletName() string {
+	return walletName
+}
+
+func SetWalletName(name string) {
+	walletName = name
 }
 
 // GetWalletOf 获取钱包数据

@@ -50,10 +50,12 @@ func init() {
 	}
 }
 
+// GetWalletName 获取货币名称
 func GetWalletName() string {
 	return walletName
 }
 
+// SetWalletName 设置货币名称
 func SetWalletName(name string) {
 	walletName = name
 }

@@ -73,9 +73,9 @@ func GetGroupWalletOf(sortable bool, uids ...int64) (wallets []Wallet, err error
 }
 
 // InsertWalletOf 更新钱包(money > 0 增加,money < 0 减少)
-func (sql *Storage) InsertWalletOf(uid int64, money int) error {
-	sql.Lock()
-	defer sql.Unlock()
+func InsertWalletOf(uid int64, money int) error {
+	sdb.Lock()
+	defer sdb.Unlock()
 	lastMoney := sdb.getWalletOf(uid)
 	newMoney := lastMoney.Money + money
 	if newMoney < 0 {
@@ -84,7 +84,7 @@ func (sql *Storage) InsertWalletOf(uid int64, money int) error {
 	return sdb.updateWalletOf(uid, newMoney)
 }
 
-// 获取钱包数据
+// 获取钱包数据 no lock
 func (sql *Storage) getWalletOf(uid int64) (wallet Wallet) {
 	uidstr := strconv.FormatInt(uid, 10)
 	_ = sql.db.Find("storage", &wallet, "where uid is "+uidstr)
@@ -112,7 +112,7 @@ func (sql *Storage) getGroupWalletOf(sortable bool, uids ...int64) (wallets []Wa
 	return
 }
 
-// 更新钱包
+// 更新钱包 no lock
 func (sql *Storage) updateWalletOf(uid int64, money int) (err error) {
 	return sql.db.Insert("storage", &Wallet{
 		UID:   uid,

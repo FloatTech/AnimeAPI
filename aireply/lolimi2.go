@@ -104,7 +104,13 @@ func (l *LolimiAi2) TalkPlain(_ int64, msg, nickname string) string {
 func (l *LolimiAi2Mem) TalkPlain(_ int64, msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, l.n)
 	u := fmt.Sprintf(l.u, url.QueryEscape(l.k))
-	json, err := json.Marshal(l.m)
+	json, err := json.Marshal(
+		append(l.m,
+			lolimi2Message{
+				Role: "user", Content: msg,
+			},
+		),
+	)
 	if err != nil {
 		return "ERROR: " + err.Error()
 	}
@@ -112,7 +118,7 @@ func (l *LolimiAi2Mem) TalkPlain(_ int64, msg, nickname string) string {
 	if err != nil {
 		return "ERROR: " + err.Error()
 	}
-	replystr := gjson.Get(binary.BytesToString(data), "data.output").String()
+	replystr := binary.BytesToString(data)
 	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")
 	replystr = strings.ReplaceAll(replystr, "<br>", "\n")
 	replystr = strings.ReplaceAll(replystr, "\" />", "]")

@@ -66,7 +66,7 @@ func NewLolimiAi2(u, name string, key string, banwords ...string) *LolimiAi2 {
 
 // NewLolimiAi2Mem ...
 func NewLolimiAi2Mem(u, name string, key string, limit int, banwords ...string) *LolimiAi2Mem {
-	return &LolimiAi2Mem{u: u, n: name, k: key, l: limit, b: banwords, m: make([]lolimi2Message, limit)}
+	return &LolimiAi2Mem{u: u, n: name, k: key, l: limit, b: banwords, m: []lolimi2Message{}}
 }
 
 // String ...

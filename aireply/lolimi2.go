@@ -85,7 +85,10 @@ func (l *LolimiAi2) TalkPlain(_ int64, msg, nickname string) string {
 	u := fmt.Sprintf(l.u, url.QueryEscape(l.k), url.QueryEscape(msg))
 	data, err := web.GetData(u)
 	if err != nil {
-		return "ERROR: " + err.Error()
+		errMsg := err.Error()
+		// Remove the key from error message
+		errMsg = strings.ReplaceAll(errMsg, l.k, "********")
+		return "ERROR: " + errMsg
 	}
 	replystr := gjson.Get(binary.BytesToString(data), "data.output").String()
 	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")
@@ -112,11 +115,15 @@ func (l *LolimiAi2Mem) TalkPlain(_ int64, msg, nickname string) string {
 		),
 	)
 	if err != nil {
+		//panic(err)
 		return "ERROR: " + err.Error()
 	}
 	data, err := web.PostData(u, "application/json", strings.NewReader(binary.BytesToString(json)))
 	if err != nil {
-		return "ERROR: " + err.Error()
+		errMsg := err.Error()
+		// Remove the key from error message
+		errMsg = strings.ReplaceAll(errMsg, l.k, "********")
+		return "ERROR: " + errMsg
 	}
 	replystr := binary.BytesToString(data)
 	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")

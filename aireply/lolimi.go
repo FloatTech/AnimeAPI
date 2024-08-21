@@ -46,7 +46,7 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 	u := fmt.Sprintf(l.u, l.k, url.QueryEscape(msg))
 	data, err := web.GetData(u)
 	if err != nil {
-		return "ERROR: " + err.Error()
+		return "ERROR: " + strings.ReplaceAll(err.Error(), l.k, "********")
 	}
 	replystr := gjson.Get(binary.BytesToString(data), "data.output").String()
 	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")

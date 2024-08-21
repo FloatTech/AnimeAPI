@@ -13,25 +13,26 @@ import (
 // LolimiAi Lolimi回复类
 type LolimiAi struct {
 	u string
+	k string
 	n string
 	b []string
 }
 
 const (
-	lolimiURL = "https://api.lolimi.cn"
+	lolimiURL = "https://apii.lolimi.cn"
 	// MomoURL api地址
-	MomoURL = lolimiURL + "/API/AI/mm.php?msg=%v"
+	MomoURL = lolimiURL + "/api/mmai/mm?key=%v&msg=%v"
 	// MomoBotName ...
 	MomoBotName = "沫沫"
 	// JingfengURL api地址
-	JingfengURL = lolimiURL + "/API/AI/jj.php?msg=%v"
+	JingfengURL = lolimiURL + "/api/jjai/jj?key=%v&msg=%v"
 	// JingfengBotName ...
 	JingfengBotName = "婧枫"
 )
 
 // NewLolimiAi ...
-func NewLolimiAi(u, name string, banwords ...string) *LolimiAi {
-	return &LolimiAi{u: u, n: name, b: banwords}
+func NewLolimiAi(u, k, name string, banwords ...string) *LolimiAi {
+	return &LolimiAi{u: u, k: k, n: name, b: banwords}
 }
 
 // String ...
@@ -42,7 +43,7 @@ func (l *LolimiAi) String() string {
 // TalkPlain 取得回复消息
 func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, l.n)
-	u := fmt.Sprintf(l.u, url.QueryEscape(msg))
+	u := fmt.Sprintf(l.u, l.k, url.QueryEscape(msg))
 	data, err := web.GetData(u)
 	if err != nil {
 		return "ERROR: " + err.Error()

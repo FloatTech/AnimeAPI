@@ -1,8 +1,11 @@
 package aireply
 
 import (
-	"encoding/json"
+	/*"bytes"
+	"encoding/json"*/
 	"fmt"
+	/*"io"
+	"net/http"*/
 	"net/url"
 	"strings"
 
@@ -19,6 +22,9 @@ type LolimiAi2 struct {
 	b []string
 }
 
+// TODO: LolimiAi2Mem 有不明 Bug，导致 TalkPlain 返回 API 失败的信息
+// 我不清楚怎么修，试了很多方法都解决不了
+/*
 // LolimiAi2Mem Lolimi带记忆回复类
 type LolimiAi2Mem struct {
 	u string
@@ -34,6 +40,7 @@ type lolimi2Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
+*/
 
 const (
 	lolimi2URL = "https://apii.lolimi.cn"
@@ -51,12 +58,14 @@ const (
 	// TODO 换个更好的名字
 	GPT4oBotName = "GPT4o"
 
+/*
 	// 带记忆 POST 请求专区
 	// C4oURL api地址
 	C4oURL = lolimi2URL + "/api/c4o/c?key=%s"
 	// C4oBotName ...
 	// TODO 换个更好的名字
 	C4oBotName = "GPT4o"
+*/
 )
 
 // NewLolimiAi2 ...
@@ -64,20 +73,24 @@ func NewLolimiAi2(u, name string, key string, banwords ...string) *LolimiAi2 {
 	return &LolimiAi2{u: u, n: name, k: key, b: banwords}
 }
 
+/*
 // NewLolimiAi2Mem ...
 func NewLolimiAi2Mem(u, name string, key string, limit int, banwords ...string) *LolimiAi2Mem {
 	return &LolimiAi2Mem{u: u, n: name, k: key, l: limit, b: banwords, m: []lolimi2Message{}}
 }
+*/
 
 // String ...
 func (l *LolimiAi2) String() string {
 	return l.n
 }
 
+/*
 // String ...
 func (l *LolimiAi2Mem) String() string {
 	return l.n
 }
+*/
 
 // TalkPlain 取得回复消息
 func (l *LolimiAi2) TalkPlain(_ int64, msg, nickname string) string {
@@ -103,6 +116,7 @@ func (l *LolimiAi2) TalkPlain(_ int64, msg, nickname string) string {
 	return textReply
 }
 
+/*
 // TalkPlain 取得回复消息
 func (l *LolimiAi2Mem) TalkPlain(_ int64, msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, l.n)
@@ -118,7 +132,9 @@ func (l *LolimiAi2Mem) TalkPlain(_ int64, msg, nickname string) string {
 		//panic(err)
 		return "ERROR: " + err.Error()
 	}
-	data, err := web.PostData(u, "application/json", strings.NewReader(binary.BytesToString(json)))
+	// TODO: 有 Bug，如果在模块外调用 TalkPlain 函数，将会返回
+	// "请使用psot格式请求如有疑问进官方群"
+	data, err := lolimiAi2MemPostJson(u, json)
 	if err != nil {
 		errMsg := err.Error()
 		// Remove the key from error message
@@ -156,13 +172,39 @@ func (l *LolimiAi2Mem) TalkPlain(_ int64, msg, nickname string) string {
 	}
 	return textReply
 }
+*/
 
 // Talk 取得带 CQ 码的回复消息
 func (l *LolimiAi2) Talk(_ int64, msg, nickname string) string {
 	return l.TalkPlain(0, msg, nickname)
 }
 
+/*
 // Talk 取得带 CQ 码的回复消息
 func (l *LolimiAi2Mem) Talk(_ int64, msg, nickname string) string {
 	return l.TalkPlain(0, msg, nickname)
 }
+
+//go:noinline
+func lolimiAi2MemPostJson(u string, json []byte) (data []byte, err error) {
+	client := &http.Client{}
+	var req *http.Request
+	req, err = http.NewRequest("POST", u, bytes.NewReader(json))
+	if err != nil {
+		return
+	}
+	req.Header.Add("User-Agent", "Apifox/1.0.0 (https://apifox.com)")
+	req.Header.Add("Content-Type", "application/json")
+
+	var res *http.Response
+	res, err = client.Do(req)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+
+	data, err = io.ReadAll(res.Body)
+	//data, err = web.PostData(u, "application/json", bytes.NewReader(json))
+	return
+}
+*/

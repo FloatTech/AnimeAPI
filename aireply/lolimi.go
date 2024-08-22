@@ -39,15 +39,15 @@ type lolimiMessage struct {
 const (
 	lolimiURL = "https://apii.lolimi.cn"
 	// MomoURL api地址
-	MomoURL = lolimiURL + "/api/mmai/mm?key=%s&msg=%"
+	MomoURL = lolimiURL + "/api/mmai/mm?key=%s&msg=%s"
 	// MomoBotName ...
 	MomoBotName = "沫沫"
 	// JingfengURL api地址
-	JingfengURL = lolimiURL + "/api/jjai/jj?key=%s&msg=%"
+	JingfengURL = lolimiURL + "/api/jjai/jj?key=%s&msg=%s"
 	// JingfengBotName ...
 	JingfengBotName = "婧枫"
 	// GPT4oURL api地址
-	GPT4oURL = lolimiURL + "/api/4o/gpt4o?key=%s&msg=%v"
+	GPT4oURL = lolimiURL + "/api/4o/gpt4o?key=%s&msg=%s"
 	// GPT4oBotName ...
 	// TODO 换个更好的名字
 	GPT4oBotName = "GPT4o"

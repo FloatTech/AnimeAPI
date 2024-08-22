@@ -115,7 +115,7 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 	if l.l > 0 {
 		// 添加记忆
 		var m []lolimiMessage
-		if len(l.m) >= l.l-1 {
+		if len(l.m) >= l.l-1 && len(l.m) >= 2 {
 			m = l.m[2:]
 		} else {
 			m = l.m

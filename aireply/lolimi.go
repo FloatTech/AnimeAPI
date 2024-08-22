@@ -14,20 +14,13 @@ import (
 
 // LolimiAi Lolimi回复类
 type LolimiAi struct {
-	u string
-	n string
-	k string
-	b []string
-}
-
-// LolimiMemoryAi Lolimi带记忆回复类
-type LolimiMemoryAi struct {
-	u string
-	n string
-	k string
-	b []string
-	l int
-	m []lolimiMessage
+	u string          // API 地址
+	n string          // AI 名称
+	k string          // API 密钥
+	b []string        // Banwords
+	t bool            // API 响应模式是否为文本
+	l int             // 记忆限制数（小于 1 的值可以禁用记忆模式）
+	m []lolimiMessage // 记忆数据
 }
 
 // lolimiMessage 消息记忆记录
@@ -62,16 +55,9 @@ const (
 )
 
 // NewLolimiAi ...
-func NewLolimiAi(u, name string, key string, banwords ...string) *LolimiAi {
-	return &LolimiAi{u: u, n: name, k: key, b: banwords}
+func NewLolimiAi(u, name string, key string, textMode bool, memoryLimit int, banwords ...string) *LolimiAi {
+	return &LolimiAi{u: u, n: name, k: key, t: textMode, l: memoryLimit, b: banwords}
 }
-
-// NewLolimiMemoryAi ...
-func NewLolimiMemoryAi(u, name string, key string, limit int, banwords ...string) *LolimiMemoryAi {
-	return &LolimiMemoryAi{u: u, n: name, k: key, l: limit, b: banwords, m: []lolimiMessage{}}
-}
-
-// LolimiAi
 
 // String ...
 func (l *LolimiAi) String() string {
@@ -81,15 +67,42 @@ func (l *LolimiAi) String() string {
 // TalkPlain 取得回复消息
 func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 	msg = strings.ReplaceAll(msg, nickname, l.n)
-	u := fmt.Sprintf(l.u, url.QueryEscape(l.k), url.QueryEscape(msg))
-	data, err := web.GetData(u)
+	var u string
+	var data []byte
+	var err error
+	if l.l > 0 {
+		u = fmt.Sprintf(l.u, url.QueryEscape(l.k))
+		json, err := json.Marshal(
+			append(l.m,
+				lolimiMessage{
+					Role: "user", Content: msg,
+				},
+			),
+		)
+		if err != nil {
+			//panic(err)
+			return "ERROR: " + err.Error()
+		}
+		// TODO: 可能会返回
+		// "请使用psot格式请求如有疑问进官方群"
+		data, err = web.PostData(u, "application/json", bytes.NewReader(json))
+	} else {
+		u := fmt.Sprintf(l.u, url.QueryEscape(l.k), url.QueryEscape(msg))
+		data, err = web.GetData(u)
+	}
 	if err != nil {
 		errMsg := err.Error()
 		// Remove the key from error message
 		errMsg = strings.ReplaceAll(errMsg, l.k, "********")
 		return "ERROR: " + errMsg
 	}
-	replystr := gjson.Get(binary.BytesToString(data), "data.output").String()
+	var replystr string
+	if l.t {
+		replystr = binary.BytesToString(data)
+	} else {
+		replystr = gjson.Get(binary.BytesToString(data), "data.output").String()
+	}
+	// TODO: 是否要删除遗留代码
 	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")
 	replystr = strings.ReplaceAll(replystr, "<br>", "\n")
 	replystr = strings.ReplaceAll(replystr, "\" />", "]")
@@ -98,79 +111,28 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 		if strings.Contains(textReply, w) {
 			return "ERROR: 回复可能含有敏感内容"
 		}
+	}
+	if l.l > 0 {
+		// 添加记忆
+		var m []lolimiMessage
+		if len(l.m) >= l.l-1 {
+			m = l.m[2:]
+		} else {
+			m = l.m
+		}
+		l.m = append(m,
+			lolimiMessage{
+				Role: "user", Content: msg,
+			},
+			lolimiMessage{
+				Role: "assistant", Content: textReply,
+			},
+		)
 	}
 	return textReply
 }
 
 // Talk 取得带 CQ 码的回复消息
 func (l *LolimiAi) Talk(_ int64, msg, nickname string) string {
-	return l.TalkPlain(0, msg, nickname)
-}
-
-// LolimiMemoryAi
-
-// String ...
-func (l *LolimiMemoryAi) String() string {
-	return l.n
-}
-
-// TalkPlain 取得回复消息
-func (l *LolimiMemoryAi) TalkPlain(_ int64, msg, nickname string) string {
-	msg = strings.ReplaceAll(msg, nickname, l.n)
-	u := fmt.Sprintf(l.u, url.QueryEscape(l.k))
-	json, err := json.Marshal(
-		append(l.m,
-			lolimiMessage{
-				Role: "user", Content: msg,
-			},
-		),
-	)
-	if err != nil {
-		//panic(err)
-		return "ERROR: " + err.Error()
-	}
-	// TODO: 可能会返回
-	// "请使用psot格式请求如有疑问进官方群"
-	data, err := web.PostData(u, "application/json", bytes.NewReader(json))
-	if err != nil {
-		errMsg := err.Error()
-		// Remove the key from error message
-		errMsg = strings.ReplaceAll(errMsg, l.k, "********")
-		return "ERROR: " + errMsg
-	}
-	replystr := binary.BytesToString(data)
-	replystr = strings.ReplaceAll(replystr, "<img src=\"", "[CQ:image,file=")
-	replystr = strings.ReplaceAll(replystr, "<br>", "\n")
-	replystr = strings.ReplaceAll(replystr, "\" />", "]")
-	textReply := strings.ReplaceAll(replystr, l.n, nickname)
-	for _, w := range l.b {
-		if strings.Contains(textReply, w) {
-			return "ERROR: 回复可能含有敏感内容"
-		}
-	}
-	if len(l.m) >= l.l-1 {
-		l.m = append(l.m[2:],
-			lolimiMessage{
-				Role: "user", Content: msg,
-			},
-			lolimiMessage{
-				Role: "assistant", Content: textReply,
-			},
-		)
-	} else {
-		l.m = append(l.m,
-			lolimiMessage{
-				Role: "user", Content: msg,
-			},
-			lolimiMessage{
-				Role: "assistant", Content: textReply,
-			},
-		)
-	}
-	return textReply
-}
-
-// Talk 取得带 CQ 码的回复消息
-func (l *LolimiMemoryAi) Talk(_ int64, msg, nickname string) string {
 	return l.TalkPlain(0, msg, nickname)
 }

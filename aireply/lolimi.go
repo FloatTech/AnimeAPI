@@ -80,12 +80,14 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 			),
 		)
 		if err != nil {
-			//panic(err)
 			return "ERROR: " + err.Error()
 		}
 		// TODO: 可能会返回
 		// "请使用psot格式请求如有疑问进官方群"
 		data, err = web.PostData(u, "application/json", bytes.NewReader(json))
+		if err != nil {
+			return "ERROR: " + err.Error()
+		}
 	} else {
 		u := fmt.Sprintf(l.u, url.QueryEscape(l.k), url.QueryEscape(msg))
 		data, err = web.GetData(u)
@@ -114,13 +116,10 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 	}
 	if l.l > 0 {
 		// 添加记忆
-		var m []lolimiMessage
 		if len(l.m) >= l.l-1 && len(l.m) >= 2 {
-			m = l.m[2:]
-		} else {
-			m = l.m
+			l.m = l.m[2:]
 		}
-		l.m = append(m,
+		l.m = append(l.m,
 			lolimiMessage{
 				Role: "user", Content: msg,
 			},

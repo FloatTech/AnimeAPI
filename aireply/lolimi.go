@@ -72,22 +72,20 @@ func (l *LolimiAi) TalkPlain(_ int64, msg, nickname string) string {
 	var err error
 	if l.l > 0 {
 		u = fmt.Sprintf(l.u, url.QueryEscape(l.k))
-		json, err := json.Marshal(
-			append(l.m,
+		data, cl := binary.OpenWriterF(func(w *binary.Writer) {
+			err = json.NewEncoder(w).Encode(append(l.m,
 				lolimiMessage{
 					Role: "user", Content: msg,
 				},
-			),
-		)
+			))
+		})
+		defer cl()
 		if err != nil {
 			return "ERROR: " + err.Error()
 		}
 		// TODO: 可能会返回
 		// "请使用psot格式请求如有疑问进官方群"
-		data, err = web.PostData(u, "application/json", bytes.NewReader(json))
-		if err != nil {
-			return "ERROR: " + err.Error()
-		}
+		data, err = web.PostData(u, "application/json", bytes.NewReader(data)) //nolint: go-staticcheck
 	} else {
 		u := fmt.Sprintf(l.u, url.QueryEscape(l.k), url.QueryEscape(msg))
 		data, err = web.GetData(u)

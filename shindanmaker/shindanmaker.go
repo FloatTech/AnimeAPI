@@ -39,8 +39,8 @@ func Shindanmaker(id int64, name string) (string, error) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	_ = writer.WriteField("_token", token)
-	_ = writer.WriteField("shindanName", name)
-	_ = writer.WriteField("hiddenName", "名無しのR")
+	_ = writer.WriteField("user_input_value_1", name)
+	_ = writer.WriteField("randname", "名無しのR")
 	_ = writer.WriteField("type", "name")
 	_ = writer.WriteField("shindan_token", shindantoken)
 	_ = writer.Close()
@@ -66,7 +66,7 @@ func Shindanmaker(id int64, name string) (string, error) {
 		cookie = ""
 		return "", errors.New("无法查找到结果, 请稍后再试")
 	}
-	var output = []string{}
+	output := []string{}
 	for child := list[0].FirstChild; child != nil; child = child.NextSibling {
 		text := xpath.InnerText(child)
 		switch {

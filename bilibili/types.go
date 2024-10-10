@@ -16,7 +16,7 @@ const (
 	// DynamicDetailURL 当前动态信息,一个card
 	DynamicDetailURL = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=%v"
 	// MemberCardURL 个人信息
-	MemberCardURL = "https://account.bilibili.com/api/member/getCardByMid?mid=%v"
+	MemberCardURL = "https://api.bilibili.com/x/web-interface/card?mid=%v"
 	// ArticleInfoURL 查看专栏信息
 	ArticleInfoURL = "https://api.bilibili.com/x/article/viewinfo?id=%v"
 	// CVURL b站专栏前缀

@@ -13,10 +13,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-var (
-	// ErrAPINeedCookie ...
-	ErrAPINeedCookie = errors.New("api need cookie")
-)
+// ErrAPINeedCookie ...
+var ErrAPINeedCookie = errors.New("api need cookie")
 
 // SearchUser 查找b站用户
 func SearchUser(cookiecfg *CookieConfig, keyword string) (r []SearchResult, err error) {
@@ -101,7 +99,7 @@ func GetMemberCard(uid any) (result MemberCard, err error) {
 	if err != nil {
 		return
 	}
-	err = json.Unmarshal(binary.StringToBytes(gjson.ParseBytes(data).Get("card").Raw), &result)
+	err = json.Unmarshal(binary.StringToBytes(gjson.ParseBytes(data).Get("data.card").Raw), &result)
 	return
 }
 

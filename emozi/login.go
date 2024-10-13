@@ -16,7 +16,7 @@ import (
 // NewUser 创建已注册用户实例
 //
 // 注册请前往 API 网址
-func NewUser(name, pswd string) (usr User, err error) {
+func NewUser(name, pswd string) (usr User) {
 	usr.name = name
 	usr.pswd = pswd
 	return

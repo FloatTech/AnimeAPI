@@ -67,12 +67,13 @@ func (nv *NovalAI) Draw(tags string) (seed int, tagsproceeded string, img []byte
 	}
 	seed = config.Parameters.Seed
 	tagsproceeded = tags
-	buf := bytes.NewBuffer(nil)
-	err = config.WrtieTo(buf)
+	buf := binary.SelectWriter()
+	defer binary.PutWriter(buf)
+	err = config.WriteJSON(buf)
 	if err != nil {
 		return
 	}
-	req, err := http.NewRequest("POST", genapi, buf)
+	req, err := http.NewRequest("POST", genapi, (*bytes.Buffer)(buf))
 	if err != nil {
 		return
 	}
@@ -156,7 +157,7 @@ func (p *Payload) String() string {
 	return binary.BytesToString(b)
 }
 
-// WrtieTo ...
-func (p *Payload) WrtieTo(w io.Writer) error {
+// WriteJSON ...
+func (p *Payload) WriteJSON(w io.Writer) error {
 	return json.NewEncoder(w).Encode(p)
 }

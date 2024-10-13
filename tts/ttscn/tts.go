@@ -126,7 +126,7 @@ type result struct {
 
 // Speak 返回音频本地路径
 func (tts *TTS) Speak(_ int64, text func() string) (fileName string, err error) {
-	q := binary.NewWriterF(func(w *binary.Writer) {
+	q, cl := binary.OpenWriterF(func(w *binary.Writer) {
 		w.WriteString("language=")
 		w.WriteString(url.QueryEscape(tts.language))
 		w.WriteString("&voice=")
@@ -148,7 +148,7 @@ func (tts *TTS) Speak(_ int64, text func() string) (fileName string, err error) 
 		w.WriteString("&styledegree=")
 		w.WriteString(strconv.FormatFloat(tts.styledegree, 'f', 2, 64))
 	})
-	println(string(q))
+	defer cl()
 	data, err := web.RequestDataWithHeaders(
 		web.NewTLS12Client(), ttsapi, "POST", func(r *http.Request) error {
 			r.Header.Add("accept", "*/*")

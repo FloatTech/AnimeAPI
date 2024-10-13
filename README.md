@@ -6,6 +6,8 @@
 ascii2d 搜图
 ## bilibili
 b站相关API
+## emozi
+颜文字抽象转写
 ## huggingface
 huggingface API
 ## neteasemusic

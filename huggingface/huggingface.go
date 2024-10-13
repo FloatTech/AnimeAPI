@@ -63,7 +63,7 @@ type StatusResponse struct {
 }
 
 // Push 推送请求
-func Push(pushURL string, pushReq PushRequest) (pushRes PushResponse, err error) {
+func Push(pushURL string, pushReq *PushRequest) (pushRes PushResponse, err error) {
 	b, err := json.Marshal(pushReq)
 	if err != nil {
 		return
@@ -77,7 +77,7 @@ func Push(pushURL string, pushReq PushRequest) (pushRes PushResponse, err error)
 }
 
 // Status 状态请求
-func Status(statusURL string, statusReq StatusRequest) (data []byte, err error) {
+func Status(statusURL string, statusReq *StatusRequest) (data []byte, err error) {
 	b, err := json.Marshal(statusReq)
 	if err != nil {
 		return

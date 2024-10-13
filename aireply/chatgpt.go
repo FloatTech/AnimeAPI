@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/FloatTech/floatbox/binary"
 )
 
 // ChatGPT GPT回复类
@@ -77,12 +79,13 @@ func chat(msg string, apiKey string, url string) string {
 		FrequencyPenalty: 0,
 		PresencePenalty:  0,
 	}
-	requestData := bytes.NewBuffer(make([]byte, 0, 1024*1024))
+	requestData := binary.SelectWriter()
+	defer binary.PutWriter(requestData)
 	err := json.NewEncoder(requestData).Encode(&requestBody)
 	if err != nil {
 		return err.Error()
 	}
-	req, err := http.NewRequest("POST", url+"completions", requestData)
+	req, err := http.NewRequest("POST", url+"completions", (*bytes.Buffer)(requestData))
 	if err != nil {
 		return err.Error()
 	}

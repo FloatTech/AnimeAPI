@@ -3,24 +3,24 @@ module github.com/FloatTech/AnimeAPI
 go 1.20
 
 require (
-	github.com/FloatTech/floatbox v0.0.0-20240502092157-9deaab837c04
+	github.com/FloatTech/floatbox v0.0.0-20240505082030-226ec6713e14
 	github.com/FloatTech/sqlite v1.6.3
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
-	github.com/antchfx/htmlquery v1.2.5
+	github.com/antchfx/htmlquery v1.3.3
 	github.com/corona10/goimagehash v1.1.0
 	github.com/fumiama/go-base16384 v1.7.0
-	github.com/fumiama/terasu v0.0.0-20240502091919-c887e26289a8
+	github.com/fumiama/terasu v0.0.0-20240710095334-67a8daa3a979
 	github.com/pkg/errors v0.9.1
 	github.com/pkumza/numcn v1.0.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.8.1
-	github.com/tidwall/gjson v1.14.4
-	golang.org/x/image v0.3.0
+	github.com/stretchr/testify v1.9.0
+	github.com/tidwall/gjson v1.18.0
+	golang.org/x/image v0.21.0
 )
 
 require (
 	github.com/FloatTech/ttl v0.0.0-20230307105452-d6f7b2b647d1 // indirect
-	github.com/antchfx/xpath v1.2.1 // indirect
+	github.com/antchfx/xpath v1.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fumiama/cron v1.3.0 // indirect
 	github.com/fumiama/go-registry v0.2.6 // indirect
@@ -28,7 +28,6 @@ require (
 	github.com/fumiama/gofastTEA v0.0.10 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
@@ -39,8 +38,7 @@ require (
 	github.com/wdvxdr1123/ZeroBot v1.7.5-0.20231009162356-57f71b9f5258 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.21.5 // indirect
 	modernc.org/mathutil v1.5.0 // indirect

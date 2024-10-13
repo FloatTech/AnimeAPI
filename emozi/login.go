@@ -13,16 +13,23 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// NewUser 创建已注册用户实例
+//
+// 注册请前往 API 网址
 func NewUser(name, pswd string) (usr User, err error) {
 	usr.name = name
 	usr.pswd = pswd
 	return
 }
 
+// Anonymous 创建匿名用户
+//
+// 有访问请求数限制
 func Anonymous() (usr User) {
 	return
 }
 
+// Login 登录
 func (usr *User) Login() error {
 	data, err := web.GetData(api + "getLoginSalt?username=" + url.QueryEscape(usr.name))
 	if err != nil {

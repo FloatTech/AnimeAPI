@@ -1,7 +1,9 @@
+// Package emozi 颜文字抽象转写
 package emozi
 
 const api = "https://emozi.seku.su/api/"
 
+// User 用户
 type User struct {
 	name string
 	pswd string

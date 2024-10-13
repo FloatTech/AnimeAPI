@@ -9,6 +9,11 @@ import (
 	"github.com/FloatTech/floatbox/binary"
 )
 
+// Marshal 编码
+//
+//   - randomSameMeaning 随机使用近音颜文字
+//   - text 中文文本
+//   - choices 多音字选择
 func (usr *User) Marshal(randomSameMeaning bool, text string, choices ...int) (string, []int, error) {
 	w := binary.SelectWriter()
 	defer binary.PutWriter(w)
@@ -44,6 +49,10 @@ func (usr *User) Marshal(randomSameMeaning bool, text string, choices ...int) (s
 	return r.Result.Text, r.Result.Choice, nil
 }
 
+// Unmarshal 解码
+//
+//   - force 强制解码不是由程序生成的转写
+//   - text 颜文字文本
 func (usr *User) Unmarshal(force bool, text string) (string, error) {
 	w := binary.SelectWriter()
 	defer binary.PutWriter(w)

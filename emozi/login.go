@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"net/url"
 
 	"github.com/FloatTech/floatbox/binary"
@@ -64,4 +65,16 @@ func (usr *User) Login() error {
 	}
 	usr.auth = r.Get("result.token").Str
 	return nil
+}
+
+// IsValid 检查是否有效
+func (usr *User) IsValid() bool {
+	if usr.name == "" || usr.pswd == "" || usr.auth == "" {
+		return false
+	}
+	_, err := web.RequestDataWithHeaders(http.DefaultClient, api+"", "GET", func(r *http.Request) error {
+		r.Header.Set("Authorization", usr.auth)
+		return nil
+	}, nil)
+	return err == nil
 }

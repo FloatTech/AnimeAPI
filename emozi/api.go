@@ -39,4 +39,5 @@ type decoderesult struct {
 type loginbody struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Salt     string `json:"salt"`
 }

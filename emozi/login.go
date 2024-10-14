@@ -49,6 +49,7 @@ func (usr *User) Login() error {
 	err = json.NewEncoder(w).Encode(&loginbody{
 		Username: usr.name,
 		Password: passchlg,
+		Salt:     salt,
 	})
 	if err != nil {
 		return err

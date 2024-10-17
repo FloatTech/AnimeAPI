@@ -28,9 +28,8 @@ func Shindanmaker(id int64, name string) (string, error) {
 	seed := fmt.Sprintf("%d%d%d", now.Year(), now.Month(), now.Day())
 	name += seed
 
-	// 刷新 token 和 cookie or 获取shindan_token
-	shindantoken, err := refresh(url)
-	if err != nil {
+	// 刷新 cookie 和 token
+	if err := refresh(url); err != nil {
 		return "", err
 	}
 
@@ -42,7 +41,6 @@ func Shindanmaker(id int64, name string) (string, error) {
 	_ = writer.WriteField("user_input_value_1", name)
 	_ = writer.WriteField("randname", "名無しのR")
 	_ = writer.WriteField("type", "name")
-	_ = writer.WriteField("shindan_token", shindantoken)
 	_ = writer.Close()
 	// 发送请求
 	req, _ := http.NewRequest("POST", url, payload)
@@ -87,37 +85,33 @@ func Shindanmaker(id int64, name string) (string, error) {
 }
 
 // refresh 刷新 cookie 和 token
-func refresh(url string) (string, error) {
+func refresh(url string) error {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return err
 	}
 	// 获取 cookie
 	doc, err := xpath.Parse(resp.Body)
 	if err != nil {
-		return "", err
+		return err
 	}
 	if token == "" || cookie == "" {
 		if temp := resp.Header.Values("Set-Cookie"); len(temp) == 0 {
-			return "", errors.New("刷新 cookie 时发生错误")
+			return errors.New("刷新 cookie 时发生错误")
 		} else if cookie = temp[len(temp)-1]; !strings.Contains(cookie, "_session") {
-			return "", errors.New("刷新 cookie 时发生错误")
+			return errors.New("刷新 cookie 时发生错误")
 		}
 		// 获取 token
 		defer resp.Body.Close()
 
 		list := xpath.Find(doc, `//*[@id="shindanForm"]/input`)
 		if len(list) == 0 {
-			return "", errors.New("刷新 token 时发生错误")
+			return errors.New("刷新 token 时发生错误")
 		}
 		token = list[0].Attr[2].Val
 	}
-	shindanTokenList := xpath.Find(doc, `//*[@id="shindan_token"]`)
-	if len(shindanTokenList) == 0 {
-		return "", errors.New("获取 shindan_token 时发生错误")
-	}
-	return shindanTokenList[0].Attr[3].Val, nil
+	return nil
 }

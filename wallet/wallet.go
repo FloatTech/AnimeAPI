@@ -4,7 +4,6 @@ package wallet
 import (
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -15,7 +14,7 @@ import (
 // Storage 货币系统
 type Storage struct {
 	sync.RWMutex
-	db *sql.Sqlite
+	db sql.Sqlite
 }
 
 // Wallet 钱包
@@ -26,9 +25,7 @@ type Wallet struct {
 
 var (
 	sdb = &Storage{
-		db: &sql.Sqlite{
-			DBPath: "data/wallet/wallet.db",
-		},
+		db: sql.New("data/wallet/wallet.db"),
 	}
 	walletName = "Atri币"
 )
@@ -87,16 +84,12 @@ func InsertWalletOf(uid int64, money int) error {
 // 获取钱包数据 no lock
 func (sql *Storage) getWalletOf(uid int64) (wallet Wallet) {
 	uidstr := strconv.FormatInt(uid, 10)
-	_ = sql.db.Find("storage", &wallet, "where uid is "+uidstr)
+	_ = sql.db.Find("storage", &wallet, "WHERE uid = ?", uidstr)
 	return
 }
 
 // 获取钱包数据组
 func (sql *Storage) getGroupWalletOf(sortable bool, uids ...int64) (wallets []Wallet, err error) {
-	uidstr := make([]string, 0, len(uids))
-	for _, uid := range uids {
-		uidstr = append(uidstr, strconv.FormatInt(uid, 10))
-	}
 	sql.RLock()
 	defer sql.RUnlock()
 	wallets = make([]Wallet, 0, len(uids))
@@ -105,10 +98,10 @@ func (sql *Storage) getGroupWalletOf(sortable bool, uids ...int64) (wallets []Wa
 		sort = "DESC"
 	}
 	info := Wallet{}
-	err = sql.db.FindFor("storage", &info, "where uid IN ("+strings.Join(uidstr, ", ")+") ORDER BY money "+sort, func() error {
+	err = sql.db.FindFor("storage", &info, "WHERE uid IN ? ORDER BY money "+sort, func() error {
 		wallets = append(wallets, info)
 		return nil
-	})
+	}, uids)
 	return
 }
 

@@ -16,6 +16,8 @@ huggingface API
 二次元 AI tag 作画
 ## nsfw
 图片合规性审查
+## niu
+niu
 ## pixiv
 P站解析与图片下载
 ## qzone
@@ -40,5 +42,3 @@ QQ空间API
 文本理解与创作
 ## yandex
 Yandex 搜图
-## niuniu
-牛牛大作战数据库系统

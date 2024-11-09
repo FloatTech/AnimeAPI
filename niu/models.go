@@ -332,6 +332,9 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 		if props == "伟哥" || props == "媚药" {
 			err = errors.New("道具不能混着用哦")
 		}
+		if err != nil {
+			return "",err
+		}
 		if err = u.createUserInfoByProps(props); err != nil {
 			return "", err
 		}

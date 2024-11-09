@@ -196,7 +196,7 @@ func RedeemNiuNiu(gid, uid int64, lastLength float64) error {
 	return db.setWordNiuNiu(gid, niu)
 }
 
-func 牛牛商店(gid, uid int64, n int) error {
+func Store(gid, uid int64, n int) error {
 	info, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return err

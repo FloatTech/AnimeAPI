@@ -91,7 +91,7 @@ func DepthRanking(gid int64, ctx *zero.Ctx) ([]byte, error) {
 	return buf, err
 }
 
-func ViewNiuNiu(gid, uid int64, name string) (*strings.Builder, error) {
+func View(gid, uid int64, name string) (*strings.Builder, error) {
 	i, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return nil, errors.New("你还没有牛牛呢不能查看")
@@ -130,7 +130,7 @@ func ProcessHitGlue(gid, uid int64, prop string) (string, error) {
 	return messages, nil
 }
 
-func RegisterNiuNiu(gid, uid int64) (string, error) {
+func Register(gid, uid int64) (string, error) {
 	if _, err := db.getWordNiuNiu(gid, uid); err == nil {
 		return "", errors.New("你已经注册过了")
 	}
@@ -175,7 +175,7 @@ func JJ(gid, uid, adduser int64, prop string) (message string, err error) {
 	return
 }
 
-func CancelNiuNiu(gid, uid int64) (string, error) {
+func Cancel(gid, uid int64) (string, error) {
 	_, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return "", errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
@@ -187,7 +187,7 @@ func CancelNiuNiu(gid, uid int64) (string, error) {
 	return "注销成功,你已经没有牛牛了", err
 }
 
-func RedeemNiuNiu(gid, uid int64, lastLength float64) error {
+func Redeem(gid, uid int64, lastLength float64) error {
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return err

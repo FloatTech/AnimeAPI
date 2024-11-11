@@ -6,7 +6,6 @@ require (
 	github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024
 	github.com/FloatTech/rendercard v0.2.0
 	github.com/FloatTech/sqlite v1.7.0
-	github.com/FloatTech/zbputils v1.7.1
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/antchfx/htmlquery v1.3.3
 	github.com/corona10/goimagehash v1.1.0
@@ -17,20 +16,16 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.18.0
-	github.com/wdvxdr1123/ZeroBot v1.8.0
-	golang.org/x/image v0.21.0
+	golang.org/x/image v0.22.0
 )
 
 require (
 	github.com/FloatTech/gg v1.1.3 // indirect
-	github.com/FloatTech/imgfactory v0.2.2-0.20230315152233-49741fc994f9 // indirect
 	github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562 // indirect
-	github.com/FloatTech/zbpctrl v1.6.1 // indirect
 	github.com/antchfx/xpath v1.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 // indirect
 	github.com/fumiama/cron v1.3.0 // indirect
 	github.com/fumiama/go-registry v0.2.7 // indirect
 	github.com/fumiama/go-simple-protobuf v0.2.0 // indirect
@@ -49,7 +44,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.61.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect

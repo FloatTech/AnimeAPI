@@ -1,20 +1,11 @@
 package niu
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"github.com/FloatTech/floatbox/file"
-	"github.com/FloatTech/rendercard"
 	sql "github.com/FloatTech/sqlite"
-	"github.com/FloatTech/zbputils/control"
-	"github.com/FloatTech/zbputils/img/text"
-	zero "github.com/wdvxdr1123/ZeroBot"
-	"image"
-	"image/png"
 	"math"
 	"math/rand"
-	"net/http"
 	"sort"
 	"strconv"
 	"sync"
@@ -42,29 +33,12 @@ type userInfo struct {
 	Buff5     int // 暂定
 }
 
-type drawUserRanking struct {
-	name string
-	user *userInfo
+type BaseInfo struct {
+	UID    int64
+	Length float64
 }
 
-type drawer []drawUserRanking
-
-func (m users) setupDrawList(ctx *zero.Ctx, t bool) ([]byte, error) {
-	allUsers := make(drawer, len(m))
-	for i, info := range m {
-		allUsers[i] = drawUserRanking{
-			name: ctx.CardOrNickName(info.UID),
-			user: info,
-		}
-	}
-	image, err := allUsers.draw(t)
-	if err != nil {
-		return nil, err
-	}
-	var buf bytes.Buffer
-	err = png.Encode(&buf, image)
-	return buf.Bytes(), err
-}
+type BaseInfos []*BaseInfo
 
 func (m users) positive() users {
 	var m1 []*userInfo
@@ -106,43 +80,6 @@ func (m users) ranking(niuniu float64, uid int64) int {
 		}
 	}
 	return -1
-}
-
-func (allUsers drawer) draw(t bool) (img image.Image, err error) {
-	fontbyte, err := file.GetLazyData(text.GlowSansFontFile, control.Md5File, true)
-	if err != nil {
-		return nil, err
-	}
-	var (
-		title string
-		s     string
-	)
-	title = "牛牛深度排行"
-	s = "牛牛深度"
-	if t {
-		title = "牛牛长度排行"
-		s = "牛牛长度"
-	}
-	ri := make([]*rendercard.RankInfo, len(allUsers))
-	for i, user := range allUsers {
-		resp, err := http.Get(fmt.Sprintf("https://q1.qlogo.cn/g?b=qq&nk=%d&s=100", user.user.UID))
-		if err != nil {
-			return nil, err
-		}
-		decode, _, err := image.Decode(resp.Body)
-		_ = resp.Body.Close()
-		if err != nil {
-			return nil, err
-		}
-		ri[i] = &rendercard.RankInfo{
-			Avatar:         decode,
-			TopLeftText:    user.name,
-			BottomLeftText: fmt.Sprintf("QQ:%d", user.user.UID),
-			RightText:      fmt.Sprintf("%s:%.2fcm", s, user.user.Length),
-		}
-	}
-	img, err = rendercard.DrawRankingCard(fontbyte, title, ri)
-	return
 }
 
 func (u *userInfo) useWeiGe() (string, float64) {
@@ -333,7 +270,7 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 			err = errors.New("道具不能混着用哦")
 		}
 		if err != nil {
-			return "",err
+			return "", err
 		}
 		if err = u.createUserInfoByProps(props); err != nil {
 			return "", err
@@ -352,7 +289,7 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 		adduserniuniu.Length = f1
 
 	default:
-		fencingResult, f, f1 = Fencing(u.Length, adduserniuniu.Length)
+		fencingResult, f, f1 = fencing(u.Length, adduserniuniu.Length)
 		u.Length = f
 		adduserniuniu.Length = f1
 

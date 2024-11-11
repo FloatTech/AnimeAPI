@@ -98,8 +98,8 @@ func generateRandomString(niuniu float64) string {
 	}
 }
 
-// Fencing 击剑对决逻辑，返回对决结果和myLength的变化值
-func Fencing(myLength, oppoLength float64) (string, float64, float64) {
+// fencing 击剑对决逻辑，返回对决结果和myLength的变化值
+func fencing(myLength, oppoLength float64) (string, float64, float64) {
 	devourLimit := 0.27
 
 	probability := rand.Intn(100) + 1

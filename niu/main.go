@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/FloatTech/AnimeAPI/wallet"
 	"github.com/FloatTech/floatbox/file"
-	zero "github.com/wdvxdr1123/ZeroBot"
+	"github.com/FloatTech/rendercard"
 	"os"
 	"strconv"
 	"strings"
@@ -51,44 +51,54 @@ func DeleteWordNiuNiu(gid, uid int64) error {
 	return db.deleteWordNiuNiu(gid, uid)
 }
 
-func GetAllLengthOfGroup(gid int64) ([]float64, error) {
+func GetRankingInfo(gid int64, t bool) ([]*rendercard.RankInfo, error) {
+	var (
+		s    = "牛牛深度"
+		f    []*rendercard.RankInfo
+		list users
+		err  error
+	)
+	if t {
+		s = "牛牛长度"
+	}
 	niuOfGroup, err := db.getAllNiuNiuOfGroup(gid)
 	if err != nil {
+		if t {
+			err = errors.New("暂时没有男孩子哦")
+		} else {
+			err = errors.New("暂时没有女孩子哦")
+		}
 		return nil, err
 	}
-	f := make([]float64, len(niuOfGroup))
-	for k, v := range niuOfGroup {
-		f[k] = v.Length
+
+	if t {
+		list = niuOfGroup.positive()
+		niuOfGroup.sort(t)
+	} else {
+		list = niuOfGroup.negative()
+		niuOfGroup.sort(!t)
 	}
+	for i, info := range list {
+		f[i] = &rendercard.RankInfo{
+			BottomLeftText: fmt.Sprintf("QQ:%d", info.UID),
+			RightText:      fmt.Sprintf("%s:%.2fcm", s, info.Length),
+		}
+	}
+
 	return f, nil
 }
 
-func LengthRanking(gid int64, ctx *zero.Ctx) ([]byte, error) {
-	niuniuList, err := db.getAllNiuNiuOfGroup(gid)
+// GetRankingOfSpecifiedUser 获取指定用户在群中的排名
+func GetRankingOfSpecifiedUser(gid, uid int64) (int, error) {
+	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
-	m := niuniuList.negative()
-	if m == nil {
-		return nil, errors.New("暂时没有男孩子哦")
-	}
-	m.sort(true)
-	buf, err := m.setupDrawList(ctx, true)
-	return buf, err
-}
-
-func DepthRanking(gid int64, ctx *zero.Ctx) ([]byte, error) {
-	niuniuList, err := db.getAllNiuNiuOfGroup(gid)
+	group, err := db.getAllNiuNiuOfGroup(gid)
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
-	m := niuniuList.positive()
-	if m == nil {
-		return nil, errors.New("暂时没有女孩子哦")
-	}
-	m.sort(false)
-	buf, err := m.setupDrawList(ctx, false)
-	return buf, err
+	return group.ranking(niu.Length, uid), nil
 }
 
 func View(gid, uid int64, name string) (*strings.Builder, error) {

@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024
-	github.com/FloatTech/rendercard v0.2.0
 	github.com/FloatTech/sqlite v1.7.0
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/antchfx/htmlquery v1.3.3

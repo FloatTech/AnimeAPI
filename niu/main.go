@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/FloatTech/AnimeAPI/wallet"
 	"github.com/FloatTech/floatbox/file"
-	"github.com/FloatTech/rendercard"
 	"os"
 	"strconv"
 	"strings"
@@ -51,16 +50,12 @@ func DeleteWordNiuNiu(gid, uid int64) error {
 	return db.deleteWordNiuNiu(gid, uid)
 }
 
-func GetRankingInfo(gid int64, t bool) ([]*rendercard.RankInfo, error) {
+func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	var (
-		s    = "牛牛深度"
-		f    []*rendercard.RankInfo
+		f    BaseInfos
 		list users
 		err  error
 	)
-	if t {
-		s = "牛牛长度"
-	}
 	niuOfGroup, err := db.getAllNiuNiuOfGroup(gid)
 	if err != nil {
 		if t {
@@ -79,9 +74,9 @@ func GetRankingInfo(gid int64, t bool) ([]*rendercard.RankInfo, error) {
 		niuOfGroup.sort(!t)
 	}
 	for i, info := range list {
-		f[i] = &rendercard.RankInfo{
-			BottomLeftText: fmt.Sprintf("QQ:%d", info.UID),
-			RightText:      fmt.Sprintf("%s:%.2fcm", s, info.Length),
+		f[i] = BaseInfo{
+			UID:    info.UID,
+			Length: info.Length,
 		}
 	}
 

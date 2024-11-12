@@ -38,7 +38,7 @@ type BaseInfo struct {
 	Length float64
 }
 
-type BaseInfos []*BaseInfo
+type BaseInfos []BaseInfo
 
 func (m users) positive() users {
 	var m1 []*userInfo

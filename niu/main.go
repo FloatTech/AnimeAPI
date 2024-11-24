@@ -279,7 +279,7 @@ func Auction(gid, uid int64, i int) (string, error) {
 			UID: uid,
 		}
 	}
-	niu.Length = auction[i-1].Length
+	niu.Length = auction[i].Length
 
 	if auction[i].Money > 500 {
 		niu.WeiGe = 2

@@ -46,47 +46,6 @@ func profit(niuniu float64) (money int, t bool, message string) {
 	return
 }
 
-func getGold() (any, error) {
-	req, err := http.NewRequest("GET", "https://www.huilvbiao.com/gold", nil)
-	if err != nil {
-		return 0, err
-	}
-	req.Header.Add("User-Agent",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
-	all, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, err
-	}
-	compile, err := regexp.Compile(`(?s)<span id="high" class="text-info">(.+?)</span>`)
-	if err != nil {
-		return 0, err
-	}
-	goldstr := compile.FindStringSubmatch(string(all))
-	// 编译正则表达式，用于匹配<span>标签中的数字
-	re := regexp.MustCompile(`(?s)<span id="low" class="text-info">(\d+\.?\d*)</span>`)
-
-	// 使用FindStringSubmatch来查找匹配的内容
-	matches := re.FindStringSubmatch(goldstr[1])
-
-	// 检查是否有匹配项，并提取第一个匹配组（即括号中的数字）
-	if matches != nil && len(matches) > 1 {
-		price, err := strconv.ParseFloat(matches[1], 64)
-		if err != nil {
-			return 0, err
-		}
-		fmt.Printf("提取的最低价格是: %.2f\n", price)
-	} else {
-		return 0, errors.New(`错误`)
-	}
-	return matches, err
-}
-
 func hitGlueNiuNiu(niuniu float64) (string, float64) {
 	probability := rand.Intn(100 + 1)
 	reduce := math.Abs(hitGlue(niuniu))

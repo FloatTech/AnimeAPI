@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/FloatTech/AnimeAPI/wallet"
 	"github.com/FloatTech/floatbox/file"
+	sql "github.com/FloatTech/sqlite"
 	"os"
 	"strconv"
 	"strings"
@@ -17,11 +18,12 @@ var (
 
 func init() {
 	if file.IsNotExist("data/niuniu") {
-		err := os.MkdirAll("data/niuniu", 0755)
+		err := os.MkdirAll("data/niuniu", 775)
 		if err != nil {
 			panic(err)
 		}
 	}
+	db.sql = sql.New("data/niuniu/niuniu.db")
 	err := db.sql.Open(time.Hour * 24)
 	if err != nil {
 		panic(err)
@@ -52,7 +54,6 @@ func DeleteWordNiuNiu(gid, uid int64) error {
 
 func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	var (
-		f    BaseInfos
 		list users
 		err  error
 	)
@@ -65,7 +66,7 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 		}
 		return nil, err
 	}
-
+	f := make(BaseInfos, len(niuOfGroup))
 	if t {
 		list = niuOfGroup.positive()
 		niuOfGroup.sort(t)
@@ -151,32 +152,34 @@ func Register(gid, uid int64) (string, error) {
 	return fmt.Sprintf("注册成功,你的牛牛现在有%.2fcm", u.Length), nil
 }
 
-func JJ(gid, uid, adduser int64, prop string) (message string, err error) {
+func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
 	myniuniu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return "", errors.New("你还没有牛牛快去注册一个吧！")
+		return "", 0, errors.New("你还没有牛牛快去注册一个吧！")
 	}
 	adduserniuniu, err := db.getWordNiuNiu(gid, adduser)
 	if err != nil {
-		return "", errors.New("对方还没有牛牛呢，不能🤺")
+		return "", 0, errors.New("对方还没有牛牛呢，不能🤺")
 	}
 
 	if uid == adduser {
-		return "", errors.New("你要和谁🤺？你自己吗？")
+		return "", 0, errors.New("你要和谁🤺？你自己吗？")
 	}
 
 	message, err = myniuniu.processJJuAction(adduserniuniu, prop)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	if err = db.setWordNiuNiu(gid, myniuniu); err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	if err = db.setWordNiuNiu(gid, adduserniuniu); err != nil {
-		return "", err
+		return "", 0, err
 	}
+
+	adduserLength = adduserniuniu.Length
 	return
 }
 
@@ -193,11 +196,22 @@ func Cancel(gid, uid int64) (string, error) {
 }
 
 func Redeem(gid, uid int64, lastLength float64) error {
+	money := wallet.GetWalletOf(uid)
+	if money < 150 {
+		return fmt.Errorf("赎牛牛需要150ATRI币，快去赚钱吧，目前仅有:%d个%s", money, wallet.GetWalletName())
+	}
+
+	if err := wallet.InsertWalletOf(uid, -150); err != nil {
+		return err
+	}
+
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return err
 	}
+
 	niu.Length = lastLength
+
 	return db.setWordNiuNiu(gid, niu)
 }
 
@@ -221,4 +235,74 @@ func Store(gid, uid int64, n int) error {
 	}
 
 	return db.setWordNiuNiu(uid, info)
+}
+
+func Sell(gid, uid int64) (string, error) {
+	niu, err := db.getWordNiuNiu(gid, uid)
+	if err != nil {
+		return "", errors.New("你没有牛牛怎么卖😰")
+	}
+	money, t, message := profit(niu.Length)
+	if !t {
+		return message, errors.New(``)
+	}
+	err = wallet.InsertWalletOf(uid, money)
+	if err != nil {
+		return message, err
+	}
+	u := AuctionInfo{
+		UID:    niu.UID,
+		Length: niu.Length,
+		Money:  money * 2,
+	}
+	err = db.setNiuNiuAuction(gid, &u)
+	return message, err
+}
+
+func ShowAuction(gid int64) ([]AuctionInfo, error) {
+	return db.getAllNiuNiuAuction(gid)
+}
+
+func Auction(gid, uid int64, i int) (string, error) {
+	auction, err := db.getAllNiuNiuAuction(gid)
+	if err != nil {
+		return "", errors.New("拍卖行还没有牛牛呢")
+	}
+	err = wallet.InsertWalletOf(uid, -auction[i].Money)
+	if err != nil {
+		return "", errors.New("你的钱不够快去赚钱吧！")
+	}
+
+	niu, err := db.getWordNiuNiu(gid, uid)
+	if err != nil {
+		niu = &userInfo{
+			UID: uid,
+		}
+	}
+	niu.Length = auction[i-1].Length
+
+	if auction[i].Money > 500 {
+		niu.WeiGe = 2
+		niu.Artifact = 2
+	}
+
+	if err = db.setWordNiuNiu(gid, niu); err != nil {
+		return "", err
+	}
+	if auction[i].Money > 500 {
+		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你%d个伟哥,%d个媚药",
+			niu.Length, niu.WeiGe, niu.Artifact), nil
+	}
+
+	return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm", niu.Length), nil
+}
+
+func Bag(gid, uid int64) (string, error) {
+	niu, err := db.getWordNiuNiu(gid, uid)
+	message := fmt.Sprintf("当前牛牛背包如下\n伟哥: %v\n媚药: %v\n击剑神器: %v\n击剑神稽: %v",
+		niu.WeiGe,
+		niu.Philter,
+		niu.Artifact,
+		niu.ShenJi)
+	return message, err
 }

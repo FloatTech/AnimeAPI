@@ -33,6 +33,12 @@ type userInfo struct {
 	Buff5     int // 暂定
 }
 
+type AuctionInfo struct {
+	UID    int64
+	Length float64
+	Money  int
+}
+
 type BaseInfo struct {
 	UID    int64
 	Length float64
@@ -332,5 +338,40 @@ func (db *model) deleteWordNiuNiu(gid, uid int64) error {
 func (db *model) getAllNiuNiuOfGroup(gid int64) (users, error) {
 	db.Lock()
 	defer db.Unlock()
-	return sql.FindAll[userInfo](&db.sql, strconv.FormatInt(gid, 10), "where UserCount = 0")
+	var user userInfo
+	var useras users
+	err := db.sql.FindFor(fmt.Sprintf("%d", gid), &user, "",
+		func() error {
+			useras = append(useras, &user)
+			return nil
+		})
+	return useras, err
+}
+
+func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
+	db.Lock()
+	defer db.Unlock()
+	err := db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
+	if err != nil {
+		err = db.sql.Create(strconv.FormatInt(gid, 10), &AuctionInfo{})
+		if err != nil {
+			return err
+		}
+		err = db.sql.Insert(strconv.FormatInt(gid, 10), u)
+	}
+	return err
+}
+
+func (db *model) getAllNiuNiuAuction(gid int64) ([]AuctionInfo, error) {
+	db.Lock()
+	defer db.Unlock()
+	var user AuctionInfo
+	var useras []AuctionInfo
+	err := db.sql.FindFor(fmt.Sprintf("auction_%d", gid), &user, "",
+		func() error {
+			useras = append(useras, user)
+			return nil
+		})
+
+	return useras, err
 }

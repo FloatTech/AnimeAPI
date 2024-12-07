@@ -190,7 +190,7 @@ func (u *userInfo) createUserInfoByProps(props string) error {
 	if propInfo, ok := propsMap[props]; ok {
 		return u.useItem(propInfo.itemCount, propInfo.errMsg)
 	}
-	return errors.New("道具不存在")
+	return ErrPropNotFound
 }
 
 func (u *userInfo) useItem(itemCount *int, errMsg string) error {
@@ -211,7 +211,7 @@ func (u *userInfo) checkProps(props, propSort string) error {
 	// 检查是否是有效道具类别
 	validPropsList, ok := validProps[propSort]
 	if !ok {
-		return errors.New("道具类别传入错误")
+		return ErrInvalidPropType
 	}
 
 	validPropsMap := make(map[string]struct{})
@@ -233,11 +233,11 @@ func (u *userInfo) checkProps(props, propSort string) error {
 	// 如果道具属于冲突集合,返回
 	for _, conflictProp := range conflictingProps {
 		if props == conflictProp {
-			return errors.New("道具使用域错误！")
+			return ErrInvalidPropUsageScope
 		}
 	}
 
-	return errors.New("道具不存在")
+	return ErrPropNotFound
 }
 
 func (u *userInfo) purchaseItem(n int) (int, error) {

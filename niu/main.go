@@ -13,16 +13,19 @@ import (
 )
 
 var (
-	db                   = &model{}
-	ErrNoBoys            = errors.New("暂时没有男孩子哦")
-	ErrNoGirls           = errors.New("暂时没有女孩子哦")
-	ErrNoNiuNiu          = errors.New("你还没有牛牛呢,快去注册吧！")
-	ErrNoNiuNiuINAuction = errors.New("拍卖行还没有牛牛呢")
-	ErrNoMoney           = errors.New("你的钱不够快去赚钱吧！")
-	ErrAdduserNoNiuNiu   = errors.New("对方还没有牛牛呢，不能🤺")
-	ErrCannotFight       = errors.New("你要和谁🤺？你自己吗？")
-	ErrNoNiuNiuTwo       = errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
-	ErrAlreadyRegistered = errors.New("你已经注册过了")
+	db                       = &model{}
+	ErrNoBoys                = errors.New("暂时没有男孩子哦")
+	ErrNoGirls               = errors.New("暂时没有女孩子哦")
+	ErrNoNiuNiu              = errors.New("你还没有牛牛呢,快去注册吧！")
+	ErrNoNiuNiuINAuction     = errors.New("拍卖行还没有牛牛呢")
+	ErrNoMoney               = errors.New("你的钱不够快去赚钱吧！")
+	ErrAdduserNoNiuNiu       = errors.New("对方还没有牛牛呢，不能🤺")
+	ErrCannotFight           = errors.New("你要和谁🤺？你自己吗？")
+	ErrNoNiuNiuTwo           = errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
+	ErrAlreadyRegistered     = errors.New("你已经注册过了")
+	ErrInvalidPropType       = errors.New("道具类别传入错误")
+	ErrInvalidPropUsageScope = errors.New("道具使用域错误")
+	ErrPropNotFound          = errors.New("道具不存在")
 )
 
 func init() {

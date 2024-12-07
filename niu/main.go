@@ -13,7 +13,16 @@ import (
 )
 
 var (
-	db = &model{}
+	db                   = &model{}
+	ErrNoBoys            = errors.New("暂时没有男孩子哦")
+	ErrNoGirls           = errors.New("暂时没有女孩子哦")
+	ErrNoNiuNiu          = errors.New("你还没有牛牛呢,快去注册吧！")
+	ErrNoNiuNiuINAuction = errors.New("拍卖行还没有牛牛呢")
+	ErrNoMoney           = errors.New("你的钱不够快去赚钱吧！")
+	ErrAdduserNoNiuNiu   = errors.New("对方还没有牛牛呢，不能🤺")
+	ErrCannotFight       = errors.New("你要和谁🤺？你自己吗？")
+	ErrNoNiuNiuTwo       = errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
+	ErrAlreadyRegistered = errors.New("你已经注册过了")
 )
 
 func init() {
@@ -32,6 +41,8 @@ func init() {
 
 // SetWordNiuNiu length > 0 就增加 , length < 0 就减小
 func SetWordNiuNiu(gid, uid int64, length float64) error {
+	db.Lock()
+	defer db.Unlock()
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return err
@@ -41,15 +52,11 @@ func SetWordNiuNiu(gid, uid int64, length float64) error {
 }
 
 func GetWordNiuNiu(gid, uid int64) (float64, error) {
-	niu, err := db.getWordNiuNiu(gid, uid)
-	if err != nil {
-		return 0, err
-	}
-	return niu.Length, nil
-}
+	db.RLock()
+	defer db.RUnlock()
 
-func DeleteWordNiuNiu(gid, uid int64) error {
-	return db.deleteWordNiuNiu(gid, uid)
+	niu, err := db.getWordNiuNiu(gid, uid)
+	return niu.Length, err
 }
 
 func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
@@ -60,32 +67,23 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	niuOfGroup, err := db.getAllNiuNiuOfGroup(gid)
 	if err != nil {
 		if t {
-			err = errors.New("暂时没有男孩子哦")
-		} else {
-			err = errors.New("暂时没有女孩子哦")
+			return nil, ErrNoBoys
 		}
-		return nil, err
+		return nil, ErrNoGirls
 	}
-	f := make(BaseInfos, len(niuOfGroup))
-	if t {
-		list = niuOfGroup.positive()
-		niuOfGroup.sort(t)
-	} else {
-		list = niuOfGroup.negative()
-		niuOfGroup.sort(!t)
-	}
+	list = niuOfGroup.filter(t)
+	f := make(BaseInfos, len(list))
 	for i, info := range list {
 		f[i] = BaseInfo{
 			UID:    info.UID,
 			Length: info.Length,
 		}
 	}
-
 	return f, nil
 }
 
-// GetRankingOfSpecifiedUser 获取指定用户在群中的排名
-func GetRankingOfSpecifiedUser(gid, uid int64) (int, error) {
+// GetGroupUserRank 获取指定用户在群中的排名
+func GetGroupUserRank(gid, uid int64) (int, error) {
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return -1, err
@@ -97,10 +95,11 @@ func GetRankingOfSpecifiedUser(gid, uid int64) (int, error) {
 	return group.ranking(niu.Length, uid), nil
 }
 
+// View 查看牛牛
 func View(gid, uid int64, name string) (*strings.Builder, error) {
 	i, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return nil, errors.New("你还没有牛牛呢不能查看")
+		return nil, ErrNoNiuNiu
 	}
 	niuniu := i.Length
 	var result strings.Builder
@@ -120,10 +119,11 @@ func View(gid, uid int64, name string) (*strings.Builder, error) {
 	return &result, nil
 }
 
-func ProcessHitGlue(gid, uid int64, prop string) (string, error) {
+// HitGlue 打胶
+func HitGlue(gid, uid int64, prop string) (string, error) {
 	niuniu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return "", errors.New("请先注册牛牛！")
+		return "", ErrNoNiuNiuTwo
 	}
 
 	messages, err := niuniu.processNiuNiuAction(prop)
@@ -136,9 +136,10 @@ func ProcessHitGlue(gid, uid int64, prop string) (string, error) {
 	return messages, nil
 }
 
+// Register 注册牛牛
 func Register(gid, uid int64) (string, error) {
 	if _, err := db.getWordNiuNiu(gid, uid); err == nil {
-		return "", errors.New("你已经注册过了")
+		return "", ErrAlreadyRegistered
 	}
 	// 获取初始长度
 	length := db.newLength()
@@ -152,18 +153,21 @@ func Register(gid, uid int64) (string, error) {
 	return fmt.Sprintf("注册成功,你的牛牛现在有%.2fcm", u.Length), nil
 }
 
+// JJ ...
 func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
+
 	myniuniu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return "", 0, errors.New("你还没有牛牛快去注册一个吧！")
+		return "", 0, ErrNoNiuNiu
 	}
+
 	adduserniuniu, err := db.getWordNiuNiu(gid, adduser)
 	if err != nil {
-		return "", 0, errors.New("对方还没有牛牛呢，不能🤺")
+		return "", 0, ErrAdduserNoNiuNiu
 	}
 
 	if uid == adduser {
-		return "", 0, errors.New("你要和谁🤺？你自己吗？")
+		return "", 0, ErrCannotFight
 	}
 
 	message, err = myniuniu.processJJuAction(adduserniuniu, prop)
@@ -183,10 +187,11 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 	return
 }
 
+// Cancel 注销牛牛
 func Cancel(gid, uid int64) (string, error) {
 	_, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return "", errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
+		return "", ErrNoNiuNiuTwo
 	}
 	err = db.deleteWordNiuNiu(gid, uid)
 	if err != nil {
@@ -195,10 +200,19 @@ func Cancel(gid, uid int64) (string, error) {
 	return "注销成功,你已经没有牛牛了", err
 }
 
+// Redeem 赎牛牛
 func Redeem(gid, uid int64, lastLength float64) error {
 	money := wallet.GetWalletOf(uid)
 	if money < 150 {
-		return fmt.Errorf("赎牛牛需要150ATRI币，快去赚钱吧，目前仅有:%d个%s", money, wallet.GetWalletName())
+		var builder strings.Builder
+		walletName := wallet.GetWalletName()
+		builder.WriteString("赎牛牛需要150")
+		builder.WriteString(walletName)
+		builder.WriteString("，快去赚钱吧，目前仅有:")
+		builder.WriteString(strconv.Itoa(money))
+		builder.WriteString("个")
+		builder.WriteString(walletName)
+		return errors.New(builder.String())
 	}
 
 	if err := wallet.InsertWalletOf(uid, -150); err != nil {
@@ -207,7 +221,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return err
+		return ErrNoNiuNiu
 	}
 
 	niu.Length = lastLength
@@ -215,6 +229,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 	return db.setWordNiuNiu(gid, niu)
 }
 
+// Store 牛牛商店
 func Store(gid, uid int64, n int) error {
 	info, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
@@ -227,7 +242,7 @@ func Store(gid, uid int64, n int) error {
 	}
 
 	if wallet.GetWalletOf(uid) < money {
-		return errors.New("你还没有足够的ATRI币呢,不能购买")
+		return ErrNoMoney
 	}
 
 	if err = wallet.InsertWalletOf(uid, -money); err != nil {
@@ -237,21 +252,22 @@ func Store(gid, uid int64, n int) error {
 	return db.setWordNiuNiu(uid, info)
 }
 
+// Sell 出售牛牛
 func Sell(gid, uid int64) (string, error) {
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return "", errors.New("你没有牛牛怎么卖😰")
+		return "", ErrNoNiuNiu
 	}
 	money, t, message := profit(niu.Length)
 	if !t {
-		return message, errors.New(``)
+		return "", errors.New(message)
 	}
 	err = wallet.InsertWalletOf(uid, money)
 	if err != nil {
 		return message, err
 	}
 	u := AuctionInfo{
-		UID:    niu.UID,
+		UserId: niu.UID,
 		Length: niu.Length,
 		Money:  money * 2,
 	}
@@ -259,18 +275,22 @@ func Sell(gid, uid int64) (string, error) {
 	return message, err
 }
 
+// ShowAuction 展示牛牛拍卖行
 func ShowAuction(gid int64) ([]AuctionInfo, error) {
+	db.RLock()
+	defer db.RUnlock()
 	return db.getAllNiuNiuAuction(gid)
 }
 
+// Auction 购买牛牛
 func Auction(gid, uid int64, i int) (string, error) {
 	auction, err := db.getAllNiuNiuAuction(gid)
 	if err != nil {
-		return "", errors.New("拍卖行还没有牛牛呢")
+		return "", ErrNoNiuNiuINAuction
 	}
 	err = wallet.InsertWalletOf(uid, -auction[i].Money)
 	if err != nil {
-		return "", errors.New("你的钱不够快去赚钱吧！")
+		return "", ErrNoMoney
 	}
 
 	niu, err := db.getWordNiuNiu(gid, uid)
@@ -289,20 +309,32 @@ func Auction(gid, uid int64, i int) (string, error) {
 	if err = db.setWordNiuNiu(gid, niu); err != nil {
 		return "", err
 	}
+	err = db.deleteNiuNiuAuction(gid, auction[i].ID)
+	if err != nil {
+		return "", err
+	}
 	if auction[i].Money > 500 {
 		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你%d个伟哥,%d个媚药",
 			niu.Length, niu.WeiGe, niu.Artifact), nil
 	}
-
 	return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm", niu.Length), nil
 }
 
+// Bag 牛牛背包
 func Bag(gid, uid int64) (string, error) {
 	niu, err := db.getWordNiuNiu(gid, uid)
-	message := fmt.Sprintf("当前牛牛背包如下\n伟哥: %v\n媚药: %v\n击剑神器: %v\n击剑神稽: %v",
-		niu.WeiGe,
-		niu.Philter,
-		niu.Artifact,
-		niu.ShenJi)
-	return message, err
+	if err != nil {
+		return "", ErrNoNiuNiu
+	}
+
+	var result strings.Builder
+	result.Grow(100)
+
+	result.WriteString("当前牛牛背包如下\n")
+	result.WriteString(fmt.Sprintf("伟哥: %v\n", niu.WeiGe))
+	result.WriteString(fmt.Sprintf("媚药: %v\n", niu.Philter))
+	result.WriteString(fmt.Sprintf("击剑神器: %v\n", niu.Artifact))
+	result.WriteString(fmt.Sprintf("击剑神稽: %v\n", niu.ShenJi))
+
+	return result.String(), nil
 }

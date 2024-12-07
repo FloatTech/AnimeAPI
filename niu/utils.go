@@ -1,15 +1,10 @@
 package niu
 
 import (
-	"errors"
 	"fmt"
 	"github.com/FloatTech/AnimeAPI/wallet"
-	"io"
 	"math"
 	"math/rand"
-	"net/http"
-	"regexp"
-	"strconv"
 )
 
 func randomChoice(options []string) string {
@@ -44,47 +39,6 @@ func profit(niuniu float64) (money int, t bool, message string) {
 		t = true
 	}
 	return
-}
-
-func getGold() (any, error) {
-	req, err := http.NewRequest("GET", "https://www.huilvbiao.com/gold", nil)
-	if err != nil {
-		return 0, err
-	}
-	req.Header.Add("User-Agent",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
-	all, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, err
-	}
-	compile, err := regexp.Compile(`(?s)<span id="high" class="text-info">(.+?)</span>`)
-	if err != nil {
-		return 0, err
-	}
-	goldstr := compile.FindStringSubmatch(string(all))
-	// 编译正则表达式，用于匹配<span>标签中的数字
-	re := regexp.MustCompile(`(?s)<span id="low" class="text-info">(\d+\.?\d*)</span>`)
-
-	// 使用FindStringSubmatch来查找匹配的内容
-	matches := re.FindStringSubmatch(goldstr[1])
-
-	// 检查是否有匹配项，并提取第一个匹配组（即括号中的数字）
-	if matches != nil && len(matches) > 1 {
-		price, err := strconv.ParseFloat(matches[1], 64)
-		if err != nil {
-			return 0, err
-		}
-		fmt.Printf("提取的最低价格是: %.2f\n", price)
-	} else {
-		return 0, errors.New(`错误`)
-	}
-	return matches, err
 }
 
 func hitGlueNiuNiu(niuniu float64) (string, float64) {
@@ -185,21 +139,25 @@ func fencing(myLength, oppoLength float64) (string, float64, float64) {
 	case oppoLength <= -100 && myLength > 0 && 10 < probability && probability <= 20:
 		change := hitGlue(oppoLength) + rand.Float64()*math.Log2(math.Abs(0.5*(myLength+oppoLength)))
 		myLength += change
+		myLength *= 0.85
 		return fmt.Sprintf("对方身为魅魔诱惑了你，你同化成魅魔！当前长度%.2fcm！", -myLength), -myLength, oppoLength
 
 	case oppoLength >= 100 && myLength > 0 && 10 < probability && probability <= 20:
 		change := math.Min(math.Abs(devourLimit*myLength), math.Abs(1.5*myLength))
 		myLength += change
+		myLength *= 0.85
 		return fmt.Sprintf("对方以牛头人的荣誉摧毁了你的牛牛！当前长度%.2fcm！", myLength), myLength, oppoLength
 
 	case myLength <= -100 && oppoLength > 0 && 10 < probability && probability <= 20:
 		change := hitGlue(myLength+oppoLength) + rand.Float64()*math.Log2(math.Abs(0.5*(myLength+oppoLength)))
 		oppoLength -= change
 		myLength -= change
+		myLength *= 0.85
 		return fmt.Sprintf("你身为魅魔诱惑了对方，吞噬了对方部分长度！当前长度%.2fcm！", myLength), myLength, oppoLength
 
 	case myLength >= 100 && oppoLength > 0 && 10 < probability && probability <= 20:
 		myLength -= oppoLength
+		myLength *= 0.85
 		oppoLength = 0.01
 		return fmt.Sprintf("你以牛头人的荣誉摧毁了对方的牛牛！当前长度%.2fcm！", myLength), myLength, oppoLength
 

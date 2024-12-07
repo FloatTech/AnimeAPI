@@ -11,6 +11,12 @@ import (
 	"sync"
 )
 
+var (
+	DaJiaoProps = []string{"伟哥", "媚药"}
+	JJPorps     = []string{"击剑神器", "击剑神稽"}
+	query       = "WHERE UID = ?"
+)
+
 type users []*userInfo
 
 type model struct {
@@ -34,7 +40,8 @@ type userInfo struct {
 }
 
 type AuctionInfo struct {
-	UID    int64
+	ID     uint
+	UserId int64
 	Length float64
 	Money  int
 }
@@ -45,6 +52,13 @@ type BaseInfo struct {
 }
 
 type BaseInfos []BaseInfo
+
+func (m users) filter(pos bool) users {
+	if pos {
+		return m.positive()
+	}
+	return m.negative()
+}
 
 func (m users) positive() users {
 	var m1 []*userInfo
@@ -163,38 +177,67 @@ func (u *userInfo) useShenJi(adduserniuniu float64) (string, float64, float64) {
 }
 
 func (u *userInfo) createUserInfoByProps(props string) error {
-	var (
-		err error
-	)
-	switch props {
-	case "伟哥":
-		if u.WeiGe > 0 {
-			u.WeiGe--
-		} else {
-			err = errors.New("你还没有伟哥呢,不能使用")
-		}
-	case "媚药":
-		if u.Philter > 0 {
-			u.Philter--
-		} else {
-			err = errors.New("你还没有媚药呢,不能使用")
-		}
-	case "击剑神器":
-		if u.Artifact > 0 {
-			u.Artifact--
-		} else {
-			err = errors.New("你还没有击剑神器呢,不能使用")
-		}
-	case "击剑神稽":
-		if u.ShenJi > 0 {
-			u.ShenJi--
-		} else {
-			err = errors.New("你还没有击剑神稽呢,不能使用")
-		}
-	default:
-		err = errors.New("道具不存在")
+	propsMap := map[string]struct {
+		itemCount *int
+		errMsg    string
+	}{
+		"伟哥":   {&u.WeiGe, "你还没有伟哥呢,不能使用"},
+		"媚药":   {&u.Philter, "你还没有媚药呢,不能使用"},
+		"击剑神器": {&u.Artifact, "你还没有击剑神器呢,不能使用"},
+		"击剑神稽": {&u.ShenJi, "你还没有击剑神稽呢,不能使用"},
 	}
-	return err
+
+	if propInfo, ok := propsMap[props]; ok {
+		return u.useItem(propInfo.itemCount, propInfo.errMsg)
+	}
+	return errors.New("道具不存在")
+}
+
+func (u *userInfo) useItem(itemCount *int, errMsg string) error {
+	if *itemCount > 0 {
+		*itemCount -= 1
+		return nil
+	}
+	return errors.New(errMsg)
+}
+
+func (u *userInfo) checkProps(props, propSort string) error {
+
+	validProps := map[string][]string{
+		"dajiao": DaJiaoProps,
+		"jj":     JJPorps,
+	}
+
+	// 检查是否是有效道具类别
+	validPropsList, ok := validProps[propSort]
+	if !ok {
+		return errors.New("道具类别传入错误")
+	}
+
+	validPropsMap := make(map[string]struct{})
+	for _, prop := range validPropsList {
+		validPropsMap[prop] = struct{}{}
+	}
+
+	// 如果道具属于有效道具，返回 nil
+	if _, exists := validPropsMap[props]; exists {
+		return nil
+	}
+
+	// 检查是否相反
+	conflictingProps := DaJiaoProps
+	if propSort == "dajiao" {
+		conflictingProps = JJPorps
+	}
+
+	// 如果道具属于冲突集合,返回
+	for _, conflictProp := range conflictingProps {
+		if props == conflictProp {
+			return errors.New("道具使用域错误！")
+		}
+	}
+
+	return errors.New("道具不存在")
 }
 
 func (u *userInfo) purchaseItem(n int) (int, error) {
@@ -230,16 +273,11 @@ func (u *userInfo) processNiuNiuAction(props string) (string, error) {
 	)
 	info = *u
 	if props != "" {
-		if props != "伟哥" && props != "媚药" {
-			err = errors.New("道具不存在")
-		}
-		if props == "击剑神器" || props == "击剑神稽" {
-			err = errors.New("道具不能混着用哦")
-		}
+		err := u.checkProps(props, "dajiao")
 		if err != nil {
 			return "", err
 		}
-		if err = u.createUserInfoByProps(props); err != nil {
+		if err := u.createUserInfoByProps(props); err != nil {
 			return "", err
 		}
 	}
@@ -269,16 +307,11 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 	)
 	info = *u
 	if props != "" {
-		if props != "击剑神器" && props != "击剑神稽" {
-			err = errors.New("道具不存在")
-		}
-		if props == "伟哥" || props == "媚药" {
-			err = errors.New("道具不能混着用哦")
-		}
+		err := u.checkProps(props, "jj")
 		if err != nil {
 			return "", err
 		}
-		if err = u.createUserInfoByProps(props); err != nil {
+		if err := u.createUserInfoByProps(props); err != nil {
 			return "", err
 		}
 	}
@@ -310,8 +343,9 @@ func (db *model) newLength() float64 {
 func (db *model) getWordNiuNiu(gid, uid int64) (*userInfo, error) {
 	db.RLock()
 	defer db.RUnlock()
-	u := userInfo{}
-	err := db.sql.Find(strconv.FormatInt(gid, 10), &u, "where UID = "+strconv.FormatInt(uid, 10))
+
+	var u userInfo
+	err := db.sql.Find(strconv.FormatInt(gid, 10), &u, query, uid)
 	return &u, err
 }
 
@@ -332,7 +366,7 @@ func (db *model) setWordNiuNiu(gid int64, u *userInfo) error {
 func (db *model) deleteWordNiuNiu(gid, uid int64) error {
 	db.Lock()
 	defer db.Unlock()
-	return db.sql.Del(strconv.FormatInt(gid, 10), "where UID = "+strconv.FormatInt(uid, 10))
+	return db.sql.Del(strconv.FormatInt(gid, 10), query, uid)
 }
 
 func (db *model) getAllNiuNiuOfGroup(gid int64) (users, error) {
@@ -351,7 +385,12 @@ func (db *model) getAllNiuNiuOfGroup(gid int64) (users, error) {
 func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
 	db.Lock()
 	defer db.Unlock()
-	err := db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
+	num, err := db.sql.Count(fmt.Sprintf("auction_%d", gid))
+	if err != nil {
+		num = 1
+	}
+	u.ID = uint(num)
+	err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	if err != nil {
 		err = db.sql.Create(strconv.FormatInt(gid, 10), &AuctionInfo{})
 		if err != nil {
@@ -362,9 +401,15 @@ func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
 	return err
 }
 
-func (db *model) getAllNiuNiuAuction(gid int64) ([]AuctionInfo, error) {
+func (db *model) deleteNiuNiuAuction(gid int64, id uint) error {
 	db.Lock()
 	defer db.Unlock()
+	return db.sql.Del(strconv.FormatInt(gid, 10), "WHERE ID = ?", id)
+}
+
+func (db *model) getAllNiuNiuAuction(gid int64) ([]AuctionInfo, error) {
+	db.RLock()
+	defer db.RUnlock()
 	var user AuctionInfo
 	var useras []AuctionInfo
 	err := db.sql.FindFor(fmt.Sprintf("auction_%d", gid), &user, "",

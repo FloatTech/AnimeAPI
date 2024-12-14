@@ -15,7 +15,7 @@ import (
 
 var (
 	db                       = &model{}
-	lock                     sync.Mutex
+	globalLock               sync.Mutex
 	ErrNoBoys                = errors.New("暂时没有男孩子哦")
 	ErrNoGirls               = errors.New("暂时没有女孩子哦")
 	ErrNoNiuNiu              = errors.New("你还没有牛牛呢,快去注册吧！")
@@ -46,8 +46,8 @@ func init() {
 
 // SetWordNiuNiu length > 0 就增加 , length < 0 就减小
 func SetWordNiuNiu(gid, uid int64, length float64) error {
-	lock.Lock()
-	defer lock.Unlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return err
@@ -57,16 +57,16 @@ func SetWordNiuNiu(gid, uid int64, length float64) error {
 }
 
 func GetWordNiuNiu(gid, uid int64) (float64, error) {
-	lock.Lock()
-	defer lock.Unlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 
 	niu, err := db.getWordNiuNiu(gid, uid)
 	return niu.Length, err
 }
 
 func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
-	lock.Lock()
-	defer lock.Unlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	var (
 		list users
 		err  error
@@ -91,8 +91,8 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 
 // GetGroupUserRank 获取指定用户在群中的排名
 func GetGroupUserRank(gid, uid int64) (int, error) {
-	lock.Lock()
-	defer lock.Unlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return -1, err

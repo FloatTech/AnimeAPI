@@ -8,7 +8,7 @@ func TestCreateUserInfoByProps(t *testing.T) {
 		Length: 12,
 		WeiGe:  2,
 	}
-	err := user.createUserInfoByProps("媚药")
+	err := user.applyProp("媚药")
 	if err != nil {
 		t.Error(err)
 	}

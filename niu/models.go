@@ -176,7 +176,7 @@ func (u *userInfo) useShenJi(adduserniuniu float64) (string, float64, float64) {
 	return r, myLength, adduserniuniu + 0.7*change
 }
 
-func (u *userInfo) createUserInfoByProps(props string) error {
+func (u *userInfo) applyProp(props string) error {
 	propsMap := map[string]struct {
 		itemCount *int
 		errMsg    string
@@ -277,7 +277,7 @@ func (u *userInfo) processNiuNiuAction(props string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if err := u.createUserInfoByProps(props); err != nil {
+		if err := u.applyProp(props); err != nil {
 			return "", err
 		}
 	}
@@ -311,7 +311,7 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 		if err != nil {
 			return "", err
 		}
-		if err := u.createUserInfoByProps(props); err != nil {
+		if err := u.applyProp(props); err != nil {
 			return "", err
 		}
 	}

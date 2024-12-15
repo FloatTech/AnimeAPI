@@ -395,11 +395,11 @@ func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
 	u.ID = uint(num)
 	err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	if err != nil {
-		err = db.sql.Create(strconv.FormatInt(gid, 10), &AuctionInfo{})
+		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &AuctionInfo{})
 		if err != nil {
 			return err
 		}
-		err = db.sql.Insert(strconv.FormatInt(gid, 10), u)
+		err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	}
 	return err
 }

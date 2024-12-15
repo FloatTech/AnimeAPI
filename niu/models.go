@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	DaJiaoProps = []string{"伟哥", "媚药"}
-	JJPorps     = []string{"击剑神器", "击剑神稽"}
+	daJiaoProps = []string{"伟哥", "媚药"}
+	jjPorps     = []string{"击剑神器", "击剑神稽"}
 	query       = "WHERE UID = ?"
 )
 
@@ -39,18 +39,21 @@ type userInfo struct {
 	Buff5     int // 暂定
 }
 
+// AuctionInfo 拍卖信息
 type AuctionInfo struct {
 	ID     uint
-	UserId int64
+	UserID int64
 	Length float64
 	Money  int
 }
 
+// BaseInfo ...
 type BaseInfo struct {
 	UID    int64
 	Length float64
 }
 
+// BaseInfos ...
 type BaseInfos []BaseInfo
 
 func (m users) filter(pos bool) users {
@@ -195,7 +198,7 @@ func (u *userInfo) applyProp(props string) error {
 
 func (u *userInfo) useItem(itemCount *int, errMsg string) error {
 	if *itemCount > 0 {
-		*itemCount -= 1
+		*itemCount--
 		return nil
 	}
 	return errors.New(errMsg)
@@ -204,8 +207,8 @@ func (u *userInfo) useItem(itemCount *int, errMsg string) error {
 func (u *userInfo) checkProps(props, propSort string) error {
 
 	validProps := map[string][]string{
-		"dajiao": DaJiaoProps,
-		"jj":     JJPorps,
+		"dajiao": daJiaoProps,
+		"jj":     jjPorps,
 	}
 
 	// 检查是否是有效道具类别
@@ -225,9 +228,9 @@ func (u *userInfo) checkProps(props, propSort string) error {
 	}
 
 	// 检查是否相反
-	conflictingProps := DaJiaoProps
+	conflictingProps := daJiaoProps
 	if propSort == "dajiao" {
-		conflictingProps = JJPorps
+		conflictingProps = jjPorps
 	}
 
 	// 如果道具属于冲突集合,返回

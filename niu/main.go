@@ -14,20 +14,43 @@ import (
 )
 
 var (
-	db                       = &model{}
-	globalLock               sync.Mutex
-	ErrNoBoys                = errors.New("暂时没有男孩子哦")
-	ErrNoGirls               = errors.New("暂时没有女孩子哦")
-	ErrNoNiuNiu              = errors.New("你还没有牛牛呢,快去注册吧！")
-	ErrNoNiuNiuINAuction     = errors.New("拍卖行还没有牛牛呢")
-	ErrNoMoney               = errors.New("你的钱不够快去赚钱吧！")
-	ErrAdduserNoNiuNiu       = errors.New("对方还没有牛牛呢，不能🤺")
-	ErrCannotFight           = errors.New("你要和谁🤺？你自己吗？")
-	ErrNoNiuNiuTwo           = errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
-	ErrAlreadyRegistered     = errors.New("你已经注册过了")
-	ErrInvalidPropType       = errors.New("道具类别传入错误")
+	db         = &model{}
+	globalLock sync.Mutex
+	// ErrNoBoys 表示当前没有男孩子可用的错误。
+	ErrNoBoys = errors.New("暂时没有男孩子哦")
+
+	// ErrNoGirls 表示当前没有女孩子可用的错误。
+	ErrNoGirls = errors.New("暂时没有女孩子哦")
+
+	// ErrNoNiuNiu 表示用户尚未拥有牛牛的错误。
+	ErrNoNiuNiu = errors.New("你还没有牛牛呢,快去注册吧！")
+
+	// ErrNoNiuNiuINAuction 表示拍卖行当前没有牛牛可用的错误。
+	ErrNoNiuNiuINAuction = errors.New("拍卖行还没有牛牛呢")
+
+	// ErrNoMoney 表示用户资金不足的错误。
+	ErrNoMoney = errors.New("你的钱不够快去赚钱吧！")
+
+	// ErrAdduserNoNiuNiu 表示对方尚未拥有牛牛，因此无法进行某些操作的错误。
+	ErrAdduserNoNiuNiu = errors.New("对方还没有牛牛呢，不能🤺")
+
+	// ErrCannotFight 表示无法进行战斗操作的错误。
+	ErrCannotFight = errors.New("你要和谁🤺？你自己吗？")
+
+	// ErrNoNiuNiuTwo 表示用户尚未拥有牛牛，无法执行特定操作的错误。
+	ErrNoNiuNiuTwo = errors.New("你还没有牛牛呢，咋的你想凭空造一个啊")
+
+	// ErrAlreadyRegistered 表示用户已经注册过的错误。
+	ErrAlreadyRegistered = errors.New("你已经注册过了")
+
+	// ErrInvalidPropType 表示传入的道具类别错误的错误。
+	ErrInvalidPropType = errors.New("道具类别传入错误")
+
+	// ErrInvalidPropUsageScope 表示道具使用域错误的错误。
 	ErrInvalidPropUsageScope = errors.New("道具使用域错误")
-	ErrPropNotFound          = errors.New("道具不存在")
+
+	// ErrPropNotFound 表示找不到指定道具的错误。
+	ErrPropNotFound = errors.New("道具不存在")
 )
 
 func init() {
@@ -44,6 +67,13 @@ func init() {
 	}
 }
 
+// DeleteWordNiuNiu ...
+func DeleteWordNiuNiu(gid, uid int64) error {
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	return db.deleteWordNiuNiu(gid, uid)
+}
+
 // SetWordNiuNiu length > 0 就增加 , length < 0 就减小
 func SetWordNiuNiu(gid, uid int64, length float64) error {
 	globalLock.Lock()
@@ -56,6 +86,7 @@ func SetWordNiuNiu(gid, uid int64, length float64) error {
 	return db.setWordNiuNiu(gid, niu)
 }
 
+// GetWordNiuNiu ...
 func GetWordNiuNiu(gid, uid int64) (float64, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
@@ -64,6 +95,7 @@ func GetWordNiuNiu(gid, uid int64) (float64, error) {
 	return niu.Length, err
 }
 
+// GetRankingInfo 获取排行信息
 func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
@@ -276,7 +308,7 @@ func Sell(gid, uid int64) (string, error) {
 		return message, err
 	}
 	u := AuctionInfo{
-		UserId: niu.UID,
+		UserID: niu.UID,
 		Length: niu.Length,
 		Money:  money * 2,
 	}
@@ -286,8 +318,8 @@ func Sell(gid, uid int64) (string, error) {
 
 // ShowAuction 展示牛牛拍卖行
 func ShowAuction(gid int64) ([]AuctionInfo, error) {
-	db.RLock()
-	defer db.RUnlock()
+	globalLock.Lock()
+	defer globalLock.Unlock()
 	return db.getAllNiuNiuAuction(gid)
 }
 
@@ -311,8 +343,8 @@ func Auction(gid, uid int64, i int) (string, error) {
 	niu.Length = auction[i].Length
 
 	if auction[i].Money > 500 {
-		niu.WeiGe = 2
-		niu.Artifact = 2
+		niu.WeiGe += 2
+		niu.Artifact += 2
 	}
 
 	if err = db.setWordNiuNiu(gid, niu); err != nil {
@@ -323,8 +355,8 @@ func Auction(gid, uid int64, i int) (string, error) {
 		return "", err
 	}
 	if auction[i].Money > 500 {
-		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你%d个伟哥,%d个媚药",
-			niu.Length, niu.WeiGe, niu.Artifact), nil
+		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你2个伟哥,2个媚药",
+			niu.Length), nil
 	}
 	return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm", niu.Length), nil
 }

@@ -1,3 +1,4 @@
+// Package niu 牛牛大作战
 package niu
 
 import (
@@ -55,7 +56,7 @@ var (
 
 func init() {
 	if file.IsNotExist("data/niuniu") {
-		err := os.MkdirAll("data/niuniu", 775)
+		err := os.MkdirAll("data/niuniu", 0775)
 		if err != nil {
 			panic(err)
 		}

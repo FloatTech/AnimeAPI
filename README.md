@@ -16,6 +16,8 @@ huggingface API
 二次元 AI tag 作画
 ## nsfw
 图片合规性审查
+## niu
+niu
 ## pixiv
 P站解析与图片下载
 ## qzone

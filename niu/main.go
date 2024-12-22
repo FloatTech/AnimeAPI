@@ -4,14 +4,16 @@ package niu
 import (
 	"errors"
 	"fmt"
-	"github.com/FloatTech/AnimeAPI/wallet"
-	"github.com/FloatTech/floatbox/file"
-	sql "github.com/FloatTech/sqlite"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/FloatTech/floatbox/file"
+	sql "github.com/FloatTech/sqlite"
+
+	"github.com/FloatTech/AnimeAPI/wallet"
 )
 
 var (
@@ -197,7 +199,6 @@ func Register(gid, uid int64) (string, error) {
 
 // JJ ...
 func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
-
 	myniuniu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return "", 0, ErrNoNiuNiu

@@ -4,12 +4,13 @@ package niu
 import (
 	"errors"
 	"fmt"
-	sql "github.com/FloatTech/sqlite"
 	"math"
 	"math/rand"
 	"sort"
 	"strconv"
 	"sync"
+
+	sql "github.com/FloatTech/sqlite"
 )
 
 var (
@@ -206,7 +207,6 @@ func (u *userInfo) useItem(itemCount *int, errMsg string) error {
 }
 
 func (u *userInfo) checkProps(props, propSort string) error {
-
 	validProps := map[string][]string{
 		"dajiao": daJiaoProps,
 		"jj":     jjPorps,
@@ -320,7 +320,6 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 		}
 	}
 	switch {
-
 	case u.ShenJi-info.ShenJi != 0:
 		fencingResult, f, f1 = u.useShenJi(adduserniuniu.Length)
 		u.Length = f
@@ -335,7 +334,6 @@ func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (stri
 		fencingResult, f, f1 = fencing(u.Length, adduserniuniu.Length)
 		u.Length = f
 		adduserniuniu.Length = f1
-
 	}
 	return fencingResult, err
 }

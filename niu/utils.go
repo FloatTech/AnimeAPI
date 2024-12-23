@@ -3,9 +3,10 @@ package niu
 
 import (
 	"fmt"
-	"github.com/FloatTech/AnimeAPI/wallet"
 	"math"
 	"math/rand"
+
+	"github.com/FloatTech/AnimeAPI/wallet"
 )
 
 func randomChoice(options []string) string {

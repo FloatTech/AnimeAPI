@@ -95,7 +95,7 @@ func GetDynamicDetail(cookiecfg *CookieConfig, dynamicIDStr string) (card Dynami
 
 // GetMemberCard 获取b站个人详情
 func GetMemberCard(uid any) (result MemberCard, err error) {
-	data, err := web.GetData(fmt.Sprintf(MemberCardURL, uid))
+	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(MemberCardURL, uid), "GET", "", web.RandUA(), nil)
 	if err != nil {
 		return
 	}

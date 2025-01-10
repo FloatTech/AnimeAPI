@@ -49,6 +49,8 @@ const (
 	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v&up_mid=%v"
 	// NavURL 导航URL
 	NavURL = "https://api.bilibili.com/x/web-interface/nav"
+	// ConstUA 浏览器UA
+	ConstUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
 )
 
 // DynamicCard 总动态结构体,包括desc,card
@@ -198,108 +200,21 @@ type Vote struct {
 
 // MemberCard 个人信息卡片
 type MemberCard struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	TTL     int    `json:"ttl"`
-	Data    struct {
-		Card struct {
-			Mid         string  `json:"mid"`
-			Name        string  `json:"name"`
-			Approve     bool    `json:"approve"`
-			Sex         string  `json:"sex"`
-			Rank        string  `json:"rank"`
-			Face        string  `json:"face"`
-			FaceNft     int     `json:"face_nft"`
-			FaceNftType int     `json:"face_nft_type"`
-			DisplayRank string  `json:"DisplayRank"`
-			Regtime     int64   `json:"regtime"`
-			Spacesta    int     `json:"spacesta"`
-			Birthday    string  `json:"birthday"`
-			Place       string  `json:"place"`
-			Description string  `json:"description"`
-			Article     int     `json:"article"`
-			Attentions  []int64 `json:"attentions"`
-			Fans        int     `json:"fans"`
-			Friend      int     `json:"friend"`
-			Attention   int     `json:"attention"`
-			Sign        string  `json:"sign"`
-			LevelInfo   struct {
-				CurrentLevel int `json:"current_level"`
-				CurrentMin   int `json:"current_min"`
-				CurrentExp   int `json:"current_exp"`
-				NextExp      int `json:"next_exp"`
-			} `json:"level_info"`
-			Pendant struct {
-				Pid               int    `json:"pid"`
-				Name              string `json:"name"`
-				Image             string `json:"image"`
-				Expire            int    `json:"expire"`
-				ImageEnhance      string `json:"image_enhance"`
-				ImageEnhanceFrame string `json:"image_enhance_frame"`
-				NPid              int    `json:"n_pid"`
-			} `json:"pendant"`
-			Nameplate struct {
-				Nid        int    `json:"nid"`
-				Name       string `json:"name"`
-				Image      string `json:"image"`
-				ImageSmall string `json:"image_small"`
-				Level      string `json:"level"`
-				Condition  string `json:"condition"`
-			} `json:"nameplate"`
-			Official struct {
-				Role  int    `json:"role"`
-				Title string `json:"title"`
-				Desc  string `json:"desc"`
-				Type  int    `json:"type"`
-			} `json:"Official"`
-			OfficialVerify struct {
-				Type int    `json:"type"`
-				Desc string `json:"desc"`
-			} `json:"official_verify"`
-			Vip struct {
-				Type       int   `json:"type"`
-				Status     int   `json:"status"`
-				DueDate    int64 `json:"due_date"`
-				VipPayType int   `json:"vip_pay_type"`
-				ThemeType  int   `json:"theme_type"`
-				Label      struct {
-					Path                  string `json:"path"`
-					Text                  string `json:"text"`
-					LabelTheme            string `json:"label_theme"`
-					TextColor             string `json:"text_color"`
-					BgStyle               int    `json:"bg_style"`
-					BgColor               string `json:"bg_color"`
-					BorderColor           string `json:"border_color"`
-					UseImgLabel           bool   `json:"use_img_label"`
-					ImgLabelURIHans       string `json:"img_label_uri_hans"`
-					ImgLabelURIHant       string `json:"img_label_uri_hant"`
-					ImgLabelURIHansStatic string `json:"img_label_uri_hans_static"`
-					ImgLabelURIHantStatic string `json:"img_label_uri_hant_static"`
-				} `json:"label"`
-				AvatarSubscript    int    `json:"avatar_subscript"`
-				NicknameColor      string `json:"nickname_color"`
-				Role               int    `json:"role"`
-				AvatarSubscriptURL string `json:"avatar_subscript_url"`
-				TvVipStatus        int    `json:"tv_vip_status"`
-				TvVipPayType       int    `json:"tv_vip_pay_type"`
-				TvDueDate          int    `json:"tv_due_date"`
-				AvatarIcon         struct {
-					IconType     int `json:"icon_type"`
-					IconResource struct {
-					} `json:"icon_resource"`
-				} `json:"avatar_icon"`
-				VipType   int `json:"vipType"`
-				VipStatus int `json:"vipStatus"`
-			} `json:"vip"`
-			IsSeniorMember int         `json:"is_senior_member"`
-			NameRender     interface{} `json:"name_render"`
-		} `json:"card"`
-		Following    bool `json:"following"`
-		ArchiveCount int  `json:"archive_count"`
-		ArticleCount int  `json:"article_count"`
-		Follower     int  `json:"follower"`
-		LikeNum      int  `json:"like_num"`
-	} `json:"data"`
+	Mid        string  `json:"mid"`
+	Name       string  `json:"name"`
+	Sex        string  `json:"sex"`
+	Face       string  `json:"face"`
+	Coins      float64 `json:"coins"`
+	Regtime    int64   `json:"regtime"`
+	Birthday   string  `json:"birthday"`
+	Sign       string  `json:"sign"`
+	Attentions []int64 `json:"attentions"`
+	Fans       int     `json:"fans"`
+	Friend     int     `json:"friend"`
+	Attention  int     `json:"attention"`
+	LevelInfo  struct {
+		CurrentLevel int `json:"current_level"`
+	} `json:"level_info"`
 }
 
 // RoomCard 直播间卡片

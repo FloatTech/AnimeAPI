@@ -268,7 +268,7 @@ func (u *userInfo) purchaseItem(n int) (int, error) {
 	return money, err
 }
 
-func (u *userInfo) processNiuNiuAction(props string) (string, error) {
+func (u *userInfo) processDaJiao(props string) (string, error) {
 	var (
 		messages string
 		info     userInfo
@@ -301,7 +301,7 @@ func (u *userInfo) processNiuNiuAction(props string) (string, error) {
 	return messages, err
 }
 
-func (u *userInfo) processJJuAction(adduserniuniu *userInfo, props string) (string, error) {
+func (u *userInfo) processJJ(adduserniuniu *userInfo, props string) (string, error) {
 	var (
 		fencingResult string
 		f             float64
@@ -378,7 +378,8 @@ func (db *model) getAllNiuNiuOfGroup(gid int64) (users, error) {
 	var useras users
 	err := db.sql.FindFor(fmt.Sprintf("%d", gid), &user, "",
 		func() error {
-			useras = append(useras, &user)
+			newUser := user
+			useras = append(useras, &newUser)
 			return nil
 		})
 	return useras, err
@@ -389,24 +390,21 @@ func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
 	defer db.Unlock()
 	num, err := db.sql.Count(fmt.Sprintf("auction_%d", gid))
 	if err != nil {
-		num = 1
-	}
-	u.ID = uint(num)
-	err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
-	if err != nil {
 		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &AuctionInfo{})
 		if err != nil {
 			return err
 		}
-		err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
+		num = -1
 	}
+	u.ID = uint(num + 1)
+	err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	return err
 }
 
 func (db *model) deleteNiuNiuAuction(gid int64, id uint) error {
 	db.Lock()
 	defer db.Unlock()
-	return db.sql.Del(strconv.FormatInt(gid, 10), "WHERE ID = ?", id)
+	return db.sql.Del(fmt.Sprintf("auction_%d", gid), "WHERE id = ?", id)
 }
 
 func (db *model) getAllNiuNiuAuction(gid int64) ([]AuctionInfo, error) {

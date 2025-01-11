@@ -4,14 +4,16 @@ package niu
 import (
 	"errors"
 	"fmt"
-	"github.com/FloatTech/AnimeAPI/wallet"
-	"github.com/FloatTech/floatbox/file"
-	sql "github.com/FloatTech/sqlite"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/FloatTech/floatbox/file"
+	sql "github.com/FloatTech/sqlite"
+
+	"github.com/FloatTech/AnimeAPI/wallet"
 )
 
 var (
@@ -168,7 +170,7 @@ func HitGlue(gid, uid int64, prop string) (string, error) {
 		return "", ErrNoNiuNiuTwo
 	}
 
-	messages, err := niuniu.processNiuNiuAction(prop)
+	messages, err := niuniu.processDaJiao(prop)
 	if err != nil {
 		return "", err
 	}
@@ -197,7 +199,6 @@ func Register(gid, uid int64) (string, error) {
 
 // JJ ...
 func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
-
 	myniuniu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return "", 0, ErrNoNiuNiu
@@ -212,7 +213,7 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 		return "", 0, ErrCannotFight
 	}
 
-	message, err = myniuniu.processJJuAction(adduserniuniu, prop)
+	message, err = myniuniu.processJJ(adduserniuniu, prop)
 	if err != nil {
 		return "", 0, err
 	}
@@ -326,39 +327,40 @@ func ShowAuction(gid int64) ([]AuctionInfo, error) {
 
 // Auction 购买牛牛
 func Auction(gid, uid int64, i int) (string, error) {
-	auction, err := db.getAllNiuNiuAuction(gid)
+	infos, err := db.getAllNiuNiuAuction(gid)
 	if err != nil {
 		return "", ErrNoNiuNiuINAuction
 	}
-	err = wallet.InsertWalletOf(uid, -auction[i].Money)
-	if err != nil {
+	index := i - 1
+	if err := wallet.InsertWalletOf(uid, -infos[index].Money); err != nil {
 		return "", ErrNoMoney
 	}
 
 	niu, err := db.getWordNiuNiu(gid, uid)
-	if err != nil {
-		niu = &userInfo{
-			UID: uid,
-		}
-	}
-	niu.Length = auction[i].Length
 
-	if auction[i].Money > 500 {
+	if err != nil {
+		niu.UID = uid
+	}
+
+	niu.Length = infos[index].Length
+
+	if infos[index].Money >= 500 {
 		niu.WeiGe += 2
-		niu.Artifact += 2
+		niu.Philter += 2
+	}
+
+	if err = db.deleteNiuNiuAuction(gid, uint(index)); err != nil {
+		return "", err
 	}
 
 	if err = db.setWordNiuNiu(gid, niu); err != nil {
 		return "", err
 	}
-	err = db.deleteNiuNiuAuction(gid, auction[i].ID)
-	if err != nil {
-		return "", err
+
+	if infos[index].Money >= 500 {
+		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你2个伟哥,2个媚药", niu.Length), nil
 	}
-	if auction[i].Money > 500 {
-		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你2个伟哥,2个媚药",
-			niu.Length), nil
-	}
+
 	return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm", niu.Length), nil
 }
 

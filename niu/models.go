@@ -43,10 +43,10 @@ type userInfo struct {
 
 // AuctionInfo 拍卖信息
 type AuctionInfo struct {
-	ID     uint
-	UserID int64
-	Length float64
-	Money  int
+	ID     int     `db:"id"`
+	UserID int64   `db:"user_id"`
+	Length float64 `db:"length"`
+	Money  int     `db:"money"`
 }
 
 // BaseInfo ...
@@ -388,16 +388,14 @@ func (db *model) getAllNiuNiuOfGroup(gid int64) (users, error) {
 func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
 	db.Lock()
 	defer db.Unlock()
-	num, err := db.sql.Count(fmt.Sprintf("auction_%d", gid))
+	err := db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	if err != nil {
-		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &AuctionInfo{})
+		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &userInfo{})
 		if err != nil {
 			return err
 		}
-		num = -1
+		err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	}
-	u.ID = uint(num + 1)
-	err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	return err
 }
 

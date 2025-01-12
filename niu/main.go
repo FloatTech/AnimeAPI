@@ -231,7 +231,7 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 	if err = db.setWordNiuNiu(gid, adduserniuniu); err != nil {
 		return "", 0, err
 	}
-	
+
 	return
 }
 

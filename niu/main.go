@@ -347,7 +347,7 @@ func ShowAuction(gid int64) ([]AuctionInfo, error) {
 }
 
 // Auction 购买牛牛
-func Auction(gid, uid int64, index int) (string, error) {
+func Auction(gid, uid int64, index int) (string, error) { 
 	infos, err := db.getAllNiuNiuAuction(gid)
 	if err != nil {
 		return "", ErrNoNiuNiuINAuction

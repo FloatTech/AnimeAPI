@@ -390,7 +390,7 @@ func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
 	defer db.Unlock()
 	err := db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
 	if err != nil {
-		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &userInfo{})
+		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &AuctionInfo{})
 		if err != nil {
 			return err
 		}

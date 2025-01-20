@@ -106,14 +106,20 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 		list users
 		err  error
 	)
+
 	niuOfGroup, err := db.getAllNiuNiuOfGroup(gid)
 	if err != nil {
+		return nil, err
+	}
+
+	list = niuOfGroup.filter(t)
+	list.sort(t)
+	if len(list) == 0 {
 		if t {
 			return nil, ErrNoBoys
 		}
 		return nil, ErrNoGirls
 	}
-	list = niuOfGroup.filter(t)
 	f := make(BaseInfos, len(list))
 	for i, info := range list {
 		f[i] = BaseInfo{
@@ -140,10 +146,10 @@ func GetGroupUserRank(gid, uid int64) (int, error) {
 }
 
 // View 查看牛牛
-func View(gid, uid int64, name string) (*strings.Builder, error) {
+func View(gid, uid int64, name string) (string, error) {
 	i, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
-		return nil, ErrNoNiuNiu
+		return "", ErrNoNiuNiu
 	}
 	niuniu := i.Length
 	var result strings.Builder
@@ -155,12 +161,12 @@ func View(gid, uid int64, name string) (*strings.Builder, error) {
 	}
 	niuniuList, err := db.getAllNiuNiuOfGroup(gid)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	result.WriteString(fmt.Sprintf("\n📛%s<%s>的牛牛信息\n⭕性别:%s\n⭕%s度:%.2fcm\n⭕排行:%d\n⭕%s ",
 		name, strconv.FormatInt(uid, 10),
 		sex, sexLong, niuniu, niuniuList.ranking(niuniu, uid), generateRandomString(niuniu)))
-	return &result, nil
+	return result.String(), nil
 }
 
 // HitGlue 打胶
@@ -310,15 +316,25 @@ func Sell(gid, uid int64) (string, error) {
 	if !t {
 		return "", errors.New(message)
 	}
+
+	if err := db.deleteWordNiuNiu(gid, uid); err != nil {
+		return "", err
+	}
+
 	err = wallet.InsertWalletOf(uid, money)
 	if err != nil {
 		return message, err
 	}
+
+	infos, _ := db.getAllNiuNiuAuction(gid)
+
 	u := AuctionInfo{
+		ID:     len(infos),
 		UserID: niu.UID,
 		Length: niu.Length,
 		Money:  money * 2,
 	}
+
 	err = db.setNiuNiuAuction(gid, &u)
 	return message, err
 }
@@ -331,12 +347,11 @@ func ShowAuction(gid int64) ([]AuctionInfo, error) {
 }
 
 // Auction 购买牛牛
-func Auction(gid, uid int64, i int) (string, error) {
+func Auction(gid, uid int64, index int) (string, error) { 
 	infos, err := db.getAllNiuNiuAuction(gid)
 	if err != nil {
 		return "", ErrNoNiuNiuINAuction
 	}
-	index := i - 1
 	if err := wallet.InsertWalletOf(uid, -infos[index].Money); err != nil {
 		return "", ErrNoMoney
 	}

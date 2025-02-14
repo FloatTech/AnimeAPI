@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024
-	github.com/FloatTech/sqlite v1.7.0
+	github.com/FloatTech/sqlite v1.7.1
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/antchfx/htmlquery v1.3.3
 	github.com/corona10/goimagehash v1.1.0

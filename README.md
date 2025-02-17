@@ -10,6 +10,8 @@ b站相关API
 颜文字抽象转写
 ## huggingface
 huggingface API
+## kimoi
+AI匹配kimoi词库
 ## neteasemusic
 网易云的一些简单功能
 ## novelai

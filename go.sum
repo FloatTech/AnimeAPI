@@ -1,7 +1,7 @@
 github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024 h1:mrvWpiwfRklt9AyiQjKgDGJjf4YL6FZ3yC+ydbkuF2o=
 github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024/go.mod h1:+P3hs+Cvl10/Aj3SNE96TuBvKAXCe+XD1pKphTZyiwk=
-github.com/FloatTech/sqlite v1.7.0 h1:FGSn4pCR12kESozn7IvNx3U39dwR/AcFM9oPyGACsl0=
-github.com/FloatTech/sqlite v1.7.0/go.mod h1:/4tzfCGhrZnnjC1U8vcfwGQeF6eR649fhOsS3+Le0+s=
+github.com/FloatTech/sqlite v1.7.1 h1:XKUY0+MNaRmvEIgRv7QLbl7PFVpUfQ72+XQg+no2Vq0=
+github.com/FloatTech/sqlite v1.7.1/go.mod h1:/4tzfCGhrZnnjC1U8vcfwGQeF6eR649fhOsS3+Le0+s=
 github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562 h1:snfw7FNFym1eNnLrQ/VCf80LiQo9C7jHgrunZDwiRcY=
 github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562/go.mod h1:fHZFWGquNXuHttu9dUYoKuNbm3dzLETnIOnm1muSfDs=
 github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7 h1:S/ferNiehVjNaBMNNBxUjLtVmP/YWD6Yh79RfPv4ehU=

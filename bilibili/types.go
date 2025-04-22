@@ -47,6 +47,8 @@ const (
 	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
 	// VideoSummaryURL AI视频总结
 	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v&up_mid=%v"
+	// PlayURL 获得视频下载地址
+	PlayURL = "https://api.bilibili.com/x/player/playurl?bvid=%v&cid=%v&qn=0&fnval=80&fnver=0&fourk=1"
 	// NavURL 导航URL
 	NavURL = "https://api.bilibili.com/x/web-interface/nav"
 	// ConstUA 浏览器UA

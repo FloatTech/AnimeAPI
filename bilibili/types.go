@@ -47,8 +47,10 @@ const (
 	AllGuardURL = "https://api.vtbs.moe/v1/guard/all"
 	// VideoSummaryURL AI视频总结
 	VideoSummaryURL = "https://api.bilibili.com/x/web-interface/view/conclusion/get?bvid=%v&cid=%v&up_mid=%v"
-	// PlayURL 获得视频下载地址
-	PlayURL = "https://api.bilibili.com/x/player/playurl?bvid=%v&cid=%v&qn=0&fnval=80&fnver=0&fourk=1"
+	// VideoDownloadURL 视频下载
+	VideoDownloadURL = "https://api.bilibili.com/x/player/playurl?bvid=%v&cid=%v&qn=80&fnval=1&fnver=0&fourk=1"
+	// OnlineTotalURL 在线人数
+	OnlineTotalURL = "https://api.bilibili.com/x/player/online/total?bvid=%v&cid=%v"
 	// NavURL 导航URL
 	NavURL = "https://api.bilibili.com/x/web-interface/nav"
 	// ConstUA 浏览器UA
@@ -402,6 +404,65 @@ type VideoSummary struct {
 		Status     int    `json:"status"`
 		LikeNum    int    `json:"like_num"`
 		DislikeNum int    `json:"dislike_num"`
+	} `json:"data"`
+}
+
+// VideoDownload 视频下载结构体(mp4格式)
+type VideoDownload struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	TTL     int    `json:"ttl"`
+	Data    struct {
+		From              string   `json:"from"`
+		Result            string   `json:"result"`
+		Message           string   `json:"message"`
+		Quality           int      `json:"quality"`
+		Format            string   `json:"format"`
+		Timelength        int      `json:"timelength"`
+		AcceptFormat      string   `json:"accept_format"`
+		AcceptDescription []string `json:"accept_description"`
+		AcceptQuality     []int    `json:"accept_quality"`
+		VideoCodecid      int      `json:"video_codecid"`
+		SeekParam         string   `json:"seek_param"`
+		SeekType          string   `json:"seek_type"`
+		Durl              []struct {
+			Order     int      `json:"order"`
+			Length    int      `json:"length"`
+			Size      int      `json:"size"`
+			Ahead     string   `json:"ahead"`
+			Vhead     string   `json:"vhead"`
+			URL       string   `json:"url"`
+			BackupURL []string `json:"backup_url"`
+		} `json:"durl"`
+		SupportFormats []struct {
+			Quality        int         `json:"quality"`
+			Format         string      `json:"format"`
+			NewDescription string      `json:"new_description"`
+			DisplayDesc    string      `json:"display_desc"`
+			Superscript    string      `json:"superscript"`
+			Codecs         interface{} `json:"codecs"`
+		} `json:"support_formats"`
+		HighFormat   interface{} `json:"high_format"`
+		LastPlayTime int         `json:"last_play_time"`
+		LastPlayCid  int         `json:"last_play_cid"`
+	} `json:"data"`
+}
+
+// OnlineTotal 在线人数结构体
+type OnlineTotal struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	TTL     int    `json:"ttl"`
+	Data    struct {
+		Total      string `json:"total"`
+		Count      string `json:"count"`
+		ShowSwitch struct {
+			Total bool `json:"total"`
+			Count bool `json:"count"`
+		} `json:"show_switch"`
+		Abtest struct {
+			Group string `json:"group"`
+		} `json:"abtest"`
 	} `json:"data"`
 }
 

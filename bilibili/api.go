@@ -95,7 +95,7 @@ func GetDynamicDetail(cookiecfg *CookieConfig, dynamicIDStr string) (card Dynami
 
 // GetMemberCard 获取b站个人详情
 func GetMemberCard(uid any) (result MemberCard, err error) {
-	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(MemberCardURL, uid), "GET", "", ConstUA, nil)
+	data, err := web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(MemberCardURL, uid), "GET", "", web.RandUA(), nil)
 	if err != nil {
 		return
 	}
@@ -157,7 +157,7 @@ func GetAllGuard(mid string) (guardUser GuardUser, err error) {
 // GetArticleInfo 用id查专栏信息
 func GetArticleInfo(id string) (card Card, err error) {
 	var data []byte
-	data, err = web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(ArticleInfoURL, id), "GET", "", ConstUA, nil)
+	data, err = web.GetData(fmt.Sprintf(ArticleInfoURL, id))
 	if err != nil {
 		return
 	}
@@ -168,7 +168,7 @@ func GetArticleInfo(id string) (card Card, err error) {
 // GetLiveRoomInfo 用直播间id查直播间信息
 func GetLiveRoomInfo(roomID string) (card RoomCard, err error) {
 	var data []byte
-	data, err = web.RequestDataWith(web.NewDefaultClient(), fmt.Sprintf(LiveRoomInfoURL, roomID), "GET", "", ConstUA, nil)
+	data, err = web.GetData(fmt.Sprintf(ArticleInfoURL, roomID))
 	if err != nil {
 		return
 	}

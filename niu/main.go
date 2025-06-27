@@ -4,20 +4,26 @@ package niu
 import (
 	"errors"
 	"fmt"
+	"github.com/glebarez/sqlite"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/FloatTech/floatbox/file"
-	sql "github.com/FloatTech/sqlite"
 
 	"github.com/FloatTech/AnimeAPI/wallet"
 )
 
+const (
+	ur = "user"
+	ac = "auction"
+)
+
 var (
-	db         = &model{}
+	db         *gorm.DB
 	globalLock sync.Mutex
 	// ErrNoBoys 表示当前没有男孩子可用的错误。
 	ErrNoBoys = errors.New("暂时没有男孩子哦")
@@ -63,30 +69,41 @@ func init() {
 			panic(err)
 		}
 	}
-	db.sql = sql.New("data/niuniu/niuniu.db")
-	err := db.sql.Open(time.Hour * 24)
+
+	sdb, err := gorm.Open(sqlite.Open("data/niuniu/niuniu.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
+
+	if err = sdb.AutoMigrate(&niuNiuManager{}); err != nil {
+		panic(err)
+	}
+
+	db = sdb
+
 }
 
 // DeleteWordNiuNiu ...
 func DeleteWordNiuNiu(gid, uid int64) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	return db.deleteWordNiuNiu(gid, uid)
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return err
+	}
+	return deleteUserByID(gid, uid, ur)
 }
 
 // SetWordNiuNiu length > 0 就增加 , length < 0 就减小
 func SetWordNiuNiu(gid, uid int64, length float64) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	niu, err := db.getWordNiuNiu(gid, uid)
-	if err != nil {
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return err
 	}
-	niu.Length += length
-	return db.setWordNiuNiu(gid, niu)
+	m := map[string]interface{}{
+		"length": length,
+	}
+	return updatesUserByID(gid, uid, m, ur)
 }
 
 // GetWordNiuNiu ...
@@ -94,8 +111,18 @@ func GetWordNiuNiu(gid, uid int64) (float64, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
 
-	niu, err := db.getWordNiuNiu(gid, uid)
-	return niu.Length, err
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return 0, err
+	}
+
+	info, err := getUserByID(gid, uid, ur)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return 0, ErrNoNiuNiu
+	} else if err != nil {
+		return 0, err
+	}
+
+	return info.Length, err
 }
 
 // GetRankingInfo 获取排行信息
@@ -104,15 +131,18 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	defer globalLock.Unlock()
 	var (
 		list users
-		err  error
 	)
 
-	niuOfGroup, err := db.getAllNiuNiuOfGroup(gid)
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return nil, err
+	}
+
+	us, err := listUsers(gid)
 	if err != nil {
 		return nil, err
 	}
 
-	list = niuOfGroup.filter(t)
+	list = us.filter(t)
 	list.sort(t)
 	if len(list) == 0 {
 		if t {
@@ -123,7 +153,7 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	f := make(BaseInfos, len(list))
 	for i, info := range list {
 		f[i] = BaseInfo{
-			UID:    info.UID,
+			UID:    info.UserID,
 			Length: info.Length,
 		}
 	}
@@ -134,20 +164,29 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 func GetGroupUserRank(gid, uid int64) (int, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	niu, err := db.getWordNiuNiu(gid, uid)
+
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return 0, err
+	}
+	niu, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return -1, err
 	}
-	group, err := db.getAllNiuNiuOfGroup(gid)
+
+	group, err := listUsers(gid)
 	if err != nil {
 		return -1, err
 	}
+
 	return group.ranking(niu.Length, uid), nil
 }
 
 // View 查看牛牛
 func View(gid, uid int64, name string) (string, error) {
-	i, err := db.getWordNiuNiu(gid, uid)
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", err
+	}
+	i, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}
@@ -159,7 +198,7 @@ func View(gid, uid int64, name string) (string, error) {
 		sexLong = "深"
 		sex = "♀️"
 	}
-	niuniuList, err := db.getAllNiuNiuOfGroup(gid)
+	niuniuList, err := listUsers(gid)
 	if err != nil {
 		return "", err
 	}
@@ -171,7 +210,10 @@ func View(gid, uid int64, name string) (string, error) {
 
 // HitGlue 打胶
 func HitGlue(gid, uid int64, prop string) (string, error) {
-	niuniu, err := db.getWordNiuNiu(gid, uid)
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", err
+	}
+	niuniu, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return "", ErrNoNiuNiuTwo
 	}
@@ -180,37 +222,62 @@ func HitGlue(gid, uid int64, prop string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err = db.setWordNiuNiu(gid, niuniu); err != nil {
+
+	if err = TableFor(gid, ur).Where("user_id = ?", uid).Save(niuniu).Error; err != nil {
 		return "", err
 	}
+
 	return messages, nil
 }
 
 // Register 注册牛牛
 func Register(gid, uid int64) (string, error) {
-	if _, err := db.getWordNiuNiu(gid, uid); err == nil {
+	globalLock.Lock()
+	defer globalLock.Unlock()
+
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", err
+	}
+
+	if _, err := getUserByID(gid, uid, ur); err == nil {
 		return "", ErrAlreadyRegistered
 	}
 	// 获取初始长度
-	length := db.newLength()
+	length := newLength()
 	u := userInfo{
-		UID:    uid,
+		UserID: uid,
+		NiuID:  uuid.New(),
 		Length: length,
 	}
-	if err := db.setWordNiuNiu(gid, &u); err != nil {
+
+	if err := createUser(gid, &u, ur); err != nil {
 		return "", err
 	}
+
+	if err := db.Model(&niuNiuManager{}).Create(&niuNiuManager{
+		NiuID: u.NiuID,
+	}).Error; err != nil {
+		return "", err
+	}
+
 	return fmt.Sprintf("注册成功,你的牛牛现在有%.2fcm", u.Length), nil
 }
 
 // JJ ...
 func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
-	myniuniu, err := db.getWordNiuNiu(gid, uid)
+	globalLock.Lock()
+	defer globalLock.Unlock()
+
+	if err = ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", 0, ErrNoNiuNiu
+	}
+
+	myniuniu, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return "", 0, ErrNoNiuNiu
 	}
 
-	adduserniuniu, err := db.getWordNiuNiu(gid, adduser)
+	adduserniuniu, err := getUserByID(gid, adduser, ur)
 	if err != nil {
 		return "", 0, ErrAdduserNoNiuNiu
 	}
@@ -219,44 +286,73 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 		return "", 0, ErrCannotFight
 	}
 
+	m := map[string]interface{}{}
 	message, err = myniuniu.processJJ(adduserniuniu, prop)
 	if err != nil {
-		return "", 0, err
+		return "", 0, ErrNoNiuNiu
 	}
 
-	if err = db.setWordNiuNiu(gid, myniuniu); err != nil {
-		return "", 0, err
+	m["length"] = myniuniu.Length
+	if err = updatesUserByID(gid, uid, m, ur); err != nil {
+		return "", 0, ErrNoNiuNiu
 	}
 
-	if err = db.setWordNiuNiu(gid, adduserniuniu); err != nil {
-		return "", 0, err
+	m["length"] = adduserniuniu.Length
+	if err = updatesUserByID(gid, adduser, m, ur); err != nil {
+		return "", 0, ErrNoNiuNiu
 	}
 
 	adduserLength = adduserniuniu.Length
-
-	if err = db.setWordNiuNiu(gid, adduserniuniu); err != nil {
-		return "", 0, err
-	}
 
 	return
 }
 
 // Cancel 注销牛牛
 func Cancel(gid, uid int64) (string, error) {
-	_, err := db.getWordNiuNiu(gid, uid)
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", err
+	}
+	_, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return "", ErrNoNiuNiuTwo
 	}
-	err = db.deleteWordNiuNiu(gid, uid)
+	err = deleteUserByID(gid, uid, ur)
 	if err != nil {
 		err = errors.New("遇到不可抗力因素，注销失败！")
 	}
+	err = db.Model(&niuNiuManager{}).Where("niu_id = ?", uid).Update("status", 2).Error
 	return "注销成功,你已经没有牛牛了", err
 }
 
 // Redeem 赎牛牛
 func Redeem(gid, uid int64, lastLength float64) error {
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return err
+	}
+
+	_, err := getUserByID(gid, uid, ur)
+	if err != nil {
+		return ErrNoNiuNiu
+	}
+
+	/*	var n niuNiuManager
+		if err = db.Where("niu_id = ?", niuID).First(&n).Error; err != nil {
+			return err
+		}
+
+		switch n.Status {
+		case 1:
+			return errors.New("你的牛牛已经被拍卖无法赎回")
+		case 2:
+			return errors.New("你的牛牛已经被注销无法赎回")
+		}*/
+
 	money := wallet.GetWalletOf(uid)
+
 	if money < 150 {
 		var builder strings.Builder
 		walletName := wallet.GetWalletName()
@@ -269,23 +365,22 @@ func Redeem(gid, uid int64, lastLength float64) error {
 		return errors.New(builder.String())
 	}
 
-	if err := wallet.InsertWalletOf(uid, -150); err != nil {
+	if err = wallet.InsertWalletOf(uid, -150); err != nil {
 		return err
 	}
 
-	niu, err := db.getWordNiuNiu(gid, uid)
-	if err != nil {
-		return ErrNoNiuNiu
-	}
-
-	niu.Length = lastLength
-
-	return db.setWordNiuNiu(gid, niu)
+	return TableFor(gid, ur).Where("user_id = ?", uid).Update("length", lastLength).Error
 }
 
 // Store 牛牛商店
 func Store(gid, uid int64, n int) error {
-	info, err := db.getWordNiuNiu(gid, uid)
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return err
+	}
+
+	info, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return err
 	}
@@ -303,12 +398,20 @@ func Store(gid, uid int64, n int) error {
 		return err
 	}
 
-	return db.setWordNiuNiu(uid, info)
+	return TableFor(gid, ur).Save(info).Error
 }
 
 // Sell 出售牛牛
 func Sell(gid, uid int64) (string, error) {
-	niu, err := db.getWordNiuNiu(gid, uid)
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", err
+	}
+	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
+		return "", err
+	}
+	niu, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}
@@ -317,7 +420,7 @@ func Sell(gid, uid int64) (string, error) {
 		return "", errors.New(message)
 	}
 
-	if err := db.deleteWordNiuNiu(gid, uid); err != nil {
+	if err = deleteUserByID(gid, uid, ur); err != nil {
 		return "", err
 	}
 
@@ -326,16 +429,23 @@ func Sell(gid, uid int64) (string, error) {
 		return message, err
 	}
 
-	infos, _ := db.getAllNiuNiuAuction(gid)
+	if err = db.Model(&niu).Where("niu_id = ?", niu.NiuID).Update("status", 1).Error; err != nil {
+		return message, err
+	}
 
 	u := AuctionInfo{
-		ID:     len(infos),
-		UserID: niu.UID,
+		UserID: uid,
+		NiuID:  niu.NiuID,
 		Length: niu.Length,
 		Money:  money * 2,
 	}
 
-	err = db.setNiuNiuAuction(gid, &u)
+	if err = TableFor(gid, ac).Create(&u).Error; err != nil {
+		return "", err
+	}
+
+	db.Model(&niuNiuManager{}).Where("niu_id = ?", niu.NiuID).Update("status", 1)
+
 	return message, err
 }
 
@@ -343,41 +453,61 @@ func Sell(gid, uid int64) (string, error) {
 func ShowAuction(gid int64) ([]AuctionInfo, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	return db.getAllNiuNiuAuction(gid)
+	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
+		return nil, err
+	}
+	return listAuction(gid)
 }
 
 // Auction 购买牛牛
 func Auction(gid, uid int64, index int) (string, error) {
-	infos, err := db.getAllNiuNiuAuction(gid)
-	if err != nil {
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
+		return "", err
+	}
+
+	infos, err := listAuction(gid)
+	if len(infos) == 0 || err != nil {
 		return "", ErrNoNiuNiuINAuction
 	}
-	if err := wallet.InsertWalletOf(uid, -infos[index].Money); err != nil {
+
+	var info AuctionInfo
+	if err = TableFor(gid, ac).Where("id = ?", index).First(&info).Error; err != nil {
+		return "", err
+	}
+
+	if err = wallet.InsertWalletOf(uid, -info.Money); err != nil {
 		return "", ErrNoMoney
 	}
 
-	niu, err := db.getWordNiuNiu(gid, uid)
+	niu, err := getUserByID(gid, uid, ur)
 
 	if err != nil {
-		niu.UID = uid
+		niu.UserID = uid
 	}
 
-	niu.Length = infos[index].Length
+	niu.Length = info.Length
+	niu.NiuID = info.NiuID
 
-	if infos[index].Money >= 500 {
+	if info.Money >= 500 {
 		niu.WeiGe += 2
-		niu.Philter += 2
+		niu.MeiYao += 2
 	}
 
-	if err = db.deleteNiuNiuAuction(gid, uint(index)); err != nil {
+	if err = TableFor(gid, ac).Delete(&info).Error; err != nil {
 		return "", err
 	}
 
-	if err = db.setWordNiuNiu(gid, niu); err != nil {
+	if err = TableFor(gid, ur).Save(&niu).Error; err != nil {
 		return "", err
 	}
 
-	if infos[index].Money >= 500 {
+	if err = db.Model(&niuNiuManager{}).Where("niu_id = ?", niu.NiuID).Update("status", 0).Error; err != nil {
+		return "", err
+	}
+
+	if info.Money >= 500 {
 		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你2个伟哥,2个媚药", niu.Length), nil
 	}
 
@@ -386,7 +516,12 @@ func Auction(gid, uid int64, index int) (string, error) {
 
 // Bag 牛牛背包
 func Bag(gid, uid int64) (string, error) {
-	niu, err := db.getWordNiuNiu(gid, uid)
+	globalLock.Lock()
+	defer globalLock.Unlock()
+	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
+		return "", err
+	}
+	niu, err := getUserByID(gid, uid, ur)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}
@@ -396,7 +531,7 @@ func Bag(gid, uid int64) (string, error) {
 
 	result.WriteString("当前牛牛背包如下\n")
 	result.WriteString(fmt.Sprintf("伟哥: %v\n", niu.WeiGe))
-	result.WriteString(fmt.Sprintf("媚药: %v\n", niu.Philter))
+	result.WriteString(fmt.Sprintf("媚药: %v\n", niu.MeiYao))
 	result.WriteString(fmt.Sprintf("击剑神器: %v\n", niu.Artifact))
 	result.WriteString(fmt.Sprintf("击剑神稽: %v\n", niu.ShenJi))
 

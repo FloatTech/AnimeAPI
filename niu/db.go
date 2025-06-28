@@ -10,11 +10,7 @@ var (
 	migratedGroups = syncx.Map[string, bool]{} // key: string, value: bool
 )
 
-type t interface {
-	userInfo | AuctionInfo
-}
-
-func ensureUserInfoTable[T t](gid int64, prefix string) error {
+func ensureUserInfoTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
 	table := fmt.Sprintf("group_%d_%s_info", gid, prefix)
 	if _, ok := migratedGroups.Load(table); ok {
 		return nil
@@ -29,6 +25,7 @@ func ensureUserInfoTable[T t](gid int64, prefix string) error {
 	return nil
 }
 
+// TableFor 大写是为了防止数据操作哪里有问题留个保底可以在zbp的项目里直接改
 func TableFor(gid int64, prefix string) *gorm.DB {
 	return db.Table(fmt.Sprintf("group_%d_%s_info", gid, prefix))
 }
@@ -49,16 +46,16 @@ func createUser(gid int64, user *userInfo, fix string) error {
 	return TableFor(gid, fix).Create(user).Error
 }
 
-func getUserByID(gid int64, uid int64, fix string) (*userInfo, error) {
+func getUserByID(gid int64, uid int64) (*userInfo, error) {
 	var user userInfo
-	err := TableFor(gid, fix).Where("user_id = ?", uid).First(&user).Error
+	err := TableFor(gid, ur).Where("user_id = ?", uid).First(&user).Error
 	return &user, err
 }
 
-func updatesUserByID(gid int64, id int64, fields map[string]interface{}, fix string) error {
-	return TableFor(gid, fix).Where("user_id = ?", id).Updates(fields).Error
+func updatesUserByID(gid int64, id int64, fields map[string]interface{}) error {
+	return TableFor(gid, ur).Where("user_id = ?", id).Updates(fields).Error
 }
 
-func deleteUserByID(gid int64, id int64, fix string) error {
-	return TableFor(gid, fix).Where("user_id = ?", id).Delete(&userInfo{}).Error
+func deleteUserByID(gid int64, id int64) error {
+	return TableFor(gid, ur).Where("user_id = ?", id).Delete(&userInfo{}).Error
 }

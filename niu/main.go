@@ -25,6 +25,8 @@ const (
 var (
 	db         *gorm.DB
 	globalLock sync.Mutex
+
+	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
 	// ErrNoBoys 表示当前没有男孩子可用的错误。
 	ErrNoBoys = errors.New("暂时没有男孩子哦")
 
@@ -90,7 +92,7 @@ func DeleteWordNiuNiu(gid, uid int64) error {
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return err
 	}
-	return deleteUserByID(gid, uid, ur)
+	return deleteUserByID(gid, uid)
 }
 
 // SetWordNiuNiu length > 0 就增加 , length < 0 就减小
@@ -103,7 +105,7 @@ func SetWordNiuNiu(gid, uid int64, length float64) error {
 	m := map[string]interface{}{
 		"length": length,
 	}
-	return updatesUserByID(gid, uid, m, ur)
+	return updatesUserByID(gid, uid, m)
 }
 
 // GetWordNiuNiu ...
@@ -115,7 +117,7 @@ func GetWordNiuNiu(gid, uid int64) (float64, error) {
 		return 0, err
 	}
 
-	info, err := getUserByID(gid, uid, ur)
+	info, err := getUserByID(gid, uid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, ErrNoNiuNiu
 	} else if err != nil {
@@ -168,7 +170,7 @@ func GetGroupUserRank(gid, uid int64) (int, error) {
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return 0, err
 	}
-	niu, err := getUserByID(gid, uid, ur)
+	niu, err := getUserByID(gid, uid)
 	if err != nil {
 		return -1, err
 	}
@@ -186,7 +188,7 @@ func View(gid, uid int64, name string) (string, error) {
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return "", err
 	}
-	i, err := getUserByID(gid, uid, ur)
+	i, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}
@@ -213,7 +215,7 @@ func HitGlue(gid, uid int64, prop string) (string, error) {
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return "", err
 	}
-	niuniu, err := getUserByID(gid, uid, ur)
+	niuniu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiuTwo
 	}
@@ -239,7 +241,7 @@ func Register(gid, uid int64) (string, error) {
 		return "", err
 	}
 
-	if _, err := getUserByID(gid, uid, ur); err == nil {
+	if _, err := getUserByID(gid, uid); err == nil {
 		return "", ErrAlreadyRegistered
 	}
 	// 获取初始长度
@@ -272,12 +274,12 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 		return "", 0, ErrNoNiuNiu
 	}
 
-	myniuniu, err := getUserByID(gid, uid, ur)
+	myniuniu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", 0, ErrNoNiuNiu
 	}
 
-	adduserniuniu, err := getUserByID(gid, adduser, ur)
+	adduserniuniu, err := getUserByID(gid, adduser)
 	if err != nil {
 		return "", 0, ErrAdduserNoNiuNiu
 	}
@@ -293,12 +295,12 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 	}
 
 	m["length"] = myniuniu.Length
-	if err = updatesUserByID(gid, uid, m, ur); err != nil {
+	if err = updatesUserByID(gid, uid, m); err != nil {
 		return "", 0, ErrNoNiuNiu
 	}
 
 	m["length"] = adduserniuniu.Length
-	if err = updatesUserByID(gid, adduser, m, ur); err != nil {
+	if err = updatesUserByID(gid, adduser, m); err != nil {
 		return "", 0, ErrNoNiuNiu
 	}
 
@@ -314,13 +316,13 @@ func Cancel(gid, uid int64) (string, error) {
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return "", err
 	}
-	_, err := getUserByID(gid, uid, ur)
+	_, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiuTwo
 	}
-	err = deleteUserByID(gid, uid, ur)
+	err = deleteUserByID(gid, uid)
 	if err != nil {
-		err = errors.New("遇到不可抗力因素，注销失败！")
+		return "", errCancelFail
 	}
 	err = db.Model(&niuNiuManager{}).Where("niu_id = ?", uid).Update("status", 2).Error
 	return "注销成功,你已经没有牛牛了", err
@@ -334,7 +336,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 		return err
 	}
 
-	_, err := getUserByID(gid, uid, ur)
+	_, err := getUserByID(gid, uid)
 	if err != nil {
 		return ErrNoNiuNiu
 	}
@@ -380,7 +382,7 @@ func Store(gid, uid int64, n int) error {
 		return err
 	}
 
-	info, err := getUserByID(gid, uid, ur)
+	info, err := getUserByID(gid, uid)
 	if err != nil {
 		return err
 	}
@@ -411,7 +413,7 @@ func Sell(gid, uid int64) (string, error) {
 	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
 		return "", err
 	}
-	niu, err := getUserByID(gid, uid, ur)
+	niu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}
@@ -420,7 +422,7 @@ func Sell(gid, uid int64) (string, error) {
 		return "", errors.New(message)
 	}
 
-	if err = deleteUserByID(gid, uid, ur); err != nil {
+	if err = deleteUserByID(gid, uid); err != nil {
 		return "", err
 	}
 
@@ -481,7 +483,7 @@ func Auction(gid, uid int64, index int) (string, error) {
 		return "", ErrNoMoney
 	}
 
-	niu, err := getUserByID(gid, uid, ur)
+	niu, err := getUserByID(gid, uid)
 
 	if err != nil {
 		niu.UserID = uid
@@ -521,7 +523,7 @@ func Bag(gid, uid int64) (string, error) {
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
 		return "", err
 	}
-	niu, err := getUserByID(gid, uid, ur)
+	niu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}

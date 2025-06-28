@@ -222,20 +222,24 @@ func fence(rd float64) float64 {
 }
 
 func hitGlue(l float64) float64 {
-	if l == 0 {
+	l = math.Abs(l)
+	if l < 0.1 {
 		l = 0.1
 	}
-	l = math.Abs(l)
+
+	var logValue float64
 	switch {
-	case l > 1 && l <= 10:
-		return rand.Float64() * math.Log2(l*2)
-	case 10 < l && l <= 100:
-		return rand.Float64() * math.Log2(l*1.5)
-	case 100 < l && l <= 1000:
-		return rand.Float64() * (math.Log10(l*1.5) * 2)
 	case l > 1000:
-		return rand.Float64() * (math.Log10(l) * 2)
-	default:
-		return rand.Float64()
+		logValue = math.Log10(l) * 2
+	case l > 100:
+		logValue = math.Log10(l*1.5) * 2
+	case l > 10:
+		logValue = math.Log2(l * 1.5)
+	case l > 1:
+		logValue = math.Log2(l * 2)
+	default: // 0.1 <= l <= 1
+		logValue = 1
 	}
+
+	return rand.Float64() * logValue
 }

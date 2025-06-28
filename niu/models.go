@@ -4,49 +4,55 @@ package niu
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"math"
 	"math/rand"
 	"sort"
-	"strconv"
-	"sync"
-
-	sql "github.com/FloatTech/sqlite"
+	"time"
 )
 
 var (
 	daJiaoProps = []string{"伟哥", "媚药"}
 	jjPorps     = []string{"击剑神器", "击剑神稽"}
-	query       = "WHERE UID = ?"
 )
 
 type users []*userInfo
 
-type model struct {
-	sql sql.Sqlite
-	sync.RWMutex
+type niuNiuManager struct {
+	ID        uint `gorm:"primaryKey;autoIncrement"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	NiuID     uuid.UUID `gorm:"type:varchar(36);uniqueIndex"`
+	Status    int       `gorm:"default:0"` // 0正常 1拍卖 2注销
 }
 
+// UserInfo 结构体
 type userInfo struct {
-	UID       int64
-	Length    float64
-	UserCount int
-	WeiGe     int // 伟哥
-	Philter   int // 媚药
-	Artifact  int // 击剑神器
-	ShenJi    int // 击剑神稽
-	Buff1     int // 暂定
-	Buff2     int // 暂定
-	Buff3     int // 暂定
-	Buff4     int // 暂定
-	Buff5     int // 暂定
+	gorm.Model
+	UserID   int64     `gorm:"column:user_id;index"`
+	NiuID    uuid.UUID `gorm:"type:char(36);index"`
+	Length   float64   `gorm:"default:1"`
+	WeiGe    int       `gorm:"default:0"`
+	MeiYao   int       `gorm:"default:0"`
+	Artifact int       `gorm:"default:0"`
+	ShenJi   int       `gorm:"default:0"`
+	Buff2    int       `gorm:"default:0"`
+	Buff3    int       `gorm:"default:0"`
+	Buff4    int       `gorm:"default:0"`
+	Buff5    int       `gorm:"default:0"`
 }
 
-// AuctionInfo 拍卖信息
+// AuctionInfo 结构体
 type AuctionInfo struct {
-	ID     int     `db:"id"`
-	UserID int64   `db:"user_id"`
-	Length float64 `db:"length"`
-	Money  int     `db:"money"`
+	ID        uint `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	UserID int64     `gorm:"column:user_id;index"`
+	NiuID  uuid.UUID `gorm:"type:varchar(36);uniqueIndex"`
+	Length float64   `gorm:"default:0.01"`
+	Money  int
 }
 
 // BaseInfo ...
@@ -100,7 +106,7 @@ func (m users) sort(isDesc bool) {
 func (m users) ranking(niuniu float64, uid int64) int {
 	m.sort(niuniu > 0)
 	for i, user := range m {
-		if user.UID == uid {
+		if user.UserID == uid {
 			return i + 1
 		}
 	}
@@ -118,12 +124,12 @@ func (u *userInfo) useWeiGe() (string, float64) {
 	}), niuniu
 }
 
-func (u *userInfo) usePhilter() (string, float64) {
+func (u *userInfo) useMeiYao() (string, float64) {
 	niuniu := u.Length
 	reduce := math.Abs(hitGlue(niuniu))
 	niuniu -= reduce
 	return randomChoice([]string{
-		fmt.Sprintf("你使用媚药,咿呀咿呀一下使当前长度发生了一些变化，当前长度%.2f", niuniu),
+		fmt.Sprintf("你使用媚药,咿呀咿呀一下使当前长度发生了一些变化，当前长度%.2fcm", niuniu),
 		fmt.Sprintf("看来你追求的是‘微观之美’，故意使用道具让牛牛凹进去了%.2fcm！", reduce),
 		fmt.Sprintf("缩小奇迹’在你身上发生了，牛牛凹进去了%.2fcm，你的选择真是独特！", reduce),
 	}), niuniu
@@ -187,15 +193,17 @@ func (u *userInfo) applyProp(props string) error {
 		errMsg    string
 	}{
 		"伟哥":   {&u.WeiGe, "你还没有伟哥呢,不能使用"},
-		"媚药":   {&u.Philter, "你还没有媚药呢,不能使用"},
+		"媚药":   {&u.MeiYao, "你还没有媚药呢,不能使用"},
 		"击剑神器": {&u.Artifact, "你还没有击剑神器呢,不能使用"},
 		"击剑神稽": {&u.ShenJi, "你还没有击剑神稽呢,不能使用"},
 	}
 
-	if propInfo, ok := propsMap[props]; ok {
-		return u.useItem(propInfo.itemCount, propInfo.errMsg)
+	propInfo, ok := propsMap[props]
+	if !ok {
+		return ErrPropNotFound
 	}
-	return ErrPropNotFound
+
+	return u.useItem(propInfo.itemCount, propInfo.errMsg)
 }
 
 func (u *userInfo) useItem(itemCount *int, errMsg string) error {
@@ -203,6 +211,7 @@ func (u *userInfo) useItem(itemCount *int, errMsg string) error {
 		*itemCount--
 		return nil
 	}
+	fmt.Println(*u)
 	return errors.New(errMsg)
 }
 
@@ -255,7 +264,7 @@ func (u *userInfo) purchaseItem(n int) (int, error) {
 		u.WeiGe += 5
 	case 2:
 		money = 300
-		u.Philter += 5
+		u.MeiYao += 5
 	case 3:
 		money = 500
 		u.Artifact += 2
@@ -268,20 +277,16 @@ func (u *userInfo) purchaseItem(n int) (int, error) {
 	return money, err
 }
 
-func (u *userInfo) processDaJiao(props string) (string, error) {
-	var (
-		messages string
-		info     userInfo
-		err      error
-		f        float64
-	)
-	info = *u
+func (u *userInfo) processDaJiao(props string) (messages string, err error) {
+	var f float64
+
+	info := *u
 	if props != "" {
-		err := u.checkProps(props, "dajiao")
+		err = u.checkProps(props, "dajiao")
 		if err != nil {
 			return "", err
 		}
-		if err := u.applyProp(props); err != nil {
+		if err = u.applyProp(props); err != nil {
 			return "", err
 		}
 	}
@@ -289,16 +294,14 @@ func (u *userInfo) processDaJiao(props string) (string, error) {
 	case u.WeiGe-info.WeiGe != 0:
 		messages, f = u.useWeiGe()
 		u.Length = f
-
-	case u.Philter-info.Philter != 0:
-		messages, f = u.usePhilter()
+	case u.MeiYao-info.MeiYao != 0:
+		messages, f = u.useMeiYao()
 		u.Length = f
-
 	default:
 		messages, f = hitGlueNiuNiu(u.Length)
 		u.Length = f
 	}
-	return messages, err
+	return
 }
 
 func (u *userInfo) processJJ(adduserniuniu *userInfo, props string) (string, error) {
@@ -311,11 +314,11 @@ func (u *userInfo) processJJ(adduserniuniu *userInfo, props string) (string, err
 	)
 	info = *u
 	if props != "" {
-		err := u.checkProps(props, "jj")
+		err = u.checkProps(props, "jj")
 		if err != nil {
 			return "", err
 		}
-		if err := u.applyProp(props); err != nil {
+		if err = u.applyProp(props); err != nil {
 			return "", err
 		}
 	}
@@ -338,83 +341,6 @@ func (u *userInfo) processJJ(adduserniuniu *userInfo, props string) (string, err
 	return fencingResult, err
 }
 
-func (db *model) newLength() float64 {
+func newLength() float64 {
 	return float64(rand.Intn(9)+1) + (float64(rand.Intn(100)) / 100)
-}
-
-func (db *model) getWordNiuNiu(gid, uid int64) (*userInfo, error) {
-	db.RLock()
-	defer db.RUnlock()
-
-	var u userInfo
-	err := db.sql.Find(strconv.FormatInt(gid, 10), &u, query, uid)
-	return &u, err
-}
-
-func (db *model) setWordNiuNiu(gid int64, u *userInfo) error {
-	db.Lock()
-	defer db.Unlock()
-	err := db.sql.Insert(strconv.FormatInt(gid, 10), u)
-	if err != nil {
-		err = db.sql.Create(strconv.FormatInt(gid, 10), &userInfo{})
-		if err != nil {
-			return err
-		}
-		err = db.sql.Insert(strconv.FormatInt(gid, 10), u)
-	}
-	return err
-}
-
-func (db *model) deleteWordNiuNiu(gid, uid int64) error {
-	db.Lock()
-	defer db.Unlock()
-	return db.sql.Del(strconv.FormatInt(gid, 10), query, uid)
-}
-
-func (db *model) getAllNiuNiuOfGroup(gid int64) (users, error) {
-	db.Lock()
-	defer db.Unlock()
-	var user userInfo
-	var useras users
-	err := db.sql.FindFor(fmt.Sprintf("%d", gid), &user, "",
-		func() error {
-			newUser := user
-			useras = append(useras, &newUser)
-			return nil
-		})
-	return useras, err
-}
-
-func (db *model) setNiuNiuAuction(gid int64, u *AuctionInfo) error {
-	db.Lock()
-	defer db.Unlock()
-	err := db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
-	if err != nil {
-		err = db.sql.Create(fmt.Sprintf("auction_%d", gid), &AuctionInfo{})
-		if err != nil {
-			return err
-		}
-		err = db.sql.Insert(fmt.Sprintf("auction_%d", gid), u)
-	}
-	return err
-}
-
-func (db *model) deleteNiuNiuAuction(gid int64, id uint) error {
-	db.Lock()
-	defer db.Unlock()
-	return db.sql.Del(fmt.Sprintf("auction_%d", gid), "WHERE id = ?", id)
-}
-
-func (db *model) getAllNiuNiuAuction(gid int64) ([]AuctionInfo, error) {
-	db.RLock()
-	defer db.RUnlock()
-	var user AuctionInfo
-	var useras []AuctionInfo
-	err := db.sql.FindFor(fmt.Sprintf("auction_%d", gid), &user, "",
-		func() error {
-			useras = append(useras, user)
-			return nil
-		})
-
-	return useras, err
 }

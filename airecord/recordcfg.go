@@ -1,3 +1,4 @@
+// Package airecord 群应用：AI声聊配置
 package airecord
 
 import (
@@ -10,7 +11,8 @@ import (
 )
 
 var (
-	recordcfg  recordconfig
+	// RecCfg 语音记录配置
+	RecCfg     recordconfig
 	configPath = "data/airecord/recordconfig.json" // 配置文件路径
 )
 
@@ -29,22 +31,17 @@ type recordconfig struct {
 	Customgid int64  `json:"customgid"` // 自定义群ID
 }
 
-// GetRecordConfig 返回当前语音记录配置信息
-func GetRecordConfig() recordconfig {
-	return recordcfg
-}
-
 // SetRecordModel 设置语音记录模型
-func SetRecordModel(modelName, modelID string) {
-	recordcfg.ModelName = modelName
-	recordcfg.ModelID = modelID
-	saveConfig() // 保存配置
+func SetRecordModel(modelName, modelID string) error {
+	RecCfg.ModelName = modelName
+	RecCfg.ModelID = modelID
+	return saveConfig() // 保存配置
 }
 
 // SetCustomGID 设置自定义群ID
-func SetCustomGID(gid int64) {
-	recordcfg.Customgid = gid
-	saveConfig() // 保存配置
+func SetCustomGID(gid int64) error {
+	RecCfg.Customgid = gid
+	return saveConfig() // 保存配置
 }
 
 // PrintRecordConfig 生成格式化的语音记录配置信息字符串
@@ -59,7 +56,7 @@ func PrintRecordConfig(recCfg recordconfig) string {
 
 // saveConfig 将配置保存到JSON文件
 func saveConfig() error {
-	data, err := json.MarshalIndent(recordcfg, "", "  ")
+	data, err := json.MarshalIndent(RecCfg, "", "  ")
 	if err != nil {
 		logrus.Warnln("ERROR: 序列化配置失败:", err)
 		return err
@@ -78,7 +75,7 @@ func loadConfig() error {
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(data, &recordcfg)
+	err = json.Unmarshal(data, &RecCfg)
 	if err != nil {
 		logrus.Warnln("ERROR: 解析配置文件失败:", err)
 		return err

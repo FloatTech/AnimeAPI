@@ -287,20 +287,17 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 		return "", 0, ErrCannotFight
 	}
 
-	m := map[string]interface{}{}
 	message, err = myniuniu.processJJ(adduserniuniu, prop)
 	if err != nil {
-		return "", 0, ErrNoNiuNiu
+		return "", 0, err
 	}
 
-	m["length"] = myniuniu.Length
-	if err = updatesUserByID(gid, uid, m); err != nil {
-		return "", 0, ErrNoNiuNiu
+	if err = TableFor(gid, ur).Where("user_id =?", uid).Update("length", myniuniu.Length).Error; err != nil {
+		return "", 0, err
 	}
 
-	m["length"] = adduserniuniu.Length
-	if err = updatesUserByID(gid, adduser, m); err != nil {
-		return "", 0, ErrNoNiuNiu
+	if err = TableFor(gid, ur).Where("user_id =?", adduser).Update("length", adduserniuniu.Length).Error; err != nil {
+		return "", 0, err
 	}
 
 	adduserLength = adduserniuniu.Length

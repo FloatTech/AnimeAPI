@@ -3,7 +3,7 @@ package niu
 import (
 	"fmt"
 	"github.com/RomiChan/syncx"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -15,7 +15,7 @@ func ensureUserInfoTable[T userInfo | AuctionInfo](gid int64, prefix string) err
 	if _, ok := migratedGroups.Load(table); ok {
 		return nil
 	}
-	err := db.Table(table).AutoMigrate(new(T))
+	err := db.Table(table).AutoMigrate(new(T)).Error
 	if err != nil {
 		return err
 	}

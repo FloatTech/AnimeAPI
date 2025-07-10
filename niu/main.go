@@ -4,9 +4,8 @@ package niu
 import (
 	"errors"
 	"fmt"
-	"github.com/glebarez/sqlite"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 	"os"
 	"strconv"
 	"strings"
@@ -72,16 +71,16 @@ func init() {
 		}
 	}
 
-	sdb, err := gorm.Open(sqlite.Open("data/niuniu/niuniu.db"), &gorm.Config{})
+	sdb, err := gorm.Open("sqlite3", "data/niuniu/niuniu.db")
 	if err != nil {
 		panic(err)
 	}
 
-	if err = sdb.AutoMigrate(&niuNiuManager{}); err != nil {
+	if err = sdb.AutoMigrate(&niuNiuManager{}).Error; err != nil {
 		panic(err)
 	}
 
-	db = sdb
+	db = sdb.LogMode(false)
 
 }
 

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 	"math"
 	"math/rand"
 	"sort"
@@ -20,10 +20,9 @@ var (
 type users []*userInfo
 
 type niuNiuManager struct {
-	ID        uint `gorm:"primaryKey;autoIncrement"`
+	ID        uint `gorm:"primary_key"`
 	CreatedAt time.Time
-	UpdatedAt time.Time
-	NiuID     uuid.UUID `gorm:"type:varchar(36);uniqueIndex"`
+	NiuID     uuid.UUID `gorm:"type:varchar(36);unique_index"`
 	Status    int       `gorm:"default:0"` // 0正常 1拍卖 2注销
 }
 
@@ -45,14 +44,12 @@ type userInfo struct {
 
 // AuctionInfo 结构体
 type AuctionInfo struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint `gorm:"primary_key"`
 	CreatedAt time.Time
-	UpdatedAt time.Time
-
-	UserID int64     `gorm:"column:user_id;index"`
-	NiuID  uuid.UUID `gorm:"type:varchar(36);uniqueIndex"`
-	Length float64   `gorm:"default:0.01"`
-	Money  int
+	UserID    int64     `gorm:"column:user_id;index"`
+	NiuID     uuid.UUID `gorm:"type:varchar(36);unique_index"`
+	Length    float64   `gorm:"default:0.01"`
+	Money     int
 }
 
 // BaseInfo ...

@@ -168,7 +168,7 @@ func GetArticleInfo(id string) (card Card, err error) {
 // GetLiveRoomInfo 用直播间id查直播间信息
 func GetLiveRoomInfo(roomID string) (card RoomCard, err error) {
 	var data []byte
-	data, err = web.GetData(fmt.Sprintf(ArticleInfoURL, roomID))
+	data, err = web.GetData(fmt.Sprintf(LiveRoomInfoURL, roomID))
 	if err != nil {
 		return
 	}

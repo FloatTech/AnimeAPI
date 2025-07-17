@@ -2,83 +2,89 @@
 package airecord
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
+	"sync"
+	"time"
 
-	"github.com/sirupsen/logrus"
+	sql "github.com/FloatTech/sqlite"
 )
 
+// Storage 语音记录配置存储
+type Storage struct {
+	sync.RWMutex
+	db sql.Sqlite
+}
+
 var (
-	// RecCfg 语音记录配置
-	RecCfg     recordconfig
-	configPath = "data/airecord/recordconfig.json" // 配置文件路径
+	sdb = &Storage{
+		db: sql.New("data/airecord/recordconfig.db"),
+	}
 )
 
 func init() {
-	if err := loadConfig(); err != nil {
-		logrus.Warnln("[airecord] WARN: 加载配置文件失败，使用默认配置:", err)
-	} else {
-		logrus.Infoln("[airecord] 成功从文件加载语音记录配置")
+	if err := os.MkdirAll("data/airecord", 0755); err != nil {
+		panic(err)
+	}
+	if err := sdb.db.Open(time.Hour * 24); err != nil {
+		panic(err)
+	}
+	if err := sdb.db.Create("config", &recordconfig{}); err != nil {
+		panic(err)
 	}
 }
 
 // recordconfig 存储语音记录相关配置
 type recordconfig struct {
-	ModelName string `json:"modelName"` // 语音模型名称
-	ModelID   string `json:"modelID"`   // 语音模型ID
-	Customgid int64  `json:"customgid"` // 自定义群ID
+	ID        int64  `db:"id"`        // 主键ID
+	ModelName string `db:"modelName"` // 语音模型名称
+	ModelID   string `db:"modelID"`   // 语音模型ID
+	Customgid int64  `db:"customgid"` // 自定义群ID
+}
+
+// GetConfig 获取当前配置
+func GetConfig() recordconfig {
+	sdb.RLock()
+	defer sdb.RUnlock()
+	cfg := recordconfig{}
+	_ = sdb.db.Find("config", &cfg, "WHERE id = 1")
+	return cfg
 }
 
 // SetRecordModel 设置语音记录模型
 func SetRecordModel(modelName, modelID string) error {
-	RecCfg.ModelName = modelName
-	RecCfg.ModelID = modelID
-	return saveConfig() // 保存配置
+	cfg := GetConfig()
+	sdb.Lock()
+	defer sdb.Unlock()
+	return sdb.db.Insert("config", &recordconfig{
+		ID:        1,
+		ModelName: modelName,
+		ModelID:   modelID,
+		Customgid: cfg.Customgid,
+	})
 }
 
 // SetCustomGID 设置自定义群ID
 func SetCustomGID(gid int64) error {
-	RecCfg.Customgid = gid
-	return saveConfig() // 保存配置
+	cfg := GetConfig()
+	sdb.Lock()
+	defer sdb.Unlock()
+	return sdb.db.Insert("config", &recordconfig{
+		ID:        1,
+		ModelName: cfg.ModelName,
+		ModelID:   cfg.ModelID,
+		Customgid: gid,
+	})
 }
 
 // PrintRecordConfig 生成格式化的语音记录配置信息字符串
-func PrintRecordConfig(recCfg recordconfig) string {
+func PrintRecordConfig() string {
+	cfg := GetConfig()
 	var builder strings.Builder
 	builder.WriteString("当前语音记录配置：\n")
-	builder.WriteString(fmt.Sprintf("• 语音模型名称：%s\n", recCfg.ModelName))
-	builder.WriteString(fmt.Sprintf("• 语音模型ID：%s\n", recCfg.ModelID))
-	builder.WriteString(fmt.Sprintf("• 自定义群ID：%d\n", recCfg.Customgid))
+	builder.WriteString(fmt.Sprintf("• 语音模型名称：%s\n", cfg.ModelName))
+	builder.WriteString(fmt.Sprintf("• 语音模型ID：%s\n", cfg.ModelID))
+	builder.WriteString(fmt.Sprintf("• 自定义群ID：%d\n", cfg.Customgid))
 	return builder.String()
-}
-
-// saveConfig 将配置保存到JSON文件
-func saveConfig() error {
-	data, err := json.MarshalIndent(RecCfg, "", "  ")
-	if err != nil {
-		logrus.Warnln("ERROR: 序列化配置失败:", err)
-		return err
-	}
-	err = os.WriteFile(configPath, data, 0644)
-	if err != nil {
-		logrus.Warnln("ERROR: 写入配置文件失败:", err)
-		return err
-	}
-	return nil
-}
-
-// loadConfig 从JSON文件加载配置
-func loadConfig() error {
-	data, err := os.ReadFile(configPath)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(data, &RecCfg)
-	if err != nil {
-		logrus.Warnln("ERROR: 解析配置文件失败:", err)
-		return err
-	}
-	return nil
 }

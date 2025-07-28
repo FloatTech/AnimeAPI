@@ -26,6 +26,10 @@ var (
 	globalLock sync.Mutex
 
 	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
+
+	// ErrInvalidProductID 商品ID无效
+	ErrInvalidProductID = errors.New("商品id不存在")
+
 	// ErrNoBoys 表示当前没有男孩子可用的错误。
 	ErrNoBoys = errors.New("暂时没有男孩子哦")
 
@@ -337,24 +341,15 @@ func Redeem(gid, uid int64, lastLength float64) error {
 		return ErrNoNiuNiu
 	}
 
-	/*	var n niuNiuManager
-		if err = db.Where("niu_id = ?", niuID).First(&n).Error; err != nil {
-			return err
-		}
-
-		switch n.Status {
-		case 1:
-			return errors.New("你的牛牛已经被拍卖无法赎回")
-		case 2:
-			return errors.New("你的牛牛已经被注销无法赎回")
-		}*/
-
 	money := wallet.GetWalletOf(uid)
 
-	if money < 150 {
+	price := 150
+
+	if money < price {
 		var builder strings.Builder
 		walletName := wallet.GetWalletName()
-		builder.WriteString("赎牛牛需要150")
+		builder.WriteString("赎牛牛需要")
+		builder.WriteString(strconv.Itoa(price))
 		builder.WriteString(walletName)
 		builder.WriteString("，快去赚钱吧，目前仅有:")
 		builder.WriteString(strconv.Itoa(money))
@@ -363,7 +358,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 		return errors.New(builder.String())
 	}
 
-	if err = wallet.InsertWalletOf(uid, -150); err != nil {
+	if err = wallet.InsertWalletOf(uid, -price); err != nil {
 		return err
 	}
 
@@ -371,7 +366,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 }
 
 // Store 牛牛商店
-func Store(gid, uid int64, n int) error {
+func Store(gid, uid int64, productID int, quantity int) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
 	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
@@ -383,7 +378,7 @@ func Store(gid, uid int64, n int) error {
 		return err
 	}
 
-	money, err := info.purchaseItem(n)
+	money, err := info.purchaseItem(productID, quantity)
 	if err != nil {
 		return err
 	}
@@ -442,9 +437,7 @@ func Sell(gid, uid int64) (string, error) {
 		return "", err
 	}
 
-	db.Model(&niuNiuManager{}).Where("niu_id = ?", niu.NiuID).Update("status", 1)
-
-	return message, err
+	return message, db.Model(&niuNiuManager{}).Where("niu_id = ?", niu.NiuID).Update("status", 1).Error
 }
 
 // ShowAuction 展示牛牛拍卖行
@@ -481,8 +474,10 @@ func Auction(gid, uid int64, index int) (string, error) {
 
 	niu, err := getUserByID(gid, uid)
 
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		niu.UserID = uid
+	} else if err != nil {
+		return "", err
 	}
 
 	niu.Length = info.Length

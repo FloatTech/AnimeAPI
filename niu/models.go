@@ -250,28 +250,23 @@ func (u *userInfo) checkProps(props, propSort string) error {
 	return ErrPropNotFound
 }
 
-func (u *userInfo) purchaseItem(n int) (int, error) {
-	var (
-		money int
-		err   error
-	)
-	switch n {
-	case 1:
-		money = 300
-		u.WeiGe += 5
-	case 2:
-		money = 300
-		u.MeiYao += 5
-	case 3:
-		money = 500
-		u.Artifact += 2
-	case 4:
-		money = 500
-		u.ShenJi += 2
-	default:
-		err = errors.New("无效的选择")
+func (u *userInfo) purchaseItem(productID, quantity int) (money int, err error) {
+
+	m := map[int]int{
+		1: 300, // 伟哥
+		2: 300, // 媚药
+		3: 500, // 击剑神器
+		4: 500, // 击剑神稽
 	}
-	return money, err
+
+	var ok bool
+	if money, ok = m[productID]; !ok {
+		return 0, ErrInvalidProductID
+	}
+
+	money *= quantity
+
+	return
 }
 
 func (u *userInfo) processDaJiao(props string) (messages string, err error) {

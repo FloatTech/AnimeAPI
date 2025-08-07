@@ -16,6 +16,9 @@ import (
 // ErrAPINeedCookie ...
 var ErrAPINeedCookie = errors.New("api need cookie")
 
+// Ua 默认UA
+var Ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"
+
 // SearchUser 查找b站用户
 func SearchUser(cookiecfg *CookieConfig, keyword string) (r []SearchResult, err error) {
 	client := &http.Client{}
@@ -166,9 +169,17 @@ func GetArticleInfo(id string) (card Card, err error) {
 }
 
 // GetLiveRoomInfo 用直播间id查直播间信息
-func GetLiveRoomInfo(roomID string) (card RoomCard, err error) {
+func GetLiveRoomInfo(roomID string, cookie string) (card RoomCard, err error) {
 	var data []byte
-	data, err = web.GetData(fmt.Sprintf(ArticleInfoURL, roomID))
+	if cookie != "" {
+		data, err = web.RequestDataWithHeaders(web.NewDefaultClient(), fmt.Sprintf(LiveRoomInfoURL, roomID), "GET", func(req *http.Request) error {
+			req.Header.Add("cookie", cookie)
+			req.Header.Set("User-Agent", Ua)
+			return nil
+		}, nil)
+	} else {
+		data, err = web.GetData(fmt.Sprintf(LiveRoomInfoURL, roomID))
+	}
 	if err != nil {
 		return
 	}

@@ -13,6 +13,7 @@ var (
 
 type tableHook func(gid int64) error
 
+// Model ...
 type Model struct {
 	*gorm.DB
 }

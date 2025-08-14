@@ -4,13 +4,22 @@ import (
 	"fmt"
 	"github.com/RomiChan/syncx"
 	"github.com/jinzhu/gorm"
+	"sync"
 )
 
 var (
 	migratedGroups = syncx.Map[string, bool]{} // key: string, value: bool
+	tableHooks     []tableHook
+	hooksMtx       sync.RWMutex
 )
 
-func ensureUserInfoTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
+type tableHook func(gid int64) error
+
+type model struct {
+	*gorm.DB
+}
+
+func ensureTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
 	table := fmt.Sprintf("group_%d_%s_info", gid, prefix)
 	if _, ok := migratedGroups.Load(table); ok {
 		return nil
@@ -25,9 +34,34 @@ func ensureUserInfoTable[T userInfo | AuctionInfo](gid int64, prefix string) err
 	return nil
 }
 
+func ensureUserInfo(gid int64) error {
+	return ensureTable[userInfo](gid, ur)
+}
+
+func ensureAuctionInfo(gid int64) error {
+	return ensureTable[AuctionInfo](gid, ac)
+}
+
+// registerTableHook 注册钩子
+func registerTableHook(h ...tableHook) {
+	hooksMtx.Lock()
+	defer hooksMtx.Unlock()
+	tableHooks = append(tableHooks, h...)
+}
+
 // TableFor 大写是为了防止数据操作哪里有问题留个保底可以在zbp的项目里直接改
-func TableFor(gid int64, prefix string) *gorm.DB {
-	return db.Table(fmt.Sprintf("group_%d_%s_info", gid, prefix))
+func TableFor(gid int64, prefix string) *model {
+	// 先执行钩子
+	hooksMtx.RLock()
+	for _, h := range tableHooks {
+		if err := h(gid); err != nil {
+			panic(fmt.Sprintf("执行表钩子失败: %v", err))
+		}
+	}
+	hooksMtx.RUnlock()
+
+	tableName := fmt.Sprintf("group_%d_%s_info", gid, prefix)
+	return &model{db.Table(tableName)}
 }
 
 func listUsers(gid int64) (users, error) {

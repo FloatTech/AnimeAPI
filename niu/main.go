@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	db         *gorm.DB
+	db         *model
 	globalLock sync.Mutex
 
 	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
@@ -84,17 +84,15 @@ func init() {
 		panic(err)
 	}
 
-	db = sdb.LogMode(false)
+	db = &model{sdb.LogMode(false)}
 
+	registerTableHook(ensureUserInfo, ensureAuctionInfo)
 }
 
 // DeleteWordNiuNiu ...
 func DeleteWordNiuNiu(gid, uid int64) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return err
-	}
 	return deleteUserByID(gid, uid)
 }
 
@@ -102,9 +100,6 @@ func DeleteWordNiuNiu(gid, uid int64) error {
 func SetWordNiuNiu(gid, uid int64, length float64) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return err
-	}
 	m := map[string]interface{}{
 		"length": length,
 	}
@@ -115,10 +110,6 @@ func SetWordNiuNiu(gid, uid int64, length float64) error {
 func GetWordNiuNiu(gid, uid int64) (float64, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return 0, err
-	}
 
 	info, err := getUserByID(gid, uid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -137,10 +128,6 @@ func GetRankingInfo(gid int64, t bool) (BaseInfos, error) {
 	var (
 		list users
 	)
-
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return nil, err
-	}
 
 	us, err := listUsers(gid)
 	if err != nil {
@@ -170,9 +157,6 @@ func GetGroupUserRank(gid, uid int64) (int, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
 
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return 0, err
-	}
 	niu, err := getUserByID(gid, uid)
 	if err != nil {
 		return -1, err
@@ -188,9 +172,6 @@ func GetGroupUserRank(gid, uid int64) (int, error) {
 
 // View 查看牛牛
 func View(gid, uid int64, name string) (string, error) {
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", err
-	}
 	i, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu
@@ -215,9 +196,6 @@ func View(gid, uid int64, name string) (string, error) {
 
 // HitGlue 打胶
 func HitGlue(gid, uid int64, prop string) (string, error) {
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", err
-	}
 	niuniu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiuTwo
@@ -239,10 +217,6 @@ func HitGlue(gid, uid int64, prop string) (string, error) {
 func Register(gid, uid int64) (string, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", err
-	}
 
 	if _, err := getUserByID(gid, uid); err == nil {
 		return "", ErrAlreadyRegistered
@@ -272,10 +246,6 @@ func Register(gid, uid int64) (string, error) {
 func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-
-	if err = ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", 0, ErrNoNiuNiu
-	}
 
 	myniuniu, err := getUserByID(gid, uid)
 	if err != nil {
@@ -313,9 +283,6 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 func Cancel(gid, uid int64) (string, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", err
-	}
 	_, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiuTwo
@@ -332,9 +299,6 @@ func Cancel(gid, uid int64) (string, error) {
 func Redeem(gid, uid int64, lastLength float64) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return err
-	}
 
 	_, err := getUserByID(gid, uid)
 	if err != nil {
@@ -369,9 +333,6 @@ func Redeem(gid, uid int64, lastLength float64) error {
 func Store(gid, uid int64, productID int, quantity int) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return err
-	}
 
 	info, err := getUserByID(gid, uid)
 	if err != nil {
@@ -398,12 +359,6 @@ func Store(gid, uid int64, productID int, quantity int) error {
 func Sell(gid, uid int64) (string, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", err
-	}
-	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
-		return "", err
-	}
 	niu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu
@@ -444,9 +399,6 @@ func Sell(gid, uid int64) (string, error) {
 func ShowAuction(gid int64) ([]AuctionInfo, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
-		return nil, err
-	}
 	return listAuction(gid)
 }
 
@@ -454,9 +406,6 @@ func ShowAuction(gid int64) ([]AuctionInfo, error) {
 func Auction(gid, uid int64, index int) (string, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[AuctionInfo](gid, ac); err != nil {
-		return "", err
-	}
 
 	infos, err := listAuction(gid)
 	if len(infos) == 0 || err != nil {
@@ -511,9 +460,6 @@ func Auction(gid, uid int64, index int) (string, error) {
 func Bag(gid, uid int64) (string, error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
-	if err := ensureUserInfoTable[userInfo](gid, ur); err != nil {
-		return "", err
-	}
 	niu, err := getUserByID(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu

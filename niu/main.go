@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	db         *model
+	db         *Model
 	globalLock sync.Mutex
 
 	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
@@ -84,7 +84,7 @@ func init() {
 		panic(err)
 	}
 
-	db = &model{sdb.LogMode(false)}
+	db = &Model{sdb.LogMode(false)}
 
 	registerTableHook(ensureUserInfo, ensureAuctionInfo)
 }

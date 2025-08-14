@@ -15,7 +15,7 @@ var (
 
 type tableHook func(gid int64) error
 
-type model struct {
+type Model struct {
 	*gorm.DB
 }
 
@@ -50,7 +50,7 @@ func registerTableHook(h ...tableHook) {
 }
 
 // TableFor 大写是为了防止数据操作哪里有问题留个保底可以在zbp的项目里直接改
-func TableFor(gid int64, prefix string) *model {
+func TableFor(gid int64, prefix string) *Model {
 	// 先执行钩子
 	hooksMtx.RLock()
 	for _, h := range tableHooks {
@@ -61,7 +61,7 @@ func TableFor(gid int64, prefix string) *model {
 	hooksMtx.RUnlock()
 
 	tableName := fmt.Sprintf("group_%d_%s_info", gid, prefix)
-	return &model{db.Table(tableName)}
+	return &Model{db.Table(tableName)}
 }
 
 func listUsers(gid int64) (users, error) {

@@ -13,8 +13,7 @@ var (
 
 type tableHook func(gid int64) error
 
-// Model ...
-type Model struct {
+type model struct {
 	*gorm.DB
 }
 
@@ -46,8 +45,7 @@ func registerTableHook(h ...tableHook) {
 	tableHooks = append(tableHooks, h...)
 }
 
-// TableFor 大写是为了防止数据操作哪里有问题留个保底可以在zbp的项目里直接改
-func TableFor(gid int64, prefix string) *Model {
+func tableFor(gid int64, prefix string) *model {
 	// 先跑钩子
 	for _, h := range tableHooks {
 		if err := h(gid); err != nil {
@@ -56,35 +54,35 @@ func TableFor(gid int64, prefix string) *Model {
 	}
 
 	tableName := fmt.Sprintf("group_%d_%s_info", gid, prefix)
-	return &Model{db.Table(tableName)}
+	return &model{db.Table(tableName)}
 }
 
 func listUsers(gid int64) (users, error) {
 	var us users
-	err := TableFor(gid, ur).Find(&us).Error
+	err := tableFor(gid, ur).Find(&us).Error
 	return us, err
 }
 
 func listAuction(gid int64) ([]AuctionInfo, error) {
 	var as []AuctionInfo
-	err := TableFor(gid, ac).Order("money DESC").Find(&as).Error
+	err := tableFor(gid, ac).Order("money DESC").Find(&as).Error
 	return as, err
 }
 
 func createUser(gid int64, user *userInfo, fix string) error {
-	return TableFor(gid, fix).Create(user).Error
+	return tableFor(gid, fix).Create(user).Error
 }
 
 func getUserByID(gid int64, uid int64) (*userInfo, error) {
 	var user userInfo
-	err := TableFor(gid, ur).Where("user_id = ?", uid).First(&user).Error
+	err := tableFor(gid, ur).Where("user_id = ?", uid).First(&user).Error
 	return &user, err
 }
 
 func updatesUserByID(gid int64, id int64, fields map[string]interface{}) error {
-	return TableFor(gid, ur).Where("user_id = ?", id).Updates(fields).Error
+	return tableFor(gid, ur).Where("user_id = ?", id).Updates(fields).Error
 }
 
 func deleteUserByID(gid int64, id int64) error {
-	return TableFor(gid, ur).Where("user_id = ?", id).Delete(&userInfo{}).Error
+	return tableFor(gid, ur).Where("user_id = ?", id).Delete(&userInfo{}).Error
 }

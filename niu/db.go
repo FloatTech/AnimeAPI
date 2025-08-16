@@ -32,13 +32,13 @@ func tableFor(gid int64, prefix string) *gorm.DB {
 	case ur:
 		err := ensureTable[userInfo](gid, ur)
 		if err != nil {
-			logrus.Error("ensureTable error: %v", err)
+			logrus.Errorf("ensureTable error: %v", err)
 			return nil
 		}
 	case ac:
 		err := ensureTable[AuctionInfo](gid, ac)
 		if err != nil {
-			logrus.Error("ensureTable error: %v", err)
+			logrus.Errorf("ensureTable error: %v", err)
 			return nil
 		}
 	}

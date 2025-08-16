@@ -4,18 +4,12 @@ import (
 	"fmt"
 	"github.com/RomiChan/syncx"
 	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 )
 
 var (
 	migratedGroups = syncx.Map[string, bool]{} // key: string, value: bool
-	tableHooks     []tableHook
 )
-
-type tableHook func(gid int64) error
-
-type model struct {
-	*gorm.DB
-}
 
 func ensureTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
 	table := fmt.Sprintf("group_%d_%s_info", gid, prefix)
@@ -32,29 +26,25 @@ func ensureTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
 	return nil
 }
 
-func ensureUserInfo(gid int64) error {
-	return ensureTable[userInfo](gid, ur)
-}
+func tableFor(gid int64, prefix string) *gorm.DB {
 
-func ensureAuctionInfo(gid int64) error {
-	return ensureTable[AuctionInfo](gid, ac)
-}
-
-// registerTableHook 注册钩子
-func registerTableHook(h ...tableHook) {
-	tableHooks = append(tableHooks, h...)
-}
-
-func tableFor(gid int64, prefix string) *model {
-	// 先跑钩子
-	for _, h := range tableHooks {
-		if err := h(gid); err != nil {
-			panic(fmt.Sprintf("执行钩子失败: %v", err))
+	switch prefix {
+	case ur:
+		err := ensureTable[userInfo](gid, ur)
+		if err != nil {
+			logrus.Error("ensureTable error: %v", err)
+			return nil
+		}
+	case ac:
+		err := ensureTable[AuctionInfo](gid, ac)
+		if err != nil {
+			logrus.Error("ensureTable error: %v", err)
+			return nil
 		}
 	}
 
 	tableName := fmt.Sprintf("group_%d_%s_info", gid, prefix)
-	return &model{db.Table(tableName)}
+	return db.Table(tableName)
 }
 
 func listUsers(gid int64) (users, error) {

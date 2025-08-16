@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	db         *model
+	db         *gorm.DB
 	globalLock sync.Mutex
 
 	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
@@ -84,9 +84,7 @@ func init() {
 		panic(err)
 	}
 
-	db = &model{sdb.LogMode(false)}
-
-	registerTableHook(ensureUserInfo, ensureAuctionInfo)
+	db = sdb.LogMode(false)
 }
 
 // DeleteWordNiuNiu ...
@@ -449,11 +447,13 @@ func Auction(gid, uid int64, index int) (string, error) {
 		return "", err
 	}
 
+	bs := fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm", niu.Length)
+
 	if info.Money >= 500 {
-		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你2个伟哥,2个媚药", niu.Length), nil
+		return fmt.Sprintf("%s,此次购买将赠送你2个伟哥,2个媚药", bs), nil
 	}
 
-	return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm", niu.Length), nil
+	return bs, nil
 }
 
 // Bag 牛牛背包

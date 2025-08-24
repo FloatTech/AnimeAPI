@@ -17,6 +17,7 @@ var (
 	jjPorps     = []string{"击剑神器", "击剑神稽"}
 )
 
+// Rm ...
 type Rm struct {
 	NiuID     uuid.UUID
 	TimeLimit time.Time

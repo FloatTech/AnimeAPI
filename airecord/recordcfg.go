@@ -30,13 +30,13 @@ func init() {
 	if err := sdb.db.Open(time.Hour * 24); err != nil {
 		panic(err)
 	}
-	if err := sdb.db.Create("config", &recordconfig{}); err != nil {
+	if err := sdb.db.Create("config", &RecordConfig{}); err != nil {
 		panic(err)
 	}
 }
 
-// recordconfig 存储语音记录相关配置
-type recordconfig struct {
+// RecordConfig 存储语音记录相关配置
+type RecordConfig struct {
 	ID        int64  `db:"id"`        // 主键ID
 	ModelName string `db:"modelName"` // 语音模型名称
 	ModelID   string `db:"modelID"`   // 语音模型ID
@@ -44,10 +44,10 @@ type recordconfig struct {
 }
 
 // GetConfig 获取当前配置
-func GetConfig() recordconfig {
+func GetConfig() RecordConfig {
 	sdb.RLock()
 	defer sdb.RUnlock()
-	cfg := recordconfig{}
+	cfg := RecordConfig{}
 	_ = sdb.db.Find("config", &cfg, "WHERE id = 1")
 	return cfg
 }
@@ -57,7 +57,7 @@ func SetRecordModel(modelName, modelID string) error {
 	cfg := GetConfig()
 	sdb.Lock()
 	defer sdb.Unlock()
-	return sdb.db.Insert("config", &recordconfig{
+	return sdb.db.Insert("config", &RecordConfig{
 		ID:        1,
 		ModelName: modelName,
 		ModelID:   modelID,
@@ -70,7 +70,7 @@ func SetCustomGID(gid int64) error {
 	cfg := GetConfig()
 	sdb.Lock()
 	defer sdb.Unlock()
-	return sdb.db.Insert("config", &recordconfig{
+	return sdb.db.Insert("config", &RecordConfig{
 		ID:        1,
 		ModelName: cfg.ModelName,
 		ModelID:   cfg.ModelID,

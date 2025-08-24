@@ -27,6 +27,12 @@ var (
 
 	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
 
+	// ErrAuctioned 已被拍卖无法赎回
+	ErrAuctioned = errors.New("你的牛牛已经被拍卖无法赎回")
+
+	// ErrCanceled 已被注销无法赎回
+	ErrCanceled = errors.New("你的牛牛已经被注销无法赎回")
+
 	// ErrInvalidProductID 商品ID无效
 	ErrInvalidProductID = errors.New("商品id不存在")
 
@@ -241,37 +247,38 @@ func Register(gid, uid int64) (string, error) {
 }
 
 // JJ ...
-func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, err error) {
+func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength float64, niuID uuid.UUID, err error) {
 	globalLock.Lock()
 	defer globalLock.Unlock()
 
 	myniuniu, err := getUserByID(gid, uid)
 	if err != nil {
-		return "", 0, ErrNoNiuNiu
+		return "", 0, uuid.Nil, ErrNoNiuNiu
 	}
 
 	adduserniuniu, err := getUserByID(gid, adduser)
 	if err != nil {
-		return "", 0, ErrAdduserNoNiuNiu
+		return "", 0, uuid.Nil, ErrAdduserNoNiuNiu
 	}
 
 	if uid == adduser {
-		return "", 0, ErrCannotFight
+		return "", 0, uuid.Nil, ErrCannotFight
 	}
 
 	message, err = myniuniu.processJJ(adduserniuniu, prop)
 	if err != nil {
-		return "", 0, err
+		return "", 0, uuid.Nil, err
 	}
 
 	if err = tableFor(gid, ur).Where("user_id =?", uid).Update("length", myniuniu.Length).Error; err != nil {
-		return "", 0, err
+		return "", 0, uuid.Nil, err
 	}
 
 	if err = tableFor(gid, ur).Where("user_id =?", adduser).Update("length", adduserniuniu.Length).Error; err != nil {
-		return "", 0, err
+		return "", 0, uuid.Nil, err
 	}
 
+	niuID = adduserniuniu.NiuID
 	adduserLength = adduserniuniu.Length
 
 	return
@@ -294,7 +301,7 @@ func Cancel(gid, uid int64) (string, error) {
 }
 
 // Redeem 赎牛牛
-func Redeem(gid, uid int64, lastLength float64) error {
+func Redeem(gid, uid int64, r Rm) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
 
@@ -305,7 +312,19 @@ func Redeem(gid, uid int64, lastLength float64) error {
 
 	money := wallet.GetWalletOf(uid)
 
-	price := 150
+	var niuManager niuNiuManager
+	if err = db.Model(&niuNiuManager{}).Where("niu_id = ?", r.NiuID).First(&niuManager).Error; err != nil {
+		return err
+	}
+
+	switch niuManager.Status {
+	case 1:
+		return ErrAuctioned
+	case 2:
+		return ErrCanceled
+	}
+
+	price := int(hitGlue(r.Length))*100 + 150
 
 	if money < price {
 		var builder strings.Builder
@@ -324,7 +343,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 		return err
 	}
 
-	return tableFor(gid, ur).Where("user_id = ?", uid).Update("length", lastLength).Error
+	return tableFor(gid, ur).Where("user_id = ?", uid).Update("length", r.Length).Error
 }
 
 // Store 牛牛商店

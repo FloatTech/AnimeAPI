@@ -17,6 +17,13 @@ var (
 	jjPorps     = []string{"击剑神器", "击剑神稽"}
 )
 
+type Rm struct {
+	NiuID     uuid.UUID
+	TimeLimit time.Time
+	Count     int
+	Length    float64
+}
+
 type users []*userInfo
 
 type niuNiuManager struct {
@@ -115,9 +122,9 @@ func (u *userInfo) useWeiGe() (string, float64) {
 	reduce := math.Abs(hitGlue(niuniu))
 	niuniu += reduce
 	return randomChoice([]string{
-		fmt.Sprintf("哈哈，你这一用道具，牛牛就像是被激发了潜能，增加了%.2fcm！看来今天是个大日子呢！", reduce),
+		fmt.Sprintf("哈哈，你这一用伟哥，牛牛就像是被激发了潜能，增加了%.2fcm！看来今天是个大日子呢！", reduce),
 		fmt.Sprintf("你这是用了什么神奇的道具？牛牛竟然增加了%.2fcm，简直是牛气冲天！", reduce),
-		fmt.Sprintf("使用道具后，你的牛牛就像是开启了加速模式，一下增加了%.2fcm，这成长速度让人惊叹！", reduce),
+		fmt.Sprintf("使用伟哥后，你的牛牛就像是开启了加速模式，一下增加了%.2fcm，这成长速度让人惊叹！", reduce),
 	}), niuniu
 }
 
@@ -127,7 +134,7 @@ func (u *userInfo) useMeiYao() (string, float64) {
 	niuniu -= reduce
 	return randomChoice([]string{
 		fmt.Sprintf("你使用媚药,咿呀咿呀一下使当前长度发生了一些变化，当前长度%.2fcm", niuniu),
-		fmt.Sprintf("看来你追求的是‘微观之美’，故意使用道具让牛牛凹进去了%.2fcm！", reduce),
+		fmt.Sprintf("看来你追求的是‘微观之美’，故意使用媚药让牛牛凹进去了%.2fcm！", reduce),
 		fmt.Sprintf("缩小奇迹’在你身上发生了，牛牛凹进去了%.2fcm，你的选择真是独特！", reduce),
 	}), niuniu
 }
@@ -265,6 +272,17 @@ func (u *userInfo) purchaseItem(productID, quantity int) (money int, err error) 
 	}
 
 	money *= quantity
+
+	switch productID {
+	case 1:
+		u.WeiGe += quantity
+	case 2:
+		u.MeiYao += quantity
+	case 3:
+		u.Artifact += quantity
+	case 4:
+		u.ShenJi += quantity
+	}
 
 	return
 }

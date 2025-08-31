@@ -17,15 +17,16 @@ import (
 )
 
 const (
-	ur = "user"
-	ac = "auction"
+	usr  = "user"
+	auct = "auction"
 )
 
 var (
 	db         *gorm.DB
 	globalLock sync.Mutex
 
-	errCancelFail = errors.New("遇到不可抗力因素，注销失败！")
+	// ErrCancelFail 牛牛注销失败
+	ErrCancelFail = errors.New("遇到不可抗力因素，注销失败！")
 
 	// ErrAuctioned 已被拍卖无法赎回
 	ErrAuctioned = errors.New("你的牛牛已经被拍卖无法赎回")
@@ -210,7 +211,7 @@ func HitGlue(gid, uid int64, prop string) (string, error) {
 		return "", err
 	}
 
-	if err = tableFor(gid, ur).Where("user_id = ?", uid).Save(niuniu).Error; err != nil {
+	if err = tableFor(gid, usr).Where("user_id = ?", uid).Save(niuniu).Error; err != nil {
 		return "", err
 	}
 
@@ -233,7 +234,7 @@ func Register(gid, uid int64) (string, error) {
 		Length: length,
 	}
 
-	if err := createUser(gid, &u, ur); err != nil {
+	if err := createUser(gid, &u, usr); err != nil {
 		return "", err
 	}
 
@@ -270,11 +271,11 @@ func JJ(gid, uid, adduser int64, prop string) (message string, adduserLength flo
 		return "", 0, uuid.Nil, err
 	}
 
-	if err = tableFor(gid, ur).Where("user_id =?", uid).Update("length", myniuniu.Length).Error; err != nil {
+	if err = tableFor(gid, usr).Where("user_id =?", uid).Update("length", myniuniu.Length).Error; err != nil {
 		return "", 0, uuid.Nil, err
 	}
 
-	if err = tableFor(gid, ur).Where("user_id =?", adduser).Update("length", adduserniuniu.Length).Error; err != nil {
+	if err = tableFor(gid, usr).Where("user_id =?", adduser).Update("length", adduserniuniu.Length).Error; err != nil {
 		return "", 0, uuid.Nil, err
 	}
 
@@ -294,14 +295,14 @@ func Cancel(gid, uid int64) (string, error) {
 	}
 	err = deleteUserByID(gid, uid)
 	if err != nil {
-		return "", errCancelFail
+		return "", ErrCancelFail
 	}
 	err = db.Model(&niuNiuManager{}).Where("niu_id = ?", uid).Update("status", 2).Error
 	return "注销成功,你已经没有牛牛了", err
 }
 
 // Redeem 赎牛牛
-func Redeem(gid, uid int64, r Rm) error {
+func Redeem(gid, uid int64, r PKRecord) error {
 	globalLock.Lock()
 	defer globalLock.Unlock()
 
@@ -343,7 +344,7 @@ func Redeem(gid, uid int64, r Rm) error {
 		return err
 	}
 
-	return tableFor(gid, ur).Where("user_id = ?", uid).Update("length", r.Length).Error
+	return tableFor(gid, usr).Where("user_id = ?", uid).Update("length", r.Length).Error
 }
 
 // Store 牛牛商店
@@ -369,7 +370,7 @@ func Store(gid, uid int64, productID int, quantity int) error {
 		return err
 	}
 
-	return tableFor(gid, ur).Save(info).Error
+	return tableFor(gid, usr).Save(info).Error
 }
 
 // Sell 出售牛牛
@@ -405,7 +406,7 @@ func Sell(gid, uid int64) (string, error) {
 		Money:  money * 2,
 	}
 
-	if err = tableFor(gid, ac).Create(&u).Error; err != nil {
+	if err = tableFor(gid, auct).Create(&u).Error; err != nil {
 		return "", err
 	}
 
@@ -430,7 +431,7 @@ func Auction(gid, uid int64, index int) (string, error) {
 	}
 
 	var info AuctionInfo
-	if err = tableFor(gid, ac).Where("id = ?", index).First(&info).Error; err != nil {
+	if err = tableFor(gid, auct).Where("id = ?", index).First(&info).Error; err != nil {
 		return "", err
 	}
 
@@ -454,11 +455,11 @@ func Auction(gid, uid int64, index int) (string, error) {
 		niu.MeiYao += 2
 	}
 
-	if err = tableFor(gid, ac).Delete(&info).Error; err != nil {
+	if err = tableFor(gid, auct).Delete(&info).Error; err != nil {
 		return "", err
 	}
 
-	if err = tableFor(gid, ur).Save(&niu).Error; err != nil {
+	if err = tableFor(gid, usr).Save(&niu).Error; err != nil {
 		return "", err
 	}
 

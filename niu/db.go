@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	migratedGroups = syncx.Map[string, bool]{} // key: string, value: bool
+	migratedGroups = syncx.Map[string, struct{}]{} // key: string, value: struct{}
 )
 
 func ensureTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
@@ -22,40 +22,39 @@ func ensureTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
 	}
 
 	// 设置为已迁移
-	migratedGroups.Store(table, true)
+	migratedGroups.Store(table, struct{}{})
 	return nil
 }
 
 func tableFor(gid int64, prefix string) *gorm.DB {
 
 	switch prefix {
-	case ur:
-		err := ensureTable[userInfo](gid, ur)
+	case usr:
+		err := ensureTable[userInfo](gid, usr)
 		if err != nil {
 			logrus.Errorf("ensureTable error: %v", err)
 			return nil
 		}
-	case ac:
-		err := ensureTable[AuctionInfo](gid, ac)
+	case auct:
+		err := ensureTable[AuctionInfo](gid, auct)
 		if err != nil {
 			logrus.Errorf("ensureTable error: %v", err)
 			return nil
 		}
 	}
 
-	tableName := fmt.Sprintf("group_%d_%s_info", gid, prefix)
-	return db.Table(tableName)
+	return db.Table(fmt.Sprintf("group_%d_%s_info", gid, prefix))
 }
 
 func listUsers(gid int64) (users, error) {
-	var us users
-	err := tableFor(gid, ur).Find(&us).Error
-	return us, err
+	var users users
+	err := tableFor(gid, usr).Find(&users).Error
+	return users, err
 }
 
 func listAuction(gid int64) ([]AuctionInfo, error) {
 	var as []AuctionInfo
-	err := tableFor(gid, ac).Order("money DESC").Find(&as).Error
+	err := tableFor(gid, auct).Order("money DESC").Find(&as).Error
 	return as, err
 }
 
@@ -65,14 +64,14 @@ func createUser(gid int64, user *userInfo, fix string) error {
 
 func getUserByID(gid int64, uid int64) (*userInfo, error) {
 	var user userInfo
-	err := tableFor(gid, ur).Where("user_id = ?", uid).First(&user).Error
+	err := tableFor(gid, usr).Where("user_id = ?", uid).First(&user).Error
 	return &user, err
 }
 
 func updatesUserByID(gid int64, id int64, fields map[string]interface{}) error {
-	return tableFor(gid, ur).Where("user_id = ?", id).Updates(fields).Error
+	return tableFor(gid, usr).Where("user_id = ?", id).Updates(fields).Error
 }
 
 func deleteUserByID(gid int64, id int64) error {
-	return tableFor(gid, ur).Where("user_id = ?", id).Delete(&userInfo{}).Error
+	return tableFor(gid, usr).Where("user_id = ?", id).Delete(&userInfo{}).Error
 }

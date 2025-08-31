@@ -17,8 +17,8 @@ var (
 	jjPorps     = []string{"击剑神器", "击剑神稽"}
 )
 
-// Rm ...
-type Rm struct {
+// PKRecord ...
+type PKRecord struct {
 	NiuID     uuid.UUID
 	TimeLimit time.Time
 	Count     int

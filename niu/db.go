@@ -2,6 +2,7 @@ package niu
 
 import (
 	"fmt"
+
 	"github.com/RomiChan/syncx"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
@@ -27,7 +28,6 @@ func ensureTable[T userInfo | AuctionInfo](gid int64, prefix string) error {
 }
 
 func tableFor(gid int64, prefix string) *gorm.DB {
-
 	switch prefix {
 	case usr:
 		err := ensureTable[userInfo](gid, usr)

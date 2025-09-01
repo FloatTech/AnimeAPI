@@ -4,7 +4,7 @@ import "testing"
 
 func TestCreateUserInfoByProps(t *testing.T) {
 	user := &userInfo{
-		UID:    123,
+		UserID: 123,
 		Length: 12,
 		WeiGe:  2,
 	}
@@ -17,7 +17,7 @@ func TestCreateUserInfoByProps(t *testing.T) {
 
 func TestCheckProp(t *testing.T) {
 	user := &userInfo{
-		UID:    123,
+		UserID: 123,
 		Length: 12,
 		WeiGe:  2,
 	}

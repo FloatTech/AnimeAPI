@@ -4,12 +4,13 @@ package niu
 import (
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
 	"math"
 	"math/rand"
 	"sort"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -259,7 +260,6 @@ func (u *userInfo) checkProps(props, propSort string) error {
 }
 
 func (u *userInfo) purchaseItem(productID, quantity int) (money int, err error) {
-
 	m := map[int]int{
 		1: 300, // 伟哥
 		2: 300, // 媚药

@@ -15,10 +15,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pkumza/numcn v1.0.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.18.0
 	github.com/wdvxdr1123/ZeroBot v1.8.2-0.20250921063512-13752a73d444
-	golang.org/x/image v0.31.0
+	golang.org/x/image v0.21.0
 )
 
 require (

@@ -1,6 +1,5 @@
 linters-settings:
   errcheck:
-    ignore: fmt:.*
     ignoretests: true
 
   goimports:
@@ -21,7 +20,7 @@ linters:
     #- depguard
     - dogsled
     - errcheck
-    - copyloopvar
+    #- exportloopref
     - exhaustive
     #- funlen
     #- goconst
@@ -57,13 +56,12 @@ run:
   deadline: 5m
   issues-exit-code: 1
   tests: false
-  skip-dirs:
-    - order
   go: '1.20'
 
 # output configuration options
 output:
-  format: "colored-line-number"
+  formats:
+   - format: "colored-line-number"
   print-issued-lines: true
   print-linter-name: true
   uniq-by-line: true

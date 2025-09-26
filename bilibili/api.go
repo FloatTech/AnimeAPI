@@ -11,6 +11,7 @@ import (
 	"github.com/FloatTech/floatbox/binary"
 	"github.com/FloatTech/floatbox/web"
 	"github.com/tidwall/gjson"
+	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
 // ErrAPINeedCookie ...
@@ -20,15 +21,15 @@ var ErrAPINeedCookie = errors.New("api need cookie")
 var Ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"
 
 // SearchUser 查找b站用户
-func SearchUser(cookiecfg *CookieConfig, keyword string) (r []SearchResult, err error) {
+func (cfg *CookieConfig) SearchUser(keyword string) (r []SearchResult, err error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf(SearchUserURL, keyword), nil)
 	if err != nil {
 		return
 	}
-	if cookiecfg != nil {
+	if cfg != nil {
 		cookie := ""
-		cookie, err = cookiecfg.Load()
+		cookie, err = cfg.Load()
 		if err != nil {
 			return
 		}
@@ -76,12 +77,12 @@ func LoadDynamicDetail(str string) (card DynamicCard, err error) {
 }
 
 // GetDynamicDetail 用动态id查动态信息
-func GetDynamicDetail(cookiecfg *CookieConfig, dynamicIDStr string) (card DynamicCard, err error) {
+func (cfg *CookieConfig) GetDynamicDetail(dynamicIDStr string) (card DynamicCard, err error) {
 	var data []byte
 	data, err = web.RequestDataWithHeaders(web.NewDefaultClient(), fmt.Sprintf(DynamicDetailURL, dynamicIDStr), "GET", func(req *http.Request) error {
-		if cookiecfg != nil {
+		if cfg != nil {
 			cookie := ""
-			cookie, err = cookiecfg.Load()
+			cookie, err = cfg.Load()
 			if err != nil {
 				return err
 			}
@@ -107,15 +108,15 @@ func GetMemberCard(uid any) (result MemberCard, err error) {
 }
 
 // GetMedalWall 用b站uid获得牌子
-func GetMedalWall(cookiecfg *CookieConfig, uid string) (result []Medal, err error) {
+func (cfg *CookieConfig) GetMedalWall(uid string) (result []Medal, err error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf(MedalWallURL, uid), nil)
 	if err != nil {
 		return
 	}
-	if cookiecfg != nil {
+	if cfg != nil {
 		cookie := ""
-		cookie, err = cookiecfg.Load()
+		cookie, err = cfg.Load()
 		if err != nil {
 			return
 		}
@@ -199,12 +200,12 @@ func GetVideoInfo(id string) (card Card, err error) {
 	if err != nil {
 		return
 	}
-	err = json.Unmarshal(binary.StringToBytes(gjson.ParseBytes(data).Get("data").Raw), &card)
+	err = json.Unmarshal(binary.StringToBytes(gjson.ParseBytes(data).Raw), &card)
 	return
 }
 
 // GetVideoSummary 用av或bv查看AI视频总结
-func GetVideoSummary(cookiecfg *CookieConfig, id string) (videoSummary VideoSummary, err error) {
+func (cfg *CookieConfig) GetVideoSummary(id string) (videoSummary VideoSummary, err error) {
 	var (
 		data []byte
 		card Card
@@ -223,9 +224,9 @@ func GetVideoSummary(cookiecfg *CookieConfig, id string) (videoSummary VideoSumm
 		return
 	}
 	data, err = web.RequestDataWithHeaders(web.NewDefaultClient(), SignURL(fmt.Sprintf(VideoSummaryURL, card.BvID, card.CID, card.Owner.Mid)), "GET", func(req *http.Request) error {
-		if cookiecfg != nil {
+		if cfg != nil {
 			cookie := ""
-			cookie, err = cookiecfg.Load()
+			cookie, err = cfg.Load()
 			if err != nil {
 				return err
 			}
@@ -239,4 +240,13 @@ func GetVideoSummary(cookiecfg *CookieConfig, id string) (videoSummary VideoSumm
 	}
 	err = json.Unmarshal(data, &videoSummary)
 	return
+}
+
+// GetDetailMessage 用动态id查动态信息
+func (cfg *CookieConfig) GetDetailMessage(dynamicIDStr string) (msg []message.Segment, err error) {
+	dyc, err := cfg.GetDynamicDetail(dynamicIDStr)
+	if err != nil {
+		return
+	}
+	return dyc.ToMessage()
 }
